@@ -1,0 +1,8 @@
+services:
+  app:
+    ports:
+      - 9090:8080
+
+  db:
+    ports:
+      - 6543:5432
