@@ -36,7 +36,7 @@ Database will be created with initial tables, and will save data on host compute
 #### To delete data saved locally ####
 
 ```bash
-docker volume rm postgres_data
+docker volume rm java-byt-freeedu_postgres_data
 ```
 
 #### IP ####
