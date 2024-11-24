@@ -1,13 +1,13 @@
-package com.codeJavengers.budgetManager;
+package com.byt.freeEdu;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class BudgetManagerApplication {
+public class FreeEduApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(BudgetManagerApplication.class, args);
+        SpringApplication.run(FreeEduApplication.class, args);
     }
 
 }

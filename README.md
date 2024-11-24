@@ -1,19 +1,16 @@
-# Budget Manager Application
+# FreeEdu
 
-The Budget Manager application helps you control your expenses and set savings goals. This tool is designed to make managing your finances easier and more efficient.
+FreeEdu is plug and play e-journal system for schools. It is designed to be easy to use and easy to deploy. It is written in Java and uses Spring Boot.
 
 ## Features
 
-- **Expense Tracking**: Keep a detailed record of your spending.
-- **Savings Goals**: Set and monitor your savings targets.
-- **Reports**: Generate reports to analyze your financial habits.
-- **Notifications**: Receive alerts for upcoming bills and goal progress.
+- TODO: Add feature list
 
 ## Getting Started
 
-To get started with the Budget Manager application, follow these steps:
+To get started with FreeEdu, follow these steps:
 
-## Deployment
+### Deployment
 Application is deployed od docker containers. Containers to run require a .env file.
 
 ```bash

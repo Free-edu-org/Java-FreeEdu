@@ -1,6 +1,6 @@
 spring:
   application:
-    name: BudgetManager
+    name: FreeEdu
 
   flyway:
     enabled: 'true'
