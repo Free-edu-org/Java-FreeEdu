@@ -11,7 +11,7 @@
 <div class="container text-bg-success p-3 " data-bs-theme="dark">
     <div class="row justify-content-center">
         <div class="card col-md-6">
-            <h2 class="card-title text-center">Logowanie do Budżetu Domowego</h2>
+            <h2 class="card-title text-center">Logowanie do FreeEdu</h2>
             <form class= card-body th:action="@{/authorize}" method="post">
                 <div class="form-group">
                     <label hidden for="username">Email/Username:</label>
@@ -24,13 +24,6 @@
                 <button type="submit" class="btn btn-primary btn-block">Zaloguj się</button>
                 <button type="button" onclick="window.location.href='/view/register'" class="btn btn-secondary btn-block">Utwórz konto</button>
             </form>
-            <hr>
-            <div class="card-body text-center">
-                <h3>Zaloguj się przez:</h3>
-                <button type="button" class="btn btn-primary" onclick="window.location.href='/oauth2/authorization/google'">Google</button>
-                <button type="button" class="btn btn-primary" onclick="window.location.href='/oauth2/authorization/facebook'">Facebook</button>
-                <button type="button" class="btn btn-primary" onclick="window.location.href='/oauth2/authorization/microsoft'">Microsoft</button>
-            </div>
         </div>
     </div>
 </div>
