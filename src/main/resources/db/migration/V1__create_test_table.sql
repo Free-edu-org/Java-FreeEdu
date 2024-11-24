@@ -1,4 +1,4 @@
-CREATE TABLE "test"
+CREATE TABLE test
 (
     id        int          NOT NULL PRIMARY KEY,
     username  VARCHAR(255) NOT NULL,

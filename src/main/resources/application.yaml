@@ -9,17 +9,17 @@ spring:
     baseline-version: '0'
 
   jpa:
-    database: postgresql
+    database: mysql
     hibernate:
       ddl-auto: validate
     show-sql: 'true'
     properties:
       hibernate:
         format_sql: 'true'
-        dialect: org.hibernate.dialect.PostgreSQLDialect
+        dialect: org.hibernate.dialect.MySQLDialect
 
   datasource:
-    driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://127.0.0.1:5432/FreeEduDB
-    username: postgres
-    password: postgres
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://127.0.0.1:3306/FreeEduDB
+    username: user
+    password: password

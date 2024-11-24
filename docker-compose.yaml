@@ -13,13 +13,13 @@ services:
 
   db:
     container_name: db
-    image: 'postgres:16.3-bullseye'
+    image: 'mysql:9.0'
     ports:
-      - 5432:5432
+      - 3306:3306
     env_file:
       - .env
     volumes:
-      - postgres_data:/var/lib/postgresql/data/
+      - mysql_data:/var/lib/mysql
 
 volumes:
-  postgres_data:
+  mysql_data:

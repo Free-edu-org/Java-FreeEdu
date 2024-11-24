@@ -36,12 +36,12 @@ Database will be created with initial tables, and will save data on host compute
 #### To delete data saved locally ####
 
 ```bash
-docker volume rm java-byt-freeedu_postgres_data
+docker volume rm java-byt-freeedu_mysql_data
 ```
 
 #### IP ####
 - **Docker-app: 127.0.0.1:8080**
-- **Docker-db: 127.0.0.1:5432**
+- **Docker-db: 127.0.0.1:3306**
 - **local-app: 127.0.0.1:8081**
 
 To change ports of containers, you can use [docker-compose.override.yaml.example](docker-compose.override.yaml.example)docker-compose.yaml file. 
