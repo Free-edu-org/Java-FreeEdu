@@ -9,5 +9,6 @@ public class FreeEduApplication {
     public static void main(String[] args) {
         SpringApplication.run(FreeEduApplication.class, args);
     }
+    //TEST
 
 }
