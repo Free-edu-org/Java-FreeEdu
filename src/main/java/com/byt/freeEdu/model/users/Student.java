@@ -2,10 +2,9 @@ package com.byt.freeEdu.model.users;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.*;
-
-import java.util.UUID;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
@@ -16,6 +15,7 @@ import java.util.UUID;
 public class Student extends User {
 
     @NonNull
-    @Column(name = "parent_id", nullable = false)
-    private UUID parentId;
+    @OneToOne
+    @Column(name = "parent", nullable = false)
+    private Parent parent;
 }
