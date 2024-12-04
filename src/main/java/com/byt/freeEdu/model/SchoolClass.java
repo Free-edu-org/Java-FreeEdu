@@ -6,7 +6,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
-import java.util.UUID;
 
 @Data
 @Entity
@@ -18,7 +17,7 @@ public class SchoolClass {
     @Id
     @GeneratedValue
     @Column(name = "id", unique = true, updatable = false, nullable = false)
-    private UUID schoolClassId;
+    private int schoolClassId;
 
     @NonNull
     @Column(name = "name", nullable = false, unique = true)

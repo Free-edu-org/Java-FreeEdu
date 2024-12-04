@@ -7,7 +7,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
-import java.util.UUID;
 
 @Data
 @Entity
@@ -19,7 +18,7 @@ public class User {
     @Id
     @GeneratedValue
     @Column(name = "id", updatable = false, nullable = false)
-    private UUID userId;
+    private int userId;
 
     @NonNull
     @Column(name = "username", nullable = false, unique = true)

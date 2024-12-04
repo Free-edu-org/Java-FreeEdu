@@ -10,7 +10,6 @@ import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
 import java.time.LocalDate;
-import java.util.UUID;
 
 @Data
 @Entity
@@ -22,7 +21,7 @@ public class Grade {
     @Id
     @GeneratedValue
     @Column(name = "id", unique = true, updatable = false, nullable = false)
-    private UUID gradeId;
+    private int gradeId;
 
     @NonNull
     @Enumerated(EnumType.STRING)

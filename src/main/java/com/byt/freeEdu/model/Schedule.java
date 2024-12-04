@@ -9,7 +9,6 @@ import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
 import java.time.LocalDate;
-import java.util.UUID;
 
 @Data
 @Entity
@@ -21,7 +20,7 @@ public class Schedule {
     @Id
     @GeneratedValue
     @Column(name = "id", updatable = false, unique = true, nullable = false)
-    private UUID scheduleId;
+    private int scheduleId;
 
     @NonNull
     @Column(name = "date", nullable = false)

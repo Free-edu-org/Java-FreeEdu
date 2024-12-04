@@ -9,7 +9,6 @@ import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
 import java.time.LocalDate;
-import java.util.UUID;
 
 @Data
 @Entity
@@ -21,7 +20,7 @@ public class Remark {
     @Id
     @GeneratedValue
     @Column(name = "id", updatable = false, unique = true, nullable = false)
-    private UUID remarkId;
+    private int remarkId;
 
     @NonNull
     @Column(name = "content", nullable = false)
