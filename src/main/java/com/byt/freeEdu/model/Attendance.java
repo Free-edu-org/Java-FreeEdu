@@ -18,26 +18,28 @@ import java.util.UUID;
 @NoArgsConstructor
 @Table(name = "attendance")
 public class Attendance {
+
     @Id
     @GeneratedValue
-    @Column(name = "attendance_id", updatable = false, nullable = false)
+    @Column(name = "id", unique = true, updatable = false, nullable = false)
     private UUID attendanceId;
 
     @NonNull
     @ManyToOne
-    @Column(name = "student", nullable = false)
+    @JoinColumn(name = "student_id", nullable = false)
     private Student student;
 
     @NonNull
-    @Column(name = "attendance_date")
+    @Column(name = "date", nullable = false)
     private LocalDate attendanceDate;
 
     @NonNull
+    @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     private AttendanceEnum status;
 
     @NonNull
     @ManyToOne
-    @Column(name = "teacher", nullable = false)
+    @JoinColumn(name = "teacher_id", nullable = false)
     private Teacher teacher;
 }

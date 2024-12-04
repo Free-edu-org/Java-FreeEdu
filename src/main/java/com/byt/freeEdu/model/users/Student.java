@@ -1,9 +1,7 @@
 package com.byt.freeEdu.model.users;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.Table;
+import com.byt.freeEdu.model.SchoolClass;
+import jakarta.persistence.*;
 import lombok.*;
 
 @EqualsAndHashCode(callSuper = true)
@@ -11,11 +9,16 @@ import lombok.*;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "students")
+@Table(name = "student")
 public class Student extends User {
 
     @NonNull
     @OneToOne
-    @Column(name = "parent", nullable = false)
+    @JoinColumn(name = "parent_id", nullable = false)
     private Parent parent;
+
+    @NonNull
+    @ManyToOne
+    @JoinColumn(name = "class_id", nullable = false)
+    private SchoolClass schoolClass;
 }

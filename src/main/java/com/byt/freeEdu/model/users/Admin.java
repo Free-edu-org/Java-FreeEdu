@@ -11,6 +11,6 @@ import lombok.EqualsAndHashCode;
 @Data
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
-@Table(name = "teacher")
-public class Teacher extends User {
+@Table(name = "admin")
+public class Admin extends User{
 }
