@@ -14,7 +14,7 @@ To get started with FreeEdu, follow these steps:
 Application is deployed od docker containers. Containers to run require a .env file.
 
 ```bash
-cp env.dev .env
+cp .env.dev .env
 ```
 Now you can run the application using docker-compose (required prepered JAR file).
 
