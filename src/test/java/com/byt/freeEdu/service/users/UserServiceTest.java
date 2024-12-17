@@ -30,7 +30,7 @@ class UserServiceTest {
     private UserRepository userRepository;
 
     @Test
-    void addUser_emptyUsername_throwsException() {
+    public void addUser_emptyUsername_throwsException() {
         //given
         String emptyUsername = "";
         String email = "user@example.com";
@@ -48,7 +48,7 @@ class UserServiceTest {
     }
 
     @Test
-    void addUser_emptyPassword_throwsException() {
+    public void addUser_emptyPassword_throwsException() {
         //given
         String username = "testUser";
         String email = "user@example.com";
@@ -66,29 +66,25 @@ class UserServiceTest {
     }
 
     @Test
-    void addUser_usernameAlreadyExists_throwsException() {
+    public void addUser_usernameAlreadyExists_throwsException() {
         //given
         User existingUser = new User("existingUser", "John", "Doe", "john.doe@example.com", "password123", UserRole.TEACHER);
-        String username = "existingUser";
-        String email = "new.user@example.com";
-        String password = "password123";
-        UserRole userRole = UserRole.TEACHER;
 
         //when
-        when(userRepository.existsByUsername(username)).thenReturn(true);
+        when(userRepository.existsByUsername(existingUser.getUsername())).thenReturn(true);
 
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
-                userService.addUser(username, "John", "Doe", email, password, userRole)
+                userService.addUser(existingUser.getUsername(), "John", "Doe", existingUser.getEmail(), existingUser.getPassword(), existingUser.getUser_role())
         );
 
         //then
-        assertEquals("Username already exists: " + username, exception.getMessage());
-        verify(userRepository, times(1)).existsByUsername(username);
+        assertEquals("Username already exists: " + existingUser.getUsername(), exception.getMessage());
+        verify(userRepository, times(1)).existsByUsername(existingUser.getUsername());
         verify(userRepository, times(0)).save(any(User.class));
     }
 
     @Test
-    void deleteUserById_nonExistingUser_throwsException() {
+    public void deleteUserById_nonExistingUser_throwsException() {
         //given
         int nonExistingUserId = 999;
 
@@ -102,7 +98,7 @@ class UserServiceTest {
     }
 
     @Test
-    void deleteUserByUsername_nonExistingUser_throwsException() {
+    public void deleteUserByUsername_nonExistingUser_throwsException() {
         //given
         String nonExistingUsername = "nonExistingUser";
 
@@ -116,29 +112,25 @@ class UserServiceTest {
     }
 
     @Test
-    void addUser_emailAlreadyExists_throwsException() {
+    public void addUser_emailAlreadyExists_throwsException() {
         //given
         User existingUser = new User("user123", "John", "Doe", "john.doe@example.com", "password123", UserRole.TEACHER);
-        String username = "newUser";
-        String email = "john.doe@example.com";
-        String password = "password123";
-        UserRole userRole = UserRole.TEACHER;
 
         //when
-        when(userRepository.existsByEmail(email)).thenReturn(true);
+        when(userRepository.existsByEmail(existingUser.getEmail())).thenReturn(true);
 
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
-                userService.addUser(username, "John", "Doe", email, password, userRole)
+                userService.addUser(existingUser.getUsername(), "John", "Doe", existingUser.getEmail(), existingUser.getPassword(), existingUser.getUser_role())
         );
 
         //then
-        assertEquals("Email already exists: " + email, exception.getMessage());
-        verify(userRepository, times(1)).existsByEmail(email);
+        assertEquals("Email already exists: " + existingUser.getEmail(), exception.getMessage());
+        verify(userRepository, times(1)).existsByEmail(existingUser.getEmail());
         verify(userRepository, times(0)).save(any(User.class));
     }
 
     @Test
-    void updateUser_nonExistingUser_throwsException() {
+    public void updateUser_nonExistingUser_throwsException() {
         //given
         int nonExistingUserId = 999;
         User updatedUser = new User("updatedUser", "Jane", "Doe", "janedoe@example.com", "newpassword123", UserRole.ADMIN);
@@ -153,7 +145,7 @@ class UserServiceTest {
     }
 
     @Test
-    void getUserById_existingId_returnsUser() {
+    public void getUserById_existingId_returnsUser() {
         //given
         User user = createUser();
         int userId = user.getUserId();
@@ -170,7 +162,7 @@ class UserServiceTest {
     }
 
     @Test
-    void getAllUsers_returnsListOfUsers() {
+    public void getAllUsers_returnsListOfUsers() {
         //given
         User user1 = createUser();
         User user2 = createUser();
@@ -178,7 +170,7 @@ class UserServiceTest {
 
         //when
         when(userRepository.findAll()).thenReturn(userList);
-        List<User> result = userService.getAllUsers(1);
+        List<User> result = userService.getAllUsers();
 
         //then
         assertNotNull(result);
@@ -187,7 +179,7 @@ class UserServiceTest {
     }
 
     @Test
-    void getUserById_nonExistingId_throwsException() {
+    public void getUserById_nonExistingId_throwsException() {
         //given
         int nonExistingId = 999;
 
@@ -200,7 +192,7 @@ class UserServiceTest {
     }
 
     @Test
-    void getUserByUsername_existingUsername_returnsUser() {
+    public void getUserByUsername_existingUsername_returnsUser() {
         //given
         User user = createUser();
         String username = user.getUsername();
@@ -216,7 +208,7 @@ class UserServiceTest {
     }
 
     @Test
-    void getUserByUsername_nonExistingUsername_throwsException() {
+    public void getUserByUsername_nonExistingUsername_throwsException() {
         //given
         String nonExistingUsername = "nonExistingUser";
 
@@ -229,7 +221,7 @@ class UserServiceTest {
     }
 
     @Test
-    void addUser_validUser_savesAndReturnsUser() {
+    public void addUser_validUser_savesAndReturnsUser() {
         //given
         User user = createUser();
 
@@ -256,7 +248,7 @@ class UserServiceTest {
     }
 
     @Test
-    void addUser_duplicateUsername_throwsException() {
+    public void addUser_duplicateUsername_throwsException() {
         //given
         User user = createUser();
 
@@ -277,7 +269,7 @@ class UserServiceTest {
     }
 
     @Test
-    void updateUser_existingUser_updatesAndReturnsUser() {
+    public void updateUser_existingUser_updatesAndReturnsUser() {
         //given
         User existingUser = createUser();
         User updatedUser = createUpdatedUser();
@@ -298,7 +290,7 @@ class UserServiceTest {
     }
 
     @Test
-    void deleteUserById_existingId_deletesUser() {
+    public void deleteUserById_existingId_deletesUser() {
         //given
         User user = createUser();
         int userId = user.getUserId();
@@ -315,7 +307,7 @@ class UserServiceTest {
     }
 
     @Test
-    void deleteUserById_nonExistingId_throwsException() {
+    public void deleteUserById_nonExistingId_throwsException() {
         //given
         int nonExistingId = 999;
 
@@ -329,7 +321,7 @@ class UserServiceTest {
     }
 
     @Test
-    void deleteUserByUsername_existingUsername_deletesUser() {
+    public void deleteUserByUsername_existingUsername_deletesUser() {
         //given
         User user = createUser();
         String username = user.getUsername();
@@ -346,7 +338,7 @@ class UserServiceTest {
     }
 
     @Test
-    void deleteUserByUsername_nonExistingUsername_throwsException() {
+    public void deleteUserByUsername_nonExistingUsername_throwsException() {
         //given
         String nonExistingUsername = "nonExistingUser";
 
@@ -361,7 +353,7 @@ class UserServiceTest {
 
     @ParameterizedTest
     @MethodSource("invalidUsernameAndEmail")
-    void addUser_invalidInput_throwsException(String username, String email, String password, String expectedMessage) {
+    public void addUser_invalidInput_throwsException(String username, String email, String password, String expectedMessage) {
         //given
         UserRole userRole = UserRole.STUDENT;
 

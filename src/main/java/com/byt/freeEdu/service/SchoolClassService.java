@@ -17,6 +17,7 @@ public class SchoolClassService {
     public SchoolClassService(SchoolClassRepository schoolClassRepository) {
         this.schoolClassRepository = schoolClassRepository;
     }
+
     public List<SchoolClass> getAllSchoolClass() {
         return new ArrayList<>(schoolClassRepository
                 .findAll());
@@ -54,6 +55,4 @@ public class SchoolClassService {
                 .orElseThrow(() -> new EntityNotFoundException("School class not found with name: " + name));
         schoolClassRepository.delete(schoolClass);
     }
-
-
 }

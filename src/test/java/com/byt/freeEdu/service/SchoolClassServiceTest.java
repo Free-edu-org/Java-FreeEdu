@@ -29,7 +29,7 @@ class SchoolClassServiceTest {
     private SchoolClassRepository schoolClassRepository;
 
     @Test
-    void getAllSchoolClass_returnsAllClasses() {
+    public void getAllSchoolClass_returnsAllClasses() {
         //given
         SchoolClass class1 = new SchoolClass("Math101");
         SchoolClass class2 = new SchoolClass("Science102");
@@ -47,7 +47,7 @@ class SchoolClassServiceTest {
     }
 
     @Test
-    void getSchoolClassById_classFound_returnsClass() {
+    public void getSchoolClassById_classFound_returnsClass() {
         //given
         int classId = 0;
         SchoolClass schoolClass = new SchoolClass("Math101");
@@ -63,7 +63,7 @@ class SchoolClassServiceTest {
     }
 
     @Test
-    void getSchoolClassById_classNotFound_throwsException() {
+    public void getSchoolClassById_classNotFound_throwsException() {
         //given
         int classId = 999;
 
@@ -74,7 +74,7 @@ class SchoolClassServiceTest {
     }
 
     @Test
-    void getSchoolClassByName_classFound_returnsClass() {
+    public void getSchoolClassByName_classFound_returnsClass() {
         //given
         String className = "Math101";
         SchoolClass schoolClass = new SchoolClass(className);
@@ -90,7 +90,7 @@ class SchoolClassServiceTest {
     }
 
     @Test
-    void getSchoolClassByName_classNotFound_throwsException() {
+    public void getSchoolClassByName_classNotFound_throwsException() {
         //given
         String className = "UnknownClass";
 
@@ -101,7 +101,7 @@ class SchoolClassServiceTest {
     }
 
     @Test
-    void addSchoolClass_validClass_createsClass() {
+    public void addSchoolClass_validClass_createsClass() {
         //given
         String className = "Math101";
         SchoolClass schoolClass = new SchoolClass(className);
@@ -118,7 +118,7 @@ class SchoolClassServiceTest {
     }
 
     @Test
-    void addSchoolClass_invalidName_throwsException() {
+    public void addSchoolClass_invalidName_throwsException() {
         //given
         String invalidClassName = "";
 
@@ -130,7 +130,7 @@ class SchoolClassServiceTest {
     }
 
     @Test
-    void deleteSchoolClassById_classFound_deletesClass() {
+    public void deleteSchoolClassById_classFound_deletesClass() {
         //given
         int classId = 1;
         SchoolClass schoolClass = new SchoolClass("Math101");
@@ -145,7 +145,7 @@ class SchoolClassServiceTest {
     }
 
     @Test
-    void deleteSchoolClassById_classNotFound_throwsException() {
+    public void deleteSchoolClassById_classNotFound_throwsException() {
         //given
         int classId = 999;
 
@@ -156,7 +156,7 @@ class SchoolClassServiceTest {
     }
 
     @Test
-    void deleteSchoolClassByName_classFound_deletesClass() {
+    public void deleteSchoolClassByName_classFound_deletesClass() {
         //given
         String className = "Math101";
         SchoolClass schoolClass = new SchoolClass(className);
@@ -171,7 +171,7 @@ class SchoolClassServiceTest {
     }
 
     @Test
-    void deleteSchoolClassByName_classNotFound_throwsException() {
+    public void deleteSchoolClassByName_classNotFound_throwsException() {
         //given
         String className = "UnknownClass";
 
@@ -183,7 +183,7 @@ class SchoolClassServiceTest {
 
     @ParameterizedTest
     @MethodSource("invalidClassNames")
-    void addSchoolClass_invalidName_throwsException(String className, String expectedMessage) {
+    public void addSchoolClass_invalidName_throwsException(String className, String expectedMessage) {
         //when & then
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> schoolClassService.addSchoolClass(className));
         assertEquals(expectedMessage, exception.getMessage());

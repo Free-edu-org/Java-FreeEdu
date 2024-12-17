@@ -38,7 +38,7 @@ class RemarkServiceTest {
 
     @ParameterizedTest
     @MethodSource("emptyContent")
-    void addRemark_emptyContent_throwsException(String content) {
+    public void addRemark_emptyContent_throwsException(String content) {
         //given
         int studentId = 1;
         int teacherId = 1;
@@ -54,7 +54,7 @@ class RemarkServiceTest {
     }
 
     @Test
-    void addRemark_successfully_savesRemark() {
+    public void addRemark_successfully_savesRemark() {
         //given
         String content = "Great student!";
         int studentId = 1;
@@ -82,7 +82,7 @@ class RemarkServiceTest {
     }
 
     @Test
-    void updateRemark_successfully_updatesRemark() {
+    public void updateRemark_successfully_updatesRemark() {
         //given
         int remarkId = 1;
         Remark existingRemark = new Remark("Old remark", LocalDate.now(), new Student(), new Teacher());
@@ -101,7 +101,7 @@ class RemarkServiceTest {
     }
 
     @Test
-    void updateRemark_remarkNotFound_throwsException() {
+    public void updateRemark_remarkNotFound_throwsException() {
         //given
         int remarkId = 999;
         Remark updatedRemark = new Remark("Updated remark", LocalDate.now(), new Student(), new Teacher());
@@ -114,7 +114,7 @@ class RemarkServiceTest {
     }
 
     @Test
-    void deleteRemark_remarkNotFound_throwsException() {
+    public void deleteRemark_remarkNotFound_throwsException() {
         //given
         int remarkId = 999;
 
@@ -126,7 +126,7 @@ class RemarkServiceTest {
     }
 
     @Test
-    void deleteRemark_successfully_deletesRemark() {
+    public void deleteRemark_successfully_deletesRemark() {
         //given
         int remarkId = 1;
         Remark remark = new Remark("Some remark", LocalDate.now(), new Student(), new Teacher());
@@ -141,7 +141,7 @@ class RemarkServiceTest {
     }
 
     @Test
-    void getRemarkById_remarkNotFound_throwsException() {
+    public void getRemarkById_remarkNotFound_throwsException() {
         //given
         int remarkId = 999;
 
@@ -153,7 +153,7 @@ class RemarkServiceTest {
     }
 
     @Test
-    void getRemarkById_remarkFound_returnsRemark() {
+    public void getRemarkById_remarkFound_returnsRemark() {
         //given
         int remarkId = 0;
         Remark remark = new Remark("Remark", LocalDate.now(), new Student(), new Teacher());
@@ -169,7 +169,7 @@ class RemarkServiceTest {
     }
 
     @Test
-    void getRemarksByStudentId_studentNotFound_throwsException() {
+    public void getRemarksByStudentId_studentNotFound_throwsException() {
         //given
         int studentId = 999;
 
@@ -180,7 +180,7 @@ class RemarkServiceTest {
     }
 
     @Test
-    void getRemarksByTeacherId_teacherNotFound_throwsException() {
+    public void getRemarksByTeacherId_teacherNotFound_throwsException() {
         //given
         int teacherId = 999;
 

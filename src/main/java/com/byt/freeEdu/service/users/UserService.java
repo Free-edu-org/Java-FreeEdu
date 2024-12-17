@@ -19,7 +19,7 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    public List<User> getAllUsers(int id) {
+    public List<User> getAllUsers() {
         return new ArrayList<>(userRepository.findAll());
     }
 
@@ -84,7 +84,6 @@ public class UserService {
                 .orElseThrow(() -> new EntityNotFoundException("User not found with username: " + username));
         userRepository.delete(user);
     }
-
 
 
 }

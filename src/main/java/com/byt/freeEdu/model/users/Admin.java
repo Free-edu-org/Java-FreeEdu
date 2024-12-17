@@ -12,5 +12,5 @@ import lombok.EqualsAndHashCode;
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
 @Table(name = "admin")
-public class Admin extends User{
+public class Admin extends User {
 }

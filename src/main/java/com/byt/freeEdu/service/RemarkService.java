@@ -6,6 +6,7 @@ import com.byt.freeEdu.model.users.Teacher;
 import com.byt.freeEdu.repository.RemarkRepository;
 import com.byt.freeEdu.repository.StudentRepository;
 import com.byt.freeEdu.repository.TeacherRepository;
+import com.byt.freeEdu.service.users.UserService;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,7 +38,7 @@ public class RemarkService {
                 .orElseThrow(() -> new EntityNotFoundException("Remark not found with ID: " + id));
     }
 
-    public Remark getRemarkByName(String name) {
+    public Remark getRemarkByContent(String name) {
         return remarkRepository.findByContent(name);
     }
 
@@ -74,7 +75,7 @@ public class RemarkService {
         Remark existingRemark = remarkRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Remark not found with ID: " + id));
 
-        if (updatedRemark.getContent() != null && !updatedRemark.getContent().trim().isEmpty()) {
+        if (isNotEmpty(updatedRemark.getContent())) {
             existingRemark.setContent(updatedRemark.getContent());
         }
 
@@ -88,5 +89,9 @@ public class RemarkService {
         Remark remark = remarkRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Remark not found with ID: " + id));
         remarkRepository.delete(remark);
+    }
+
+    private boolean isNotEmpty(String content) {
+        return content != null && !content.trim().isEmpty();
     }
 }
