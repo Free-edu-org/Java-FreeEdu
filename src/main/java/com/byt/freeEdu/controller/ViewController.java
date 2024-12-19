@@ -10,4 +10,9 @@ public class ViewController {
     public Mono<String> login() {
         return Mono.just("login");
     }
+
+    @GetMapping("/view/homepage")
+    public Mono<String> homepage() {
+        return Mono.just("homepage");
+    }
 }
