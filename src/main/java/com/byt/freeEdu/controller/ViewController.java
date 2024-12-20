@@ -20,4 +20,16 @@ public class ViewController {
     public Mono<String> mainpage() {
         return Mono.just("mainpage");
     }
+    @GetMapping("/view/mainpage_Teacher")
+    public Mono<String> mainpage_Teacher() {
+        return Mono.just("mainpage_Teacher");
+    }
+    @GetMapping("/view/mainpage_Admin")
+    public Mono<String> mainpage_Admin() {
+        return Mono.just("mainpage_Admin");
+    }
+    @GetMapping("/view/mainpage_Parent")
+    public Mono<String> mainpage_Parent() {
+        return Mono.just("mainpage_Parent");
+    }
 }
