@@ -4,7 +4,6 @@ import com.byt.freeEdu.model.enums.UserRole;
 import jakarta.persistence.*;
 import lombok.*;
 
-
 @Data
 @Entity
 @RequiredArgsConstructor
@@ -42,4 +41,8 @@ public class User {
     @Enumerated(EnumType.STRING)
     @Column(name = "user_role", nullable = false)
     private UserRole user_role;
+
+    public String getEmail() {
+        return email;
+    }
 }

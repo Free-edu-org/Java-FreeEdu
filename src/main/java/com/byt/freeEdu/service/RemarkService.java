@@ -6,7 +6,6 @@ import com.byt.freeEdu.model.users.Teacher;
 import com.byt.freeEdu.repository.RemarkRepository;
 import com.byt.freeEdu.repository.StudentRepository;
 import com.byt.freeEdu.repository.TeacherRepository;
-import com.byt.freeEdu.service.users.UserService;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

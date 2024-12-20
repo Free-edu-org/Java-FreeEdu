@@ -1,3 +1,3 @@
 CREATE TABLE admin (
-    id int PRIMARY KEY REFERENCES user(id)
+    id int PRIMARY KEY REFERENCES user(id) ON DELETE CASCADE
 );
