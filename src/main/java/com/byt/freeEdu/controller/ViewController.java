@@ -2,34 +2,43 @@ package com.byt.freeEdu.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import reactor.core.publisher.Mono;
 
 @Controller
+@RequestMapping("/view")
 public class ViewController {
-    @GetMapping("/view/login")
+
+    @GetMapping("/login")
     public Mono<String> login() {
         return Mono.just("login");
     }
 
-    @GetMapping("/view/homepage")
+    @GetMapping("/homepage")
     public Mono<String> homepage() {
         return Mono.just("homepage");
     }
 
-    @GetMapping("/view/mainpage")
+    @GetMapping("/mainpage")
     public Mono<String> mainpage() {
         return Mono.just("mainpage");
     }
-    @GetMapping("/view/mainpage_Teacher")
-    public Mono<String> mainpage_Teacher() {
+
+    @GetMapping("/mainpage/teacher")
+    public Mono<String> mainpageTeacher() {
         return Mono.just("mainpage_Teacher");
     }
-    @GetMapping("/view/mainpage_Admin")
-    public Mono<String> mainpage_Admin() {
+
+    @GetMapping("/mainpage/admin")
+    public Mono<String> mainpageAdmin() {
         return Mono.just("mainpage_Admin");
     }
-    @GetMapping("/view/mainpage_Parent")
-    public Mono<String> mainpage_Parent() {
+
+    @GetMapping("/mainpage/parent")
+    public Mono<String> mainpageParent() {
         return Mono.just("mainpage_Parent");
     }
 }
+
+
+
