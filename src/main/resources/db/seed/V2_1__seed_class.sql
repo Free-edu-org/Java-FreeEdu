@@ -1,6 +1,6 @@
-INSERT INTO class (id, name)
+INSERT INTO class ( name)
 VALUES
-    (1, '1A'),
-    (2, '1B'),
-    (3, '2A'),
-    (4, '2B');
+    ('1A'),
+    ('1B'),
+    ('2A'),
+    ('2B');

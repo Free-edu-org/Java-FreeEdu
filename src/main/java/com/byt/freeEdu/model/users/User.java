@@ -4,7 +4,6 @@ import com.byt.freeEdu.model.enums.UserRole;
 import jakarta.persistence.*;
 import lombok.*;
 
-
 @Data
 @Entity
 @RequiredArgsConstructor
