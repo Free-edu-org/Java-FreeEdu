@@ -77,12 +77,12 @@ public class UserService {
         userRepository.delete(user);
     }
 
-//    @Transactional
-//    public void deleteUserByUsername(String username) {
-//        User user = userRepository.findByUsername(username)
-//                .orElseThrow(() -> new EntityNotFoundException("User not found with username: " + username));
-//        userRepository.delete(user);
-//    }
+    @Transactional
+    public void deleteUserByUsername(String username) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new EntityNotFoundException("User not found with username: " + username));
+        userRepository.delete(user);
+    }
 
 
 }
