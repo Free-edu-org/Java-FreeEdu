@@ -44,12 +44,12 @@ public class UserService {
             throw new IllegalArgumentException("Password cannot be empty");
         }
 
-        if (userRepository.existsByUsername(username)) {
-            throw new IllegalArgumentException("Username already exists: " + username);
-        }
-        if (userRepository.existsByEmail(email)) {
-            throw new IllegalArgumentException("Email already exists: " + email);
-        }
+//        if (userRepository.existsByUsername(username)) {
+//            throw new IllegalArgumentException("Username already exists: " + username);
+//        }
+//        if (userRepository.existsByEmail(email)) {
+//            throw new IllegalArgumentException("Email already exists: " + email);
+//        }
 
         User user = new User(username, firstname, lastname, email, password, userRole);
         return userRepository.save(user);
@@ -77,12 +77,12 @@ public class UserService {
         userRepository.delete(user);
     }
 
-    @Transactional
-    public void deleteUserByUsername(String username) {
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new EntityNotFoundException("User not found with username: " + username));
-        userRepository.delete(user);
-    }
+//    @Transactional
+//    public void deleteUserByUsername(String username) {
+//        User user = userRepository.findByUsername(username)
+//                .orElseThrow(() -> new EntityNotFoundException("User not found with username: " + username));
+//        userRepository.delete(user);
+//    }
 
 
 }
