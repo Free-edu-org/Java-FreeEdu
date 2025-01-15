@@ -24,19 +24,20 @@ public class CustomReactiveUserDetailsService implements ReactiveUserDetailsServ
         logger.info("Looking for user with username: {}", username);
 
         return Mono.defer(() -> {
-                    //todo
-                    User user = userService.getUserByUsername(username);
-                    return Mono.just(user);
-                })
-                .map(user -> org.springframework.security.core.userdetails.User
-                        .withUsername(user.getUsername())
-                        .password(user.getPassword())
-                        .roles(user.getUser_role().name())
-                        .build())
-                .doOnTerminate(() -> logger.info("Finished processing user with username: {}", username))
-                .onErrorResume(ex -> {
-                    logger.error("User not found with username: {}", username, ex);
-                    return Mono.error(new UsernameNotFoundException("User not found with username: " + username, ex));
-                });
+                User user = userService.getUserByUsername(username);
+
+                return Mono.just(user);
+            })
+            .map(user -> org.springframework.security.core.userdetails.User
+                .withUsername(user.getUsername())
+                .password(user.getPassword())
+                .roles(user.getUser_role().name())
+                .build())
+            .doOnTerminate(() -> logger.info("Finished processing user with username: {}", username))
+            .onErrorResume(ex -> {
+                logger.error("User not found with username: {}", username, ex);
+
+                return Mono.error(new UsernameNotFoundException("User not found with username: " + username, ex));
+            });
     }
 }
