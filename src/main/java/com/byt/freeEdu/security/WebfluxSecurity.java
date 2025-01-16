@@ -19,31 +19,31 @@ public class WebfluxSecurity {
     private final CustomReactiveUserDetailsService customReactiveUserDetailsService;
 
     public WebfluxSecurity(
-        CustomReactiveUserDetailsService customReactiveUserDetailsService
+            CustomReactiveUserDetailsService customReactiveUserDetailsService
     ) {
         this.customReactiveUserDetailsService = customReactiveUserDetailsService;
     }
 
     public SecurityWebFilterChain enforcingAuthenticationWithoutCSRF(ServerHttpSecurity http) {
         http
-            .csrf(csrf -> csrf.disable())
-            .authorizeExchange(exchanges -> exchanges
-                .pathMatchers("/view/login", "/register").permitAll()
-                .anyExchange().authenticated()
-            )
-            .formLogin(form -> form
-                .loginPage("/view/login")
-                .authenticationSuccessHandler((webFilterExchange, authentication) -> {
-                    webFilterExchange.getExchange().getResponse().setStatusCode(HttpStatus.FOUND);
-                    webFilterExchange.getExchange().getResponse().getHeaders().setLocation(URI.create("/view/homepage"));
-                    return Mono.empty();
-                })
-                .authenticationFailureHandler((webFilterExchange, exception) -> {
-                    webFilterExchange.getExchange().getResponse().setStatusCode(HttpStatus.FOUND);
-                    webFilterExchange.getExchange().getResponse().getHeaders().setLocation(URI.create("/custom-login?error"));
-                    return Mono.empty();
-                })
-            );
+                .csrf(csrf -> csrf.disable())
+                .authorizeExchange(exchanges -> exchanges
+                        .pathMatchers("/view/login", "/register").permitAll()
+                        .anyExchange().authenticated()
+                )
+                .formLogin(form -> form
+                        .loginPage("/view/login")
+                        .authenticationSuccessHandler((webFilterExchange, authentication) -> {
+                            webFilterExchange.getExchange().getResponse().setStatusCode(HttpStatus.FOUND);
+                            webFilterExchange.getExchange().getResponse().getHeaders().setLocation(URI.create("/view/mainpage/student"));
+                            return Mono.empty();
+                        })
+                        .authenticationFailureHandler((webFilterExchange, exception) -> {
+                            webFilterExchange.getExchange().getResponse().setStatusCode(HttpStatus.FOUND);
+                            webFilterExchange.getExchange().getResponse().getHeaders().setLocation(URI.create("/view/login?error"));
+                            return Mono.empty();
+                        })
+                );
         return http.build();
     }
 
@@ -53,9 +53,8 @@ public class WebfluxSecurity {
 
     public UserDetailsRepositoryReactiveAuthenticationManager createAuthenticationManager(PasswordEncoder passwordEncoder) {
         UserDetailsRepositoryReactiveAuthenticationManager manager =
-            new UserDetailsRepositoryReactiveAuthenticationManager(customReactiveUserDetailsService);
+                new UserDetailsRepositoryReactiveAuthenticationManager(customReactiveUserDetailsService);
         manager.setPasswordEncoder(passwordEncoder);
         return manager;
     }
-
 }

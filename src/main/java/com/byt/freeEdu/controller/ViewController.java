@@ -19,9 +19,9 @@ public class ViewController {
         return Mono.just("homepage");
     }
 
-    @GetMapping("/mainpage")
+    @GetMapping("/mainpage/student")
     public Mono<String> mainpage() {
-        return Mono.just("mainpage");
+        return Mono.just("mainpage_Student");
     }
 
     @GetMapping("/mainpage/teacher")
