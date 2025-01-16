@@ -36,14 +36,17 @@ public class WebfluxSecurity {
                         .authenticationSuccessHandler((webFilterExchange, authentication) -> {
                             webFilterExchange.getExchange().getResponse().setStatusCode(HttpStatus.FOUND);
                             webFilterExchange.getExchange().getResponse().getHeaders().setLocation(URI.create("/view/mainpage/student"));
+
                             return Mono.empty();
                         })
                         .authenticationFailureHandler((webFilterExchange, exception) -> {
                             webFilterExchange.getExchange().getResponse().setStatusCode(HttpStatus.FOUND);
                             webFilterExchange.getExchange().getResponse().getHeaders().setLocation(URI.create("/view/login?error"));
+
                             return Mono.empty();
                         })
                 );
+
         return http.build();
     }
 
@@ -55,6 +58,7 @@ public class WebfluxSecurity {
         UserDetailsRepositoryReactiveAuthenticationManager manager =
                 new UserDetailsRepositoryReactiveAuthenticationManager(customReactiveUserDetailsService);
         manager.setPasswordEncoder(passwordEncoder);
+
         return manager;
     }
 }
