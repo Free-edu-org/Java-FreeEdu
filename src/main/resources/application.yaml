@@ -28,3 +28,4 @@ spring:
 
 app:
   debug-mode: true
+
