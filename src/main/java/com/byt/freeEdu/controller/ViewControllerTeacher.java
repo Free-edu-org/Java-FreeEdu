@@ -5,28 +5,23 @@ import com.byt.freeEdu.mapper.RemarkMapper;
 import com.byt.freeEdu.mapper.UserMapper;
 import com.byt.freeEdu.model.DTO.RemarkDto;
 import com.byt.freeEdu.model.DTO.ScheduleDto;
-import com.byt.freeEdu.model.DTO.StudentDto;
 import com.byt.freeEdu.model.DTO.UserDto;
-import com.byt.freeEdu.model.Remark;
-import com.byt.freeEdu.model.enums.UserRole;
-import com.byt.freeEdu.model.users.Student;
 import com.byt.freeEdu.model.users.Teacher;
 import com.byt.freeEdu.model.users.User;
-import com.byt.freeEdu.service.*;
+import com.byt.freeEdu.service.AttendanceService;
+import com.byt.freeEdu.service.GradeService;
+import com.byt.freeEdu.service.RemarkService;
+import com.byt.freeEdu.service.ScheduleService;
 import com.byt.freeEdu.service.users.StudentService;
 import com.byt.freeEdu.service.users.TeacherService;
 import com.byt.freeEdu.service.users.UserService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import reactor.core.publisher.Mono;
 
-import java.time.LocalDate;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/view/teacher")
