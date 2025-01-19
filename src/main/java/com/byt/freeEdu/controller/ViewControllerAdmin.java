@@ -4,6 +4,8 @@ import com.byt.freeEdu.controller.userSesion.SessionService;
 import com.byt.freeEdu.mapper.UserMapper;
 import com.byt.freeEdu.model.DTO.UserDto;
 import com.byt.freeEdu.model.users.User;
+import com.byt.freeEdu.repository.ScheduleRepository;
+import com.byt.freeEdu.service.ScheduleService;
 import com.byt.freeEdu.service.users.UserService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,11 +20,13 @@ public class ViewControllerAdmin {
     private final SessionService sessionService;
     private final UserService userService;
     private final UserMapper userMapper;
+    private final ScheduleService scheduleService;
 
-    public ViewControllerAdmin(SessionService sessionService, UserService userService, UserMapper userMapper) {
+    public ViewControllerAdmin(SessionService sessionService, UserService userService, UserMapper userMapper, ScheduleService scheduleService) {
         this.sessionService = sessionService;
         this.userService = userService;
         this.userMapper = userMapper;
+        this.scheduleService = scheduleService;
     }
 
     @GetMapping("/mainpage")
@@ -34,6 +38,12 @@ public class ViewControllerAdmin {
                     model.addAttribute("user", userDto);
                     return Mono.just("admin/admin_mainpage");
                 });
+    }
+
+    @GetMapping("/schedule")
+    public String viewSchedule(Model model) {
+        model.addAttribute("schedules", scheduleService.getAllSchedules());
+        return "admin/admin_schedule";
     }
 }
 
