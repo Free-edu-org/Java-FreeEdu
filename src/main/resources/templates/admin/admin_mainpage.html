@@ -35,19 +35,19 @@
         <!-- Content -->
         <section class="col-md-9">
             <div class="card bg-light text-dark p-4">
-                <h3>Witaj, Imię Użytkownika!</h3>
+                <h3>Witaj, <span th:text="${user.firstname}">Imię</span>!</h3>
                 <p class="lead">Tutaj znajdziesz wszystkie potrzebne informacje i funkcje aplikacji.</p>
                 <hr>
                 <h4>Twój Profil</h4>
                 <dl class="row">
                     <dt class="col-sm-4">Imię i nazwisko:</dt>
-                    <dd class="col-sm-8">Jan Kowalski</dd>
+                    <dd class="col-sm-8" th:text="${user.firstname + ' ' + user.lastname}">Jan Kowalski</dd>
 
                     <dt class="col-sm-4">Email:</dt>
-                    <dd class="col-sm-8" >jan.kowalski@example.com</dd>
+                    <dd class="col-sm-8" th:text="${user.email}">jan.kowalski@example.com</dd>
 
                     <dt class="col-sm-4">Rola:</dt>
-                    <dd class="col-sm-8" >Admin</dd>
+                    <dd class="col-sm-8" th:text="${user.role}">Nauczyciel</dd>
                 </dl>
             </div>
         </section>

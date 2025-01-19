@@ -9,14 +9,14 @@ import reactor.core.publisher.Mono;
 @RequestMapping("/view")
 public class ViewControllerHomePage {
 
-    @GetMapping("/login")
-    public Mono<String> login() {
-        return Mono.just("login");
-    }
-
     @GetMapping("/homepage")
     public Mono<String> homepage() {
         return Mono.just("homepage");
+    }
+
+    @GetMapping("/login")
+    public Mono<String> login() {
+        return Mono.just("login");
     }
 }
 

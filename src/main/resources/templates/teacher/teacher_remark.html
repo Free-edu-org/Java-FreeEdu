@@ -7,6 +7,12 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
 </head>
 <body class="bg-dark text-white">
+<header class="container-fluid bg-primary py-3">
+    <div class="container d-flex justify-content-between align-items-center">
+        <h2 class="text-white">FreeEdu - Uwagi</h2>
+        <button onclick="location.href='/view/teacher/mainpage'" class="btn btn-danger">Powrót</button>
+    </div>
+</header>
 <main class="container my-5">
     <h2 class="text-center">Uwagi</h2>
     <table class="table table-striped table-dark">
@@ -20,17 +26,17 @@
         </thead>
         <tbody>
         <tr th:each="remark : ${remarks}">
-            <td th:text="${remark.student.name}">Jan Kowalski</td>
+            <td th:text="${remark.studentName}">Jan Kowalski</td>
             <td th:text="${remark.content}">Nieprzygotowanie do zajęć</td>
-            <td th:text="${#dates.format(remark.addDate, 'dd-MM-yyyy')}">01-01-2025</td>
+            <td th:text="${remark.addDate}">01-01-2025</td>
             <td>
-                <button class="btn btn-primary btn-sm" th:onclick="'/view/editRemark/' + ${remark.id}">Edytuj</button>
-                <button class="btn btn-danger btn-sm" th:onclick="'/view/deleteRemark/' + ${remark.id}">Usuń</button>
+                <a th:href="@{/view/teacher/editRemark/{id}(id=${remark.remarkId})}" class="btn btn-primary btn-sm">Edytuj</a>
+                <a th:href="@{/view/teacher/deleteRemark/{id}(id=${remark.remarkId})}" class="btn btn-danger btn-sm">Usuń</a>
             </td>
         </tr>
         </tbody>
     </table>
-    <button class="btn btn-success" th:onclick="'/view/addRemark'">Dodaj nową uwagę</button>
+    <a th:href="@{/view/teacher/addRemark}" class="btn btn-success">Dodaj nową uwagę</a>
 </main>
 </body>
 </html>

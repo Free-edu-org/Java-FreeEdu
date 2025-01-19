@@ -36,6 +36,14 @@
                 <h3>Plan lekcji</h3>
                 <p class="lead">Twój plan lekcji na najbliższe dni.</p>
                 <hr>
+
+                <!-- Pole filtrowania -->
+                <div class="mb-3">
+                    <label for="filterDate" class="form-label">Filtruj po dacie:</label>
+                    <input type="text" id="filterDate" class="form-control" placeholder="DD.MM.YYYY">
+                </div>
+
+                <!-- Tabela -->
                 <table class="table table-striped table-dark">
                     <thead>
                     <tr>
@@ -47,7 +55,7 @@
                     </thead>
                     <tbody>
                     <!-- Thymeleaf loop -->
-                    <tr th:each="lesson : ${schedule}">
+                    <tr th:each="lesson : ${schedule}" data-date="${lesson.date}">
                         <td th:text="${lesson.date}"></td>
                         <td th:text="${lesson.subject}"></td>
                         <td th:text="${lesson.className}"></td>
@@ -56,6 +64,47 @@
                     </tbody>
                 </table>
             </div>
+
+            <script>
+                // Funkcja ustawiająca dzisiejszą datę w polu filtra
+                function setTodayAsDefault() {
+                    const today = new Date();
+                    const formattedDate = `${String(today.getDate()).padStart(2, '0')}.${String(today.getMonth() + 1).padStart(2, '0')}.${today.getFullYear()}`;
+                    document.getElementById('filterDate').value = formattedDate;
+                }
+
+                // Funkcja konwertująca datę z DD.MM.YYYY na YYYY-MM-DD (format bazy)
+                function convertDateToISO(date) {
+                    const [day, month, year] = date.split('.');
+                    return `${year}-${month}-${day}`;
+                }
+
+                // Funkcja konwertująca datę z YYYY-MM-DD na DD.MM.YYYY (do wyświetlenia)
+                function convertDateToDisplay(date) {
+                    const [year, month, day] = date.split('-');
+                    return `${day}.${month}.${year}`;
+                }
+
+                // Dodanie obsługi filtrowania
+                document.getElementById('filterDate').addEventListener('input', function () {
+                    const filterValue = this.value; // Wartość filtra w formacie DD.MM.YYYY
+                    const rows = document.querySelectorAll('tbody tr'); // Wszystkie wiersze tabeli
+
+                    rows.forEach(row => {
+                        const rowDateISO = row.getAttribute('data-date'); // Data z bazy w formacie YYYY-MM-DD
+                        const filterISO = convertDateToISO(filterValue); // Konwersja filtra na format bazy
+
+                        if (filterValue === '' || rowDateISO === filterISO) {
+                            row.style.display = ''; // Pokaż wiersz
+                        } else {
+                            row.style.display = 'none'; // Ukryj wiersz
+                        }
+                    });
+                });
+
+                // Ustaw dzisiejszą datę na start
+                setTodayAsDefault();
+            </script>
         </section>
     </div>
 </main>

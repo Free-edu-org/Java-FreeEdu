@@ -1,21 +1,32 @@
 package com.byt.freeEdu.controller;
 
 import com.byt.freeEdu.controller.userSesion.SessionService;
+import com.byt.freeEdu.mapper.RemarkMapper;
 import com.byt.freeEdu.mapper.UserMapper;
+import com.byt.freeEdu.model.DTO.RemarkDto;
 import com.byt.freeEdu.model.DTO.ScheduleDto;
+import com.byt.freeEdu.model.DTO.StudentDto;
 import com.byt.freeEdu.model.DTO.UserDto;
+import com.byt.freeEdu.model.Remark;
+import com.byt.freeEdu.model.enums.UserRole;
+import com.byt.freeEdu.model.users.Student;
 import com.byt.freeEdu.model.users.Teacher;
 import com.byt.freeEdu.model.users.User;
 import com.byt.freeEdu.service.*;
+import com.byt.freeEdu.service.users.StudentService;
 import com.byt.freeEdu.service.users.TeacherService;
 import com.byt.freeEdu.service.users.UserService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import reactor.core.publisher.Mono;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/view/teacher")
@@ -24,21 +35,25 @@ public class ViewControllerTeacher {
     private final ScheduleService scheduleService;
     private final UserService userService;
     private final UserMapper userMapper;
+    private final RemarkMapper remarkMapper;
     private final AttendanceService attendanceService;
     private final GradeService gradeService;
     private final RemarkService remarkService;
     private final TeacherService teacherService;
     private final SessionService sessionService;
+    private final StudentService studentService;
 
-    public ViewControllerTeacher(ScheduleService scheduleService, UserService userService, UserMapper userMapper, AttendanceService attendanceService, GradeService gradeService, RemarkService remarkService, TeacherService teacherService, SessionService sessionService) {
+    public ViewControllerTeacher(ScheduleService scheduleService, UserService userService, UserMapper userMapper, RemarkMapper remarkMapper, AttendanceService attendanceService, GradeService gradeService, RemarkService remarkService, TeacherService teacherService, SessionService sessionService, StudentService studentService) {
         this.scheduleService = scheduleService;
         this.userService = userService;
         this.userMapper = userMapper;
+        this.remarkMapper = remarkMapper;
         this.attendanceService = attendanceService;
         this.gradeService = gradeService;
         this.remarkService = remarkService;
         this.teacherService = teacherService;
         this.sessionService = sessionService;
+        this.studentService = studentService;
     }
 
     @GetMapping("/mainpage")
@@ -53,7 +68,7 @@ public class ViewControllerTeacher {
     }
 
     @GetMapping("/schedule")
-    public Mono<String> scheduleTeacher(Model model) {
+    public Mono<String> getScheduleTeacher(Model model) {
         return sessionService.getUserId()
                 .map(userId -> {
                     List<ScheduleDto> scheduleDto = scheduleService.getSchedulesById(userId);
@@ -63,6 +78,17 @@ public class ViewControllerTeacher {
                     model.addAttribute("teacherId", teacher);
 
                     return "teacher/teacher_schedule";
+                });
+    }
+
+    @GetMapping("/remark")
+    public Mono<String> getRemarksTeacher(Model model) {
+        return sessionService.getUserId()
+                .flatMap(userId -> {
+                    List<RemarkDto> remarksDto = remarkService.getRemarksById(userId);
+
+                    model.addAttribute("remarks", remarksDto);
+                    return Mono.just("teacher/teacher_remark");
                 });
     }
 }

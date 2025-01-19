@@ -29,7 +29,7 @@ public class WebfluxSecurity {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeExchange(exchanges -> exchanges
-                        .pathMatchers("/view/login", "/register").permitAll()
+                        .pathMatchers("/view/homepage", "/view/login", "/view/register").permitAll()
                         .anyExchange().authenticated()
                 )
                 .formLogin(form -> form
