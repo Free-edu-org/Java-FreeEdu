@@ -1,26 +1,38 @@
 package com.byt.freeEdu.service;
 
+import com.byt.freeEdu.mapper.ScheduleMapper;
+import com.byt.freeEdu.model.DTO.ScheduleDto;
 import com.byt.freeEdu.model.Schedule;
 import com.byt.freeEdu.repository.ScheduleRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ScheduleService {
     private final ScheduleRepository scheduleRepository;
+    private final ScheduleMapper scheduleMapper;
 
-    public ScheduleService(ScheduleRepository scheduleRepository) {
+    public ScheduleService(ScheduleRepository scheduleRepository, ScheduleMapper scheduleMapper) {
         this.scheduleRepository = scheduleRepository;
+        this.scheduleMapper = scheduleMapper;
     }
 
     public Schedule addSchedule(Schedule schedule) {
         return scheduleRepository.save(schedule);
     }
 
-    public Schedule getScheduleById(int id) {
-        return scheduleRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Schedule not found with ID: " + id));
+    public List<ScheduleDto> getSchedulesById(int userId) {
+        // Pobierz dane z repozytorium
+        List<Schedule> schedules = scheduleRepository.findAllById(Collections.singleton(userId));
+
+        // Użyj mappera do konwersji
+        return schedules.stream()
+                .map(scheduleMapper::toDto)
+                .collect(Collectors.toList());
     }
 
     public List<Schedule> getAllSchedules() {

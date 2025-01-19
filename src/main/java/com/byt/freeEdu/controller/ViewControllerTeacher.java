@@ -1,7 +1,7 @@
 package com.byt.freeEdu.controller;
 
 import com.byt.freeEdu.controller.userSesion.SessionService;
-import com.byt.freeEdu.model.Schedule;
+import com.byt.freeEdu.model.DTO.ScheduleDto;
 import com.byt.freeEdu.model.users.Teacher;
 import com.byt.freeEdu.service.*;
 import com.byt.freeEdu.service.users.TeacherService;
@@ -10,6 +10,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import reactor.core.publisher.Mono;
+
+import java.util.List;
 
 @Controller
 @RequestMapping("/view/teacher")
@@ -42,8 +44,8 @@ public class ViewControllerTeacher {
     public Mono<String> scheduleTeacher(Model model) {
         return sessionService.getUserId()
                 .map(userId -> {
-                    Schedule schedule = scheduleService.getScheduleById(userId);
-                    model.addAttribute("schedule", schedule);
+                    List<ScheduleDto> scheduleDto = scheduleService.getSchedulesById(userId);
+                    model.addAttribute("schedule", scheduleDto);
 
                     Teacher teacher = teacherService.getTeacherById(userId);
                     model.addAttribute("teacherId", teacher);
