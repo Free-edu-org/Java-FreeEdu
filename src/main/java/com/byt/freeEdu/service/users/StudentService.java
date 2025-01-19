@@ -6,6 +6,7 @@ import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class StudentService {
@@ -19,9 +20,14 @@ public class StudentService {
         return studentRepository.save(student);
     }
 
+    public List<Integer> getAllStudentIds() {
+        return studentRepository.findAll().stream()
+                .map(Student::getUserId)
+                .collect(Collectors.toList());
+    }
+
     public Student getStudentById(int id) {
-        return studentRepository.findById(id)
-            .orElseThrow(() -> new EntityNotFoundException("Student not found with ID: " + id));
+        return studentRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Student not found with ID: " + id));
     }
 
     public List<Student> getAllStudents() {

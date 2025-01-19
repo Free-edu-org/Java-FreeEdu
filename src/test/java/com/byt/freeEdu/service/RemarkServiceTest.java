@@ -141,34 +141,6 @@ class RemarkServiceTest {
     }
 
     @Test
-    public void getRemarkById_remarkNotFound_throwsException() {
-        //given
-        int remarkId = 999;
-
-        //when
-        when(remarkRepository.findById(remarkId)).thenReturn(Optional.empty());
-
-        //then
-        assertThrows(EntityNotFoundException.class, () -> remarkService.getRemarkById(remarkId));
-    }
-
-    @Test
-    public void getRemarkById_remarkFound_returnsRemark() {
-        //given
-        int remarkId = 0;
-        Remark remark = new Remark("Remark", LocalDate.now(), new Student(), new Teacher());
-
-        when(remarkRepository.findById(remarkId)).thenReturn(Optional.of(remark));
-
-        //when
-        Remark foundRemark = remarkService.getRemarkById(remarkId);
-
-        //then
-        assertNotNull(foundRemark);
-        assertEquals(remarkId, foundRemark.getRemarkId());
-    }
-
-    @Test
     public void getRemarksByStudentId_studentNotFound_throwsException() {
         //given
         int studentId = 999;
@@ -177,17 +149,6 @@ class RemarkServiceTest {
 
         //when & then
         assertThrows(EntityNotFoundException.class, () -> remarkService.getRemarksByStudentId(studentId));
-    }
-
-    @Test
-    public void getRemarksByTeacherId_teacherNotFound_throwsException() {
-        //given
-        int teacherId = 999;
-
-        when(teacherRepository.findById(teacherId)).thenReturn(Optional.empty());
-
-        //when & then
-        assertThrows(EntityNotFoundException.class, () -> remarkService.getRemarksByTeacherId(teacherId));
     }
 
     private static Stream<Arguments> emptyContent() {

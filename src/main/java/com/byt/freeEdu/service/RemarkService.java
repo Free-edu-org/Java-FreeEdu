@@ -1,5 +1,7 @@
 package com.byt.freeEdu.service;
 
+import com.byt.freeEdu.mapper.RemarkMapper;
+import com.byt.freeEdu.model.DTO.RemarkDto;
 import com.byt.freeEdu.model.Remark;
 import com.byt.freeEdu.model.users.Student;
 import com.byt.freeEdu.model.users.Teacher;
@@ -12,7 +14,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class RemarkService {
@@ -20,11 +24,13 @@ public class RemarkService {
     private final RemarkRepository remarkRepository;
     private final StudentRepository studentRepository;
     private final TeacherRepository teacherRepository;
+    private final RemarkMapper remarkMapper;
 
-    public RemarkService(RemarkRepository remarkRepository, StudentRepository studentRepository, TeacherRepository teacherRepository) {
+    public RemarkService(RemarkRepository remarkRepository, StudentRepository studentRepository, TeacherRepository teacherRepository, RemarkMapper remarkMapper) {
         this.remarkRepository = remarkRepository;
         this.studentRepository = studentRepository;
         this.teacherRepository = teacherRepository;
+        this.remarkMapper = remarkMapper;
     }
 
     public List<Remark> getAllRemarks() {
@@ -32,19 +38,16 @@ public class RemarkService {
                 .findAll());
     }
 
-    public Remark getRemarkById(int id) {
-        return remarkRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Remark not found with ID: " + id));
+    public List<RemarkDto> getRemarksById(int id) {
+        List<Remark> remarks = remarkRepository.findAllById(Collections.singleton(id));
+
+        return remarks.stream()
+                .map(remarkMapper::toDto)
+                .collect(Collectors.toList());
     }
 
     public Remark getRemarkByContent(String name) {
         return remarkRepository.findByContent(name);
-    }
-
-    public List<Remark> getRemarksByTeacherId(int teacherId) {
-        Teacher teacher = teacherRepository.findById(teacherId)
-                .orElseThrow(() -> new EntityNotFoundException("Teacher not found with ID: " + teacherId));
-        return remarkRepository.findByTeacher(teacher);
     }
 
     public List<Remark> getRemarksByStudentId(int studentId) {
