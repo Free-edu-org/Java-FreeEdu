@@ -1,6 +1,7 @@
 package com.byt.freeEdu.service;
 
 import com.byt.freeEdu.mapper.ScheduleMapper;
+import com.byt.freeEdu.model.DTO.ScheduleAdminDto;
 import com.byt.freeEdu.model.DTO.ScheduleDto;
 import com.byt.freeEdu.model.Schedule;
 import com.byt.freeEdu.repository.ScheduleRepository;
@@ -35,8 +36,11 @@ public class ScheduleService {
                 .collect(Collectors.toList());
     }
 
-    public List<Schedule> getAllSchedules() {
-        return scheduleRepository.findAll();
+    public List<ScheduleAdminDto> getAllSchedules() {
+        return scheduleRepository.findAll()
+                .stream()
+                .map(scheduleMapper::toAdminDto)
+                .collect(Collectors.toList());
     }
 
     public Schedule updateSchedule(int id, Schedule updatedSchedule) {
