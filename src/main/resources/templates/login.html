@@ -19,8 +19,9 @@
     <div class="card shadow-lg p-4 col-md-6 bg-light text-dark">
         <h2 class="card-title text-center mb-4">Logowanie do FreeEdu</h2>
         <form th:action="@{/view/login}" method="post" class="card-body">
+
             <!-- Error Message -->
-            <div th:if="${param.error}" class="alert alert-danger" role="alert">
+            <div th:if="${error}" class="alert alert-danger" role="alert">
                 Nieprawidłowe dane logowania. Spróbuj ponownie.
             </div>
 

@@ -83,8 +83,16 @@ public class WebfluxSecurity {
                             return Mono.empty();
                         })
                         .authenticationFailureHandler((webFilterExchange, exception) -> {
+                            String errorParam;
+
+                            if (exception.getMessage().contains("Bad credentials")) {
+                                errorParam = "badCredentials";
+                            } else {
+                                errorParam = "unknown";
+                            }
+
                             webFilterExchange.getExchange().getResponse().setStatusCode(HttpStatus.FOUND);
-                            webFilterExchange.getExchange().getResponse().getHeaders().setLocation(URI.create("/view/login?error"));
+                            webFilterExchange.getExchange().getResponse().getHeaders().setLocation(URI.create("/view/login?error=" + errorParam));
 
                             return Mono.empty();
                         })
