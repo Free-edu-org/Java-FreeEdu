@@ -23,9 +23,9 @@ public class ViewControllerHomePage {
     @GetMapping("/login")
     public String loginPage(@RequestParam(value = "error", required = false) String error, Model model) {
         if (error != null) {
-            model.addAttribute("error", true); // Ustawia atrybut tylko w przypadku błędu
+            model.addAttribute("error", error);
         } else {
-            model.addAttribute("error", false); // Brak błędu
+            model.addAttribute("error", null);
         }
         return "login";
     }
@@ -37,30 +37,16 @@ public class ViewControllerHomePage {
     }
 
     @PostMapping("/register")
-    public String registerUser(
-            @ModelAttribute("username") String username,
-            @ModelAttribute("firstname") String firstname,
-            @ModelAttribute("lastname") String lastname,
-            @ModelAttribute("email") String email,
-            @ModelAttribute("password") String password,
-            @ModelAttribute("confirmPassword") String confirmPassword,
-            Model model
+    public String registerUser(@ModelAttribute User user,
+                               Model model
     ) {
-        // Walidacja haseł
-        if (!password.equals(confirmPassword)) {
-            model.addAttribute("error", "Hasła się nie zgadzają.");
-            return "register";
-        }
-        System.out.println(username);
-        // Utworzenie nowego użytkownika
-        boolean success = userService.addUser(username,firstname,lastname,email,password);
-
+        boolean success = userService.addUser(user.getUsername(),user.getFirstname(),user.getLastname(),user.getEmail(),user.getPassword());
         if (!success) {
             model.addAttribute("error", "Nie udało się zarejestrować użytkownika. Spróbuj ponownie.");
             return "register";
         }
 
-        return "redirect:/login";
+        return "redirect:/view/login";
     }
 }
 

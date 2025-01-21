@@ -8,7 +8,6 @@ import org.springframework.security.authentication.UserDetailsRepositoryReactive
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.stereotype.Component;
@@ -87,13 +86,7 @@ public class WebfluxSecurity {
                             return Mono.empty();
                         })
                         .authenticationFailureHandler((webFilterExchange, exception) -> {
-                            String errorParam;
-
-                            if (exception.getMessage().contains("Bad credentials")) {
-                                errorParam = "badCredentials";
-                            } else {
-                                errorParam = "unknown";
-                            }
+                            String errorParam = "badCredentials";
 
                             webFilterExchange.getExchange().getResponse().setStatusCode(HttpStatus.FOUND);
                             webFilterExchange.getExchange().getResponse().getHeaders().setLocation(URI.create("/view/login?error=" + errorParam));

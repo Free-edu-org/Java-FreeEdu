@@ -21,9 +21,9 @@
         <form th:action="@{/view/login}" method="post" class="card-body">
 
             <!-- Error Message -->
-            <div th:if="${param.error != null}" class="alert alert-danger" role="alert">
-                <span th:if="${param.error == 'badCredentials'}">Nieprawidłowe dane logowania. Spróbuj ponownie.</span>
-                <span th:if="${param.error == 'roleNotFound'}">Nie przypisano roli. Skontaktuj się z administratorem.</span>
+            <div th:if="${error}" class="alert alert-danger" role="alert">
+                <span th:if="${error == 'badCredentials'}">Nieprawidłowe dane logowania. Spróbuj ponownie.</span>
+                <span th:if="${error == 'roleNotFound'}">Nie przypisano roli. Skontaktuj się z administratorem.</span>
             </div>
 
             <!-- Username Input -->
