@@ -50,10 +50,10 @@ public class UserService {
         }
 
         if (userRepository.existsByUsername(username)) {
-            throw new IllegalArgumentException("Username already exists: " + username);
+            throw new IllegalArgumentException("Istnieje użytkownik o podanej nazwie użytkownika");
         }
         if (userRepository.existsByEmail(email)) {
-            throw new IllegalArgumentException("Email already exists: " + email);
+            throw new IllegalArgumentException("Istnieję użytkownik z takim emailem");
         }
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         String hashedPassword = passwordEncoder.encode(password);

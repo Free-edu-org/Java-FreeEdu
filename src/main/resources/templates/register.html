@@ -75,7 +75,7 @@
         </form>
     </div>
 </section>
-
+<br><br>
 <!-- Footer -->
 <footer class="bg-primary text-white text-center py-3">
     <p class="mb-0">&copy; 2025 FreeEdu. Udostępnione na licencji <a href="https://www.gnu.org/licenses/gpl-3.0.html" class="text-white" target="_blank">GNU GPL v3</a>.</p>
@@ -92,19 +92,17 @@
             const password = passwordInput.value;
             const confirmPassword = confirmPasswordInput.value;
 
-            // Sprawdzenie, czy hasła są takie same
             if (password !== confirmPassword) {
-                event.preventDefault(); // Zatrzymanie wysłania formularza
-                errorDiv.style.display = "block"; // Pokaż komunikat
-                confirmPasswordInput.classList.add("is-invalid"); // Dodaj klasę bootstrap dla błędów
-                confirmPasswordInput.focus(); // Ustawienie fokusu na pole potwierdzenia
+                event.preventDefault();
+                errorDiv.style.display = "block";
+                confirmPasswordInput.classList.add("is-invalid");
+                confirmPasswordInput.focus();
             } else {
-                errorDiv.style.display = "none"; // Ukryj komunikat, jeśli hasła się zgadzają
-                confirmPasswordInput.classList.remove("is-invalid"); // Usuń klasę błędu
+                errorDiv.style.display = "none";
+                confirmPasswordInput.classList.remove("is-invalid");
             }
         });
 
-        // Ukrywanie komunikatu podczas wpisywania w pole potwierdzenia hasła
         confirmPasswordInput.addEventListener("input", function () {
             errorDiv.style.display = "none";
             confirmPasswordInput.classList.remove("is-invalid");
