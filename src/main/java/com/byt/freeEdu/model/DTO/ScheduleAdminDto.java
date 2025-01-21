@@ -8,7 +8,7 @@ import java.time.LocalDate;
 public class ScheduleAdminDto {
     private int id;
     private LocalDate date;
-    private String subject;
+    private String subjectName;
     private String className;
     private String teacherFullName;
 }

@@ -57,7 +57,7 @@
                     <!-- Thymeleaf loop -->
                     <tr th:each="lesson : ${schedule}" data-date="${lesson.date}">
                         <td th:text="${lesson.date}"></td>
-                        <td th:text="${lesson.subject}"></td>
+                        <td th:text="${lesson.subjectName}"></td>
                         <td th:text="${lesson.className}"></td>
                         <td th:text="${lesson.teacherFullName}"></td>
                     </tr>

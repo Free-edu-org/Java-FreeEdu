@@ -7,7 +7,7 @@ import java.time.LocalDate;
 @Data
 public class ScheduleDto {
     private LocalDate date;
-    private String subject;
+    private String subjectName;
     private String className;
     private String teacherFullName;
 }
