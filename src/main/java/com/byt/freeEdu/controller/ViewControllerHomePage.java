@@ -40,13 +40,25 @@ public class ViewControllerHomePage {
     public String registerUser(@ModelAttribute User user,
                                Model model
     ) {
-        boolean success = userService.addUser(user.getUsername(),user.getFirstname(),user.getLastname(),user.getEmail(),user.getPassword());
-        if (!success) {
-            model.addAttribute("error", "Nie udało się zarejestrować użytkownika. Spróbuj ponownie.");
+        try {
+            boolean success = userService.addUser(
+                    user.getUsername(),
+                    user.getFirstname(),
+                    user.getLastname(),
+                    user.getEmail(),
+                    user.getPassword()
+            );
+
+            if (!success) {
+                model.addAttribute("error", "Nie udało się zarejestrować użytkownika. Spróbuj ponownie.");
+                return "register";
+            }
+
+            return "redirect:/view/login";
+        } catch (IllegalArgumentException ex) {
+            model.addAttribute("errorMessage", ex.getMessage());
             return "register";
         }
-
-        return "redirect:/view/login";
     }
 }
 

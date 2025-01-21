@@ -4,6 +4,8 @@ import com.byt.freeEdu.model.enums.UserRole;
 import com.byt.freeEdu.model.users.User;
 import com.byt.freeEdu.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,6 +34,11 @@ public class UserService {
                 .orElseThrow(() -> new EntityNotFoundException("User not found with username: " + username));
     }
 
+    public User getUserByEmail(String email) {
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new EntityNotFoundException("User not found with email: " + email));
+    }
+
     @Transactional
     public Boolean addUser(String username, String firstname, String lastname, String email, String password) {
         if (username == null || username.trim().isEmpty()) {
@@ -50,8 +57,10 @@ public class UserService {
         if (userRepository.existsByEmail(email)) {
             throw new IllegalArgumentException("Email already exists: " + email);
         }
+        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+        String hashedPassword = passwordEncoder.encode(password);
 
-        User user = new User(username, firstname, lastname, email, password, UserRole.UNKNOWN);
+        User user = new User(username, firstname, lastname, email, hashedPassword, UserRole.UNKNOWN);
 
         userRepository.save(user);
         return true;
