@@ -72,6 +72,10 @@ public class WebfluxSecurity {
                                 case "ROLE_STUDENT":
                                     redirectUri = URI.create("/view/student/mainpage");
                                     break;
+                                case "UNKNOWN_ROLE":
+                                    System.err.println("Nieznana rola użytkownika. Przekierowanie na stronę logowania.");
+                                    redirectUri = URI.create("/view/login?error=roleNotFound");
+                                    break;
                                 default:
                                     redirectUri = URI.create("/view/login?error=roleNotFound");
                                     break;

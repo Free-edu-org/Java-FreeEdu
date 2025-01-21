@@ -33,7 +33,7 @@ public class UserService {
     }
 
     @Transactional
-    public User addUser(String username, String firstname, String lastname, String email, String password, UserRole userRole) {
+    public Boolean addUser(String username, String firstname, String lastname, String email, String password) {
         if (username == null || username.trim().isEmpty()) {
             throw new IllegalArgumentException("Username cannot be empty");
         }
@@ -51,8 +51,10 @@ public class UserService {
             throw new IllegalArgumentException("Email already exists: " + email);
         }
 
-        User user = new User(username, firstname, lastname, email, password, userRole);
-        return userRepository.save(user);
+        User user = new User(username, firstname, lastname, email, password, UserRole.UNKNOWN);
+
+        userRepository.save(user);
+        return true;
     }
 
     @Transactional
