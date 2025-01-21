@@ -7,6 +7,7 @@ import org.springframework.security.authentication.ReactiveAuthenticationManager
 import org.springframework.security.authentication.UserDetailsRepositoryReactiveAuthenticationManager;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.server.SecurityWebFilterChain;
@@ -30,6 +31,10 @@ public class WebfluxSecurity {
                 .csrf(csrf -> csrf.disable())
                 .authorizeExchange(exchanges -> exchanges
                         .pathMatchers("/view/homepage", "/view/login", "/view/register").permitAll()
+                        .pathMatchers("/view/admin/**").hasRole("ADMIN")
+                        .pathMatchers("/view/teacher/**").hasRole("TEACHER")
+                        .pathMatchers("/view/parent/**").hasRole("PARENT")
+                        .pathMatchers("/view/student/**").hasRole("STUDENT")
                         .anyExchange().authenticated()
                 )
                 .formLogin(form -> form
@@ -89,7 +94,7 @@ public class WebfluxSecurity {
     }
 
     public ReactiveAuthenticationManager noOpEncoderAuthenticationManager() {
-        return createAuthenticationManager(NoOpPasswordEncoder.getInstance());
+        return createAuthenticationManager(new BCryptPasswordEncoder());
     }
 
     public UserDetailsRepositoryReactiveAuthenticationManager createAuthenticationManager(PasswordEncoder passwordEncoder) {
