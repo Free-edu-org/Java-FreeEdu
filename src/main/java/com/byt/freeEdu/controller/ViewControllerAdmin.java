@@ -8,8 +8,7 @@ import com.byt.freeEdu.service.ScheduleService;
 import com.byt.freeEdu.service.users.UserService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
 @Controller
@@ -51,10 +50,24 @@ public class ViewControllerAdmin {
         return "admin/user_menagment";
     }
 
-    @GetMapping("/user_management")
-    public String deleteUser(Model model) {
-        model.addAttribute("users", userService.getAllUsers());
-        return "admin/user_menagment";
+    @GetMapping("/user_management/delete/{id}")
+    public String deleteUser(@PathVariable int id) {
+        userService.deleteUserById(id);
+        return "redirect:/view/admin/user_management";
+    }
+
+    @GetMapping("/user_management/edit/{id}")
+    public String editUserForm(@PathVariable int id, Model model) {
+        User user = userService.getUserById(id);
+        model.addAttribute("user", user);
+        return "admin/user_menagment_edit";
+    }
+
+    @PostMapping("/user_management/edit/{id}/confirm")
+    public String editUserFormConfirm(@PathVariable int id, @ModelAttribute User user) {
+        User userOld = userService.getUserById(id);
+        userService.updateUser(id, user);
+        return "redirect:/view/admin/user_management";
     }
 }
 

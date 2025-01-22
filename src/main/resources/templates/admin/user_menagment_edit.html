@@ -35,34 +35,33 @@
         <!-- Content -->
         <section class="col-md-9">
             <div class="card bg-light text-dark p-4">
-                <h3>Zarządzanie użytkownikami</h3>
-                <p class="lead">Możesz usuwać i edytować użytkowników</p>
+                <h3>Edycja użytkownika</h3>
+                <p class="lead">Możesz edytować dane użytkownika</p>
                 <hr>
-                <table class="table table-striped table-dark">
-                    <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Imie</th>
-                        <th>Nazwisko</th>
-                        <th>Nazwa Użytkownika</th>
-                        <th>E-mail</th>
-                        <th>Rola</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr th:each="user : ${users}">
-                        <td th:text="${user.userId}">1</td>
-                        <td th:text="${user.firstname}">Marek</td>
-                        <td th:text="${user.lastname}">Kowalski</td>
-                        <td th:text="${user.email}">Marekowalski@gmail.com</td>
-                        <td th:text="${user.user_role}">Nauczyciel</td>
-                        <td>
-                            <a class="btn btn-primary btn-sm" th:href="@{'/view/admin/user_management/edit/' + ${user.userId}}">Edytuj</a>
-                            <a class="btn btn-danger btn-sm" th:href="@{'/view/admin/user_management/delete/' + ${user.userId}}">Usuń</a>
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
+                <form th:action="@{'/view/admin/user_management/edit/' + ${user.userId} + '/confirm'}" th:object="${user}" method="post">
+                    <div class="mb-3">
+                        <label for="firstname" class="form-label">Imie</label>
+                        <input type="text" class="form-control" id="firstname" th:field="*{firstname}">
+                    </div>
+                    <div class="mb-3">
+                        <label for="lastname" class="form-label">Nazwisko</label>
+                        <input type="text" class="form-control" id="lastname" th:field="*{lastname}">
+                    </div>
+                    <div class="mb-3">
+                        <label for="email" class="form-label">E-mail</label>
+                        <input type="email" class="form-control" id="email" th:field="*{email}">
+                    </div>
+                    <div class="mb-3">
+                        <label for="user_role" class="form-label">Rola</label>
+                        <select class="form-control" id="user_role" th:field="*{user_role}">
+                            <option value="ADMIN">Admin</option>
+                            <option value="STUDENT">Student</option>
+                            <option value="TEACHER">Teacher</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Zatwierdź</button>
+                    <a href="/view/admin/user_management" class="btn btn-secondary">Wróć</a>
+                </form>
             </div>
         </section>
     </div>
