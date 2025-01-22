@@ -38,7 +38,7 @@ public class StudentService {
         return studentRepository.findAll();
     }
 
-    public List<StudentDto> getStudentsBySchoolClassId (int schoolClassId) {
+    public List<StudentDto> getStudentsBySchoolClassId(int schoolClassId) {
         return studentRepository.getStudentsBySchoolClassId(schoolClassId)
                 .stream()
                 .map(id -> {
@@ -59,7 +59,7 @@ public class StudentService {
 
     public Student updateStudent(int id, Student updatedStudent) {
         Student existingStudent = studentRepository.findById(id)
-            .orElseThrow(() -> new EntityNotFoundException("Student not found with ID: " + id));
+                .orElseThrow(() -> new EntityNotFoundException("Student not found with ID: " + id));
         existingStudent.setFirstname(updatedStudent.getFirstname());
         existingStudent.setLastname(updatedStudent.getLastname());
         existingStudent.setEmail(updatedStudent.getEmail());

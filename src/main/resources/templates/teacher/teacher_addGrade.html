@@ -8,7 +8,6 @@
 </head>
 <body class="bg-dark text-white">
 
-<!-- Navbar -->
 <header class="container-fluid bg-primary py-3">
     <div class="container d-flex justify-content-between align-items-center">
         <h2 class="text-white">FreeEdu - Dodaj Ocenę</h2>
@@ -23,7 +22,8 @@
             <label for="student" class="form-label">Uczeń</label>
             <select id="student" name="studentId" class="form-select" required>
                 <option value="" disabled selected>Wybierz ucznia</option>
-                <option th:each="student : ${students}" th:value="${student.id}" th:text="${student.firstName + ' ' + student.lastName}">
+                <option th:each="student : ${students}" th:value="${student.id}"
+                        th:text="${student.firstName + ' ' + student.lastName}">
                     Jan Kowalski
                 </option>
             </select>
@@ -39,11 +39,13 @@
         </div>
         <div class="mb-3">
             <label for="value" class="form-label">Ocena</label>
-            <input type="number" id="value" name="value" class="form-control" placeholder="Ocena (1-6)" min="1" max="6" required>
+            <input type="number" id="value" name="value" class="form-control" placeholder="Ocena (1-6)" min="1" max="6"
+                   required>
         </div>
         <div class="text-center">
             <button type="submit" class="btn btn-success">Dodaj Ocenę</button>
-            <button type="button" class="btn btn-secondary" onclick="location.href='/view/teacher/grades'">Anuluj</button>
+            <button type="button" class="btn btn-secondary" onclick="location.href='/view/teacher/grades'">Anuluj
+            </button>
         </div>
     </form>
 </main>
@@ -62,9 +64,10 @@
     });
 </script>
 
-<!-- Footer -->
 <footer class="bg-primary text-white text-center py-3">
-    <p class="mb-0">&copy; 2025 FreeEdu. Udostępnione na licencji <a href="https://www.gnu.org/licenses/gpl-3.0.html" class="text-white" target="_blank">GNU GPL v3</a>.</p>
+    <p class="mb-0">&copy; 2025 FreeEdu. Udostępnione na licencji <a href="https://www.gnu.org/licenses/gpl-3.0.html"
+                                                                     class="text-white" target="_blank">GNU GPL v3</a>.
+    </p>
 </footer>
 
 </body>

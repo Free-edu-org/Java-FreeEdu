@@ -21,7 +21,7 @@ public class ParentService {
 
     public Parent getParentById(int id) {
         return parentRepository.findById(id)
-            .orElseThrow(() -> new EntityNotFoundException("Parent not found with ID: " + id));
+                .orElseThrow(() -> new EntityNotFoundException("Parent not found with ID: " + id));
     }
 
     public List<Parent> getAllParents() {
@@ -30,7 +30,7 @@ public class ParentService {
 
     public Parent updateParent(int id, Parent updatedParent) {
         Parent existingParent = parentRepository.findById(id)
-            .orElseThrow(() -> new EntityNotFoundException("Parent not found with ID: " + id));
+                .orElseThrow(() -> new EntityNotFoundException("Parent not found with ID: " + id));
         existingParent.setFirstname(updatedParent.getFirstname());
         existingParent.setLastname(updatedParent.getLastname());
         existingParent.setEmail(updatedParent.getEmail());

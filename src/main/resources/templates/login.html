@@ -8,49 +8,47 @@
     <title>Logowanie</title>
 </head>
 <body class="bg-dark text-white">
-<!-- Hero Section -->
+
 <header class="container-fluid text-center py-5">
     <h1 class="display-4 fw-bold">Witamy w FreeEdu</h1>
     <p class="lead">Proszę się zalogować, aby uzyskać dostęp do swojego konta.</p>
 </header>
 
-<!-- Login Form Section -->
 <section class="container d-flex justify-content-center align-items-center" style="min-height: 60vh;">
     <div class="card shadow-lg p-4 col-md-6 bg-light text-dark">
         <h2 class="card-title text-center mb-4">Logowanie do FreeEdu</h2>
         <form th:action="@{/view/login}" method="post" class="card-body">
 
-            <!-- Error Message -->
             <div th:if="${error}" class="alert alert-danger" role="alert">
                 <span th:if="${error == 'badCredentials'}">Nieprawidłowe dane logowania. Spróbuj ponownie.</span>
                 <span th:if="${error == 'roleNotFound'}">Nie przypisano roli. Skontaktuj się z administratorem.</span>
             </div>
 
-            <!-- Username Input -->
             <div class="form-group mb-3">
                 <label for="username" class="form-label">Adres e-mail lub nazwa użytkownika:</label>
-                <input type="text" id="username" name="username" class="form-control" placeholder="Email lub nazwa użytkownika" required>
+                <input type="text" id="username" name="username" class="form-control"
+                       placeholder="Email lub nazwa użytkownika" required>
             </div>
 
-            <!-- Password Input -->
             <div class="form-group mb-4">
                 <label for="password" class="form-label">Hasło:</label>
                 <input type="password" id="password" name="password" class="form-control" placeholder="Hasło" required>
             </div>
 
-            <!-- Login Button -->
             <div class="d-grid gap-2">
                 <button type="submit" class="btn btn-primary">Zaloguj się</button>
 
-                <button type="button" onclick="window.location.href='/view/homepage'" class="btn btn-secondary">Powrót</button>
+                <button type="button" onclick="window.location.href='/view/homepage'" class="btn btn-secondary">Powrót
+                </button>
             </div>
         </form>
     </div>
 </section>
 
-<!-- Footer -->
 <footer class="bg-primary text-white text-center py-3">
-    <p class="mb-0">&copy; 2025 FreeEdu. Udostępnione na licencji <a href="https://www.gnu.org/licenses/gpl-3.0.html" class="text-white" target="_blank">GNU GPL v3</a>.</p>
+    <p class="mb-0">&copy; 2025 FreeEdu. Udostępnione na licencji <a href="https://www.gnu.org/licenses/gpl-3.0.html"
+                                                                     class="text-white" target="_blank">GNU GPL v3</a>.
+    </p>
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>

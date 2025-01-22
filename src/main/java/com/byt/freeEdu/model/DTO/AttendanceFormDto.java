@@ -8,6 +8,7 @@ import java.util.Map;
 
 @Data
 public class AttendanceFormDto {
+
     private Map<Integer, AttendanceEnum> attendanceMap = new HashMap<>();
 
     public Map<Integer, AttendanceEnum> getAttendanceMap() {

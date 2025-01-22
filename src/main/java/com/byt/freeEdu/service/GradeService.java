@@ -4,8 +4,6 @@ import com.byt.freeEdu.mapper.GradeMapper;
 import com.byt.freeEdu.model.DTO.GradeDto;
 import com.byt.freeEdu.model.Grade;
 import com.byt.freeEdu.model.enums.SubjectEnum;
-import com.byt.freeEdu.model.users.Student;
-import com.byt.freeEdu.model.users.Teacher;
 import com.byt.freeEdu.repository.GradeRepository;
 import com.byt.freeEdu.repository.TeacherRepository;
 import com.byt.freeEdu.service.users.StudentService;
@@ -44,6 +42,7 @@ public class GradeService {
     public Grade getGradeById(int id) {
         return gradeRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Grade not found with ID: " + id));
     }
+
     public List<GradeDto> getGradesByTeacherId(int teacherId) {
         return gradeRepository.getGradeByTeacher(teacherRepository.findById(teacherId).get())
                 .stream()

@@ -2,12 +2,9 @@ package com.byt.freeEdu.controller;
 
 import com.byt.freeEdu.controller.userSesion.SessionService;
 import com.byt.freeEdu.mapper.GradeMapper;
-import com.byt.freeEdu.mapper.RemarkMapper;
 import com.byt.freeEdu.mapper.UserMapper;
-import com.byt.freeEdu.model.Attendance;
 import com.byt.freeEdu.model.DTO.*;
 import com.byt.freeEdu.model.SchoolClass;
-import com.byt.freeEdu.model.enums.AttendanceEnum;
 import com.byt.freeEdu.model.enums.SubjectEnum;
 import com.byt.freeEdu.model.users.Student;
 import com.byt.freeEdu.model.users.Teacher;
@@ -23,7 +20,6 @@ import reactor.core.publisher.Mono;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Map;
 
 @Controller
 @RequestMapping("/view/teacher")
@@ -41,7 +37,7 @@ public class ViewControllerTeacher {
     private final SchoolClassService schoolClassService;
     private final AttendanceService attendanceService;
 
-    public ViewControllerTeacher(ScheduleService scheduleService, UserService userService, UserMapper userMapper, RemarkMapper remarkMapper, GradeMapper gradeMapper, GradeService gradeService, RemarkService remarkService, TeacherService teacherService, SessionService sessionService, StudentService studentService, SchoolClassService schoolClassService, AttendanceService attendanceService) {
+    public ViewControllerTeacher(ScheduleService scheduleService, UserService userService, UserMapper userMapper, GradeMapper gradeMapper, GradeService gradeService, RemarkService remarkService, TeacherService teacherService, SessionService sessionService, StudentService studentService, SchoolClassService schoolClassService, AttendanceService attendanceService) {
         this.scheduleService = scheduleService;
         this.userService = userService;
         this.userMapper = userMapper;
@@ -110,7 +106,7 @@ public class ViewControllerTeacher {
     public Mono<String> addRemark(@ModelAttribute RemarkDto remarkDto) {
         return sessionService.getUserId()
                 .flatMap(teacherId -> {
-                    remarkService.addRemark(remarkDto.getContent(),remarkDto.getStudentId(), teacherId);
+                    remarkService.addRemark(remarkDto.getContent(), remarkDto.getStudentId(), teacherId);
                     return Mono.just("redirect:/view/teacher/remark");
                 });
     }
@@ -166,10 +162,10 @@ public class ViewControllerTeacher {
     @GetMapping("/grades")
     public Mono<String> getGrades(Model model) {
         return sessionService.getUserId()
-                        .flatMap(userId ->{
-                            model.addAttribute("grades", gradeService.getGradesByTeacherId(userId));
-                            return Mono.just("teacher/teacher_grade");
-                        });
+                .flatMap(userId -> {
+                    model.addAttribute("grades", gradeService.getGradesByTeacherId(userId));
+                    return Mono.just("teacher/teacher_grade");
+                });
     }
 
     @GetMapping("/addGrade")

@@ -9,7 +9,6 @@
 </head>
 <body class="bg-dark text-white">
 
-<!-- Navbar -->
 <header class="container-fluid bg-primary py-3">
     <div class="container d-flex justify-content-between align-items-center">
         <h2 class="text-white">FreeEdu - Oceny</h2>
@@ -17,21 +16,27 @@
     </div>
 </header>
 
-<!-- Main Content Section -->
 <main class="container my-5">
     <div class="row">
-        <!-- Sidebar -->
+
         <nav class="col-md-3">
             <ul class="list-group">
-                <li class="list-group-item bg-dark text-white"><a href="/view/teacher/mainpage" class="text-decoration-none text-white">Strona główna</a></li>
-                <li class="list-group-item bg-dark text-white"><a href="/view/teacher/schedule" class="text-decoration-none text-white">Plan lekcji</a></li>
-                <li class="list-group-item bg-dark text-white"><a href="/view/teacher/grades" class="text-decoration-none text-white">Oceny</a></li>
-                <li class="list-group-item bg-dark text-white"><a href="/view/teacher/attendance" class="text-decoration-none text-white">Frekwencja na zajeciach</a></li>
-                <li class="list-group-item bg-dark text-white"><a href="/view/teacher/remark" class="text-decoration-none text-white">Uwagi</a></li>
+                <li class="list-group-item bg-dark text-white"><a href="/view/teacher/mainpage"
+                                                                  class="text-decoration-none text-white">Strona
+                    główna</a></li>
+                <li class="list-group-item bg-dark text-white"><a href="/view/teacher/schedule"
+                                                                  class="text-decoration-none text-white">Plan
+                    lekcji</a></li>
+                <li class="list-group-item bg-dark text-white"><a href="/view/teacher/grades"
+                                                                  class="text-decoration-none text-white">Oceny</a></li>
+                <li class="list-group-item bg-dark text-white"><a href="/view/teacher/attendance"
+                                                                  class="text-decoration-none text-white">Frekwencja na
+                    zajeciach</a></li>
+                <li class="list-group-item bg-dark text-white"><a href="/view/teacher/remark"
+                                                                  class="text-decoration-none text-white">Uwagi</a></li>
             </ul>
         </nav>
 
-        <!-- Content -->
         <section class="col-md-9">
             <div class="card bg-light text-dark p-4">
                 <h3 class="text-center">Lista Ocen</h3>
@@ -52,7 +57,8 @@
                         <td th:text="${grade.value}">5</td>
                         <td th:text="${grade.gradeDate}">01-01-2025</td>
                         <td>
-                            <a class="btn btn-primary btn-sm" th:href="@{/view/teacher/editGrade/{id}(id=${grade.gradeId})}">Edytuj</a>
+                            <a class="btn btn-primary btn-sm"
+                               th:href="@{/view/teacher/editGrade/{id}(id=${grade.gradeId})}">Edytuj</a>
                             <form th:action="@{/view/teacher/deleteGrade/{id}(id=${grade.gradeId})}" method="post"
                                   style="display:inline;">
                                 <button type="submit" class="btn btn-danger btn-sm">Usuń</button>
@@ -69,10 +75,10 @@
     </div>
 </main>
 
-<!-- Footer -->
 <footer class="bg-primary text-white text-center py-3">
     <p class="mb-0">&copy; 2025 FreeEdu. Udostępnione na licencji <a href="https://www.gnu.org/licenses/gpl-3.0.html"
-                                                                     class="text-white" target="_blank">GNU GPL v3</a>.</p>
+                                                                     class="text-white" target="_blank">GNU GPL v3</a>.
+    </p>
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
