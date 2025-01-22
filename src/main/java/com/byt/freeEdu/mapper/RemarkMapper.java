@@ -19,7 +19,7 @@ public interface RemarkMapper {
     @Mapping(target = "teacherId", expression = "java(remark.getTeacher().getUserId())")
     @Mapping(target = "teacherFirstName", expression = "java(remark.getTeacher().getFirstname())")
     @Mapping(target = "teacherLastName", expression = "java(remark.getTeacher().getLastname())")
-    @Mapping(target = "addDate", expression = "java(formatDate(remark.getAddDate()))")
+    @Mapping(target = "addDate", source = "addDate")
     @Mapping(target = "studentId", expression = "java(remark.getStudent().getUserId())")
     @Mapping(target = "studentFirstName", expression = "java(remark.getStudent().getFirstname())")
     @Mapping(target = "studentLastName", expression = "java(remark.getStudent().getLastname())")
@@ -31,9 +31,4 @@ public interface RemarkMapper {
     @Mapping(target = "student", expression = "java(studentService.getStudentById(dto.getStudentId()))")
     @Mapping(target = "teacher", expression = "java(teacherService.getTeacherById(dto.getTeacherId()))")
     Remark toEntity(RemarkDto dto, @Context StudentService studentService, @Context TeacherService teacherService);
-
-    default String formatDate(java.time.LocalDate date) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-        return date.format(formatter);
-    }
 }

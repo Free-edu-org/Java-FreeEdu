@@ -31,7 +31,7 @@
                                                                   class="text-decoration-none text-white">Oceny</a></li>
                 <li class="list-group-item bg-dark text-white"><a href="/view/teacher/attendance"
                                                                   class="text-decoration-none text-white">Frekwencja na
-                    zajeciach</a></li>
+                    zajęciach</a></li>
                 <li class="list-group-item bg-dark text-white"><a href="/view/teacher/remark"
                                                                   class="text-decoration-none text-white">Uwagi</a></li>
             </ul>
@@ -44,12 +44,10 @@
                 <p class="lead">Twój plan lekcji na najbliższe dni.</p>
                 <hr>
 
-
                 <div class="mb-3">
                     <label for="filterDate" class="form-label">Filtruj po dacie:</label>
-                    <input type="text" id="filterDate" class="form-control" placeholder="DD.MM.YYYY">
+                    <input type="date" id="filterDate" class="form-control" placeholder="Wybierz datę">
                 </div>
-
 
                 <table class="table table-striped table-dark">
                     <thead>
@@ -61,25 +59,33 @@
                     </tr>
                     </thead>
                     <tbody>
-
-                    <tr th:each="lesson : ${schedule}" data-date="${lesson.date}">
+                    <tr th:each="lesson : ${schedule}" th:data-date="${lesson.date}">
                         <td th:text="${lesson.date}"></td>
                         <td th:text="${lesson.subjectName}"></td>
                         <td th:text="${lesson.className}"></td>
-                        <td th:text="${lesson.teacherFirstName}  + ' ' + ${lesson.teacherLastName}"></td>
+                        <td th:text="${lesson.teacherFirstName} + ' ' + ${lesson.teacherLastName}"></td>
                     </tr>
                     </tbody>
                 </table>
             </div>
 
             <script>
-                document.getElementById('filterInput').addEventListener('keyup', function () {
-                    let filter = this.value.toLowerCase();
-                    let rows = document.querySelectorAll('.table tbody tr');
+                const filterDateInput = document.getElementById('filterDate');
+                const today = new Date().toISOString().split('T')[0];
+                filterDateInput.value = today;
+
+                function filterRowsByDate(date) {
+                    const rows = document.querySelectorAll('.table tbody tr');
                     rows.forEach(row => {
-                        let text = row.textContent.toLowerCase();
-                        row.style.display = text.includes(filter) ? '' : 'none';
+                        const rowDate = row.getAttribute('data-date');
+                        row.style.display = rowDate === date || !date ? '' : 'none';
                     });
+                }
+
+                filterRowsByDate(today);
+
+                filterDateInput.addEventListener('input', function () {
+                    filterRowsByDate(this.value);
                 });
             </script>
         </section>
