@@ -22,8 +22,9 @@
         <!-- Sidebar -->
         <nav class="col-md-3">
             <ul class="list-group">
+                <li class="list-group-item bg-dark text-white"><a href="/view/teacher/mainpage" class="text-decoration-none text-white">Strona główna</a></li>
                 <li class="list-group-item bg-dark text-white"><a href="/view/teacher/schedule" class="text-decoration-none text-white">Plan lekcji</a></li>
-                <li class="list-group-item bg-dark text-white"><a href="/view/teacher/grade" class="text-decoration-none text-white">Oceny</a></li>
+                <li class="list-group-item bg-dark text-white"><a href="/view/teacher/grades" class="text-decoration-none text-white">Oceny</a></li>
                 <li class="list-group-item bg-dark text-white"><a href="/view/teacher/schoolClass" class="text-decoration-none text-white">Klasy i uczniowie</a></li>
                 <li class="list-group-item bg-dark text-white"><a href="/view/teacher/attendace" class="text-decoration-none text-white">Frekwencja</a></li>
                 <li class="list-group-item bg-dark text-white"><a href="/view/teacher/remark" class="text-decoration-none text-white">Uwagi</a></li>
@@ -59,51 +60,21 @@
                         <td th:text="${lesson.date}"></td>
                         <td th:text="${lesson.subjectName}"></td>
                         <td th:text="${lesson.className}"></td>
-                        <td th:text="${lesson.teacherFullName}"></td>
+                        <td th:text="${lesson.teacherFirstName}  + ' ' + ${lesson.teacherLastName}"></td>
                     </tr>
                     </tbody>
                 </table>
             </div>
 
             <script>
-                // Funkcja ustawiająca dzisiejszą datę w polu filtra
-                function setTodayAsDefault() {
-                    const today = new Date();
-                    const formattedDate = `${String(today.getDate()).padStart(2, '0')}.${String(today.getMonth() + 1).padStart(2, '0')}.${today.getFullYear()}`;
-                    document.getElementById('filterDate').value = formattedDate;
-                }
-
-                // Funkcja konwertująca datę z DD.MM.YYYY na YYYY-MM-DD (format bazy)
-                function convertDateToISO(date) {
-                    const [day, month, year] = date.split('.');
-                    return `${year}-${month}-${day}`;
-                }
-
-                // Funkcja konwertująca datę z YYYY-MM-DD na DD.MM.YYYY (do wyświetlenia)
-                function convertDateToDisplay(date) {
-                    const [year, month, day] = date.split('-');
-                    return `${day}.${month}.${year}`;
-                }
-
-                // Dodanie obsługi filtrowania
-                document.getElementById('filterDate').addEventListener('input', function () {
-                    const filterValue = this.value; // Wartość filtra w formacie DD.MM.YYYY
-                    const rows = document.querySelectorAll('tbody tr'); // Wszystkie wiersze tabeli
-
+                document.getElementById('filterInput').addEventListener('keyup', function() {
+                    let filter = this.value.toLowerCase();
+                    let rows = document.querySelectorAll('.table tbody tr');
                     rows.forEach(row => {
-                        const rowDateISO = row.getAttribute('data-date'); // Data z bazy w formacie YYYY-MM-DD
-                        const filterISO = convertDateToISO(filterValue); // Konwersja filtra na format bazy
-
-                        if (filterValue === '' || rowDateISO === filterISO) {
-                            row.style.display = ''; // Pokaż wiersz
-                        } else {
-                            row.style.display = 'none'; // Ukryj wiersz
-                        }
+                        let text = row.textContent.toLowerCase();
+                        row.style.display = text.includes(filter) ? '' : 'none';
                     });
                 });
-
-                // Ustaw dzisiejszą datę na start
-                setTodayAsDefault();
             </script>
         </section>
     </div>

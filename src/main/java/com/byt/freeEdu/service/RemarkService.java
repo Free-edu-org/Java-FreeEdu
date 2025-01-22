@@ -38,8 +38,8 @@ public class RemarkService {
                 .findAll());
     }
 
-    public List<RemarkDto> getRemarksById(int id) {
-        List<Remark> remarks = remarkRepository.findAllById(Collections.singleton(id));
+    public List<RemarkDto> getTeacherRemarksById(int id) {
+        List<Remark> remarks = remarkRepository.getRemarkByTeacher(teacherRepository.findById(id).get());
 
         return remarks.stream()
                 .map(remarkMapper::toDto)

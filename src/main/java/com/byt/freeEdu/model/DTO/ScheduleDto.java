@@ -9,5 +9,7 @@ public class ScheduleDto {
     private LocalDate date;
     private String subjectName;
     private String className;
-    private String teacherFullName;
+    private int teacherId;
+    private String teacherFirstName;
+    private String teacherLastName;
 }

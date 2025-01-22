@@ -6,8 +6,6 @@ import com.byt.freeEdu.model.Schedule;
 import com.byt.freeEdu.model.enums.SubjectEnum;
 import org.mapstruct.*;
 
-import static com.byt.freeEdu.model.enums.SubjectEnum.*;
-
 @org.mapstruct.Mapper(unmappedTargetPolicy = ReportingPolicy.ERROR,
         componentModel = "spring",
         builder = @Builder(disableBuilder = true),
@@ -15,14 +13,18 @@ import static com.byt.freeEdu.model.enums.SubjectEnum.*;
 public interface ScheduleMapper {
 
     @Mapping(target = "className", source = "schoolClass.name")
-    @Mapping(target = "teacherFullName", expression = "java(schedule.getTeacher().getFirstname() + \" \" + schedule.getTeacher().getLastname())")
+    @Mapping(target = "teacherId", expression = "java(schedule.getTeacher().getUserId())")
+    @Mapping(target = "teacherFirstName", expression = "java(schedule.getTeacher().getFirstname())")
+    @Mapping(target = "teacherLastName", expression = "java(schedule.getTeacher().getLastname())")
     @Mapping(target = "subjectName", source = "subject", qualifiedByName = "translateSubject")
     ScheduleDto toDto(Schedule schedule);
 
     @Mapping(target = "id", source = "scheduleId")
     @Mapping(target = "className", source = "schoolClass.name")
     @Mapping(target = "subjectName", source = "subject", qualifiedByName = "translateSubject")
-    @Mapping(target = "teacherFullName", expression = "java(schedule.getTeacher().getFirstname() + \" \" + schedule.getTeacher().getLastname())")
+    @Mapping(target = "teacherId", expression = "java(schedule.getTeacher().getUserId())")
+    @Mapping(target = "teacherFirstName", expression = "java(schedule.getTeacher().getFirstname())")
+    @Mapping(target = "teacherLastName", expression = "java(schedule.getTeacher().getLastname())")
     ScheduleAdminDto toAdminDto(Schedule schedule);
 
     @Named("translateSubject")
