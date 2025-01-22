@@ -50,6 +50,12 @@ public class ViewControllerAdmin {
         model.addAttribute("users", userService.getAllUsers());
         return "admin/user_menagment";
     }
+
+    @GetMapping("/user_management")
+    public String deleteUser(Model model) {
+        model.addAttribute("users", userService.getAllUsers());
+        return "admin/user_menagment";
+    }
 }
 
 

@@ -4,6 +4,7 @@ import com.byt.freeEdu.config.AppConfig;
 import com.byt.freeEdu.controller.userSesion.SessionService;
 import com.byt.freeEdu.mapper.UserMapper;
 import com.byt.freeEdu.model.DTO.UserDto;
+import com.byt.freeEdu.model.enums.UserRole;
 import com.byt.freeEdu.model.users.User;
 import com.byt.freeEdu.service.ScheduleService;
 import com.byt.freeEdu.service.users.UserService;
@@ -19,7 +20,7 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Mono;
 
-import java.util.Collections;
+import java.util.Arrays;
 
 @WebFluxTest(controllers = ViewControllerAdmin.class, includeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = AppConfig.class))
 public class ViewControllerAdminTest {
@@ -74,7 +75,14 @@ public class ViewControllerAdminTest {
     @Test
     @WithMockUser(username = "admin", roles = {"ADMIN"})
     public void testUserManagement() {
-        Mockito.when(userService.getAllUsers()).thenReturn(Collections.singletonList(new User()));
+        User user1 = new User();
+        User user2 = new User();
+        user2.setFirstname("Anna");
+        user2.setLastname("Nowak");
+        user2.setEmail("annanowak@gmail.com");
+        user2.setUser_role(UserRole.ADMIN);
+
+        Mockito.when(userService.getAllUsers()).thenReturn(Arrays.asList(user1, user2));
 
         webTestClient.get().uri("/view/admin/user_management")
                 .exchange()
@@ -84,6 +92,10 @@ public class ViewControllerAdminTest {
                     String body = response.getResponseBody();
                     assert body != null;
                     assert body.contains("Zarządzanie użytkownikami");
+                    assert body.contains("Anna");
+                    assert body.contains("Nowak");
+                    assert body.contains("annanowak@gmail.com");
+                    assert body.contains("ADMIN");
                 });
     }
 }
