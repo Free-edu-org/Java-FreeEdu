@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pl-PL" xmlns:th="http://www.thymeleaf.org">
+<html lang="pl-PL" xmlns:th="http://www.thymeleaf.org" data-bs-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -16,27 +16,15 @@
     </div>
 </header>
 
-<div class="container my-5">
-    <div class="row">
-        <!-- Sidebar -->
-        <nav class="col-md-3 mb-4">
-            <ul class="list-group">
-                <li class="list-group-item bg-dark text-white"><a href="/view/teacher/mainpage" class="text-decoration-none text-white">Strona główna</a></li>
-                <li class="list-group-item bg-dark text-white"><a href="/view/teacher/schedule" class="text-decoration-none text-white">Plan lekcji</a></li>
-                <li class="list-group-item bg-dark text-white"><a href="/view/teacher/grades" class="text-decoration-none text-white">Oceny</a></li>
-                <li class="list-group-item bg-dark text-white"><a href="/view/teacher/schoolClass" class="text-decoration-none text-white">Klasy i uczniowie</a></li>
-                <li class="list-group-item bg-dark text-white"><a href="/view/teacher/attendance" class="text-decoration-none text-white">Frekwencja</a></li>
-                <li class="list-group-item bg-dark text-white"><a href="/view/teacher/remark" class="text-decoration-none text-white">Uwagi</a></li>
-            </ul>
-        </nav>
-
-        <!-- Main Content -->
-        <main class="col-md-9">
-            <h2 class="text-center mb-4">Edytuj Ocenę</h2>
+<main class="container my-5 d-flex justify-content-center align-items-center" style="min-height: 70vh;">
+    <div class="col-md-8 col-lg-6">
+        <div class="card bg-light text-dark p-4">
+            <h3 class="text-center">Edytuj Ocenę</h3>
             <form th:action="@{'/view/teacher/editGrade/' + ${grade.gradeId}}" method="post">
                 <div class="mb-3">
                     <label for="student" class="form-label">Uczeń</label>
-                    <input id="student" name="student" class="form-control" th:value="${grade.studentFirstName + ' ' + grade.studentLastName}" readonly>
+                    <input id="student" name="student" class="form-control"
+                           th:value="${grade.studentFirstName + ' ' + grade.studentLastName}" readonly>
                 </div>
                 <div class="mb-3">
                     <label for="subject" class="form-label">Przedmiot</label>
@@ -51,9 +39,9 @@
                     <button type="button" class="btn btn-secondary" onclick="location.href='/view/teacher/grades'">Anuluj</button>
                 </div>
             </form>
-        </main>
+        </div>
     </div>
-</div>
+</main>
 
 <script>
     document.addEventListener("DOMContentLoaded", function () {
@@ -74,5 +62,6 @@
     <p class="mb-0">&copy; 2025 FreeEdu. Udostępnione na licencji <a href="https://www.gnu.org/licenses/gpl-3.0.html" class="text-white" target="_blank">GNU GPL v3</a>.</p>
 </footer>
 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
