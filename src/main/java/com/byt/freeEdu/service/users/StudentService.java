@@ -2,7 +2,9 @@ package com.byt.freeEdu.service.users;
 
 import com.byt.freeEdu.mapper.RemarkMapper;
 import com.byt.freeEdu.model.DTO.RemarkDto;
+import com.byt.freeEdu.model.DTO.StudentDto;
 import com.byt.freeEdu.model.users.Student;
+import com.byt.freeEdu.model.users.User;
 import com.byt.freeEdu.repository.RemarkRepository;
 import com.byt.freeEdu.repository.StudentRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -20,7 +22,7 @@ public class StudentService {
     private final UserService userService;
 
 
-    public StudentService(RemarkRepository remarkRepository, RemarkMapper remarkMapper, StudentRepository studentRepository) {
+    public StudentService(RemarkRepository remarkRepository, RemarkMapper remarkMapper, StudentRepository studentRepository, UserService userService) {
         this.remarkRepository = remarkRepository;
         this.remarkMapper = remarkMapper;
         this.studentRepository = studentRepository;

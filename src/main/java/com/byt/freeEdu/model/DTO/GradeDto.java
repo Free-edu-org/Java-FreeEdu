@@ -5,13 +5,15 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class GradeDto {
     private int gradeId;
-    private String subject; // Zmieniony na String po translacji
-    private SubjectEnum subjectEnum; // Oryginalna wartość ENUM
+    private String subject;
+    private SubjectEnum subjectEnum;
     private double value;
     private int studentId;
     private String studentFirstName;
@@ -19,5 +21,5 @@ public class GradeDto {
     private int teacherId;
     private String teacherFirstName;
     private String teacherLastName;
-    private String gradeDate; // Format daty w String
+    private LocalDate gradeDate;
 }

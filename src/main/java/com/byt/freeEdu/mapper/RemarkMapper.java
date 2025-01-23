@@ -2,10 +2,9 @@ package com.byt.freeEdu.mapper;
 
 import com.byt.freeEdu.model.DTO.RemarkDto;
 import com.byt.freeEdu.model.Remark;
-import org.mapstruct.Builder;
-import org.mapstruct.Mapping;
-import org.mapstruct.NullValuePropertyMappingStrategy;
-import org.mapstruct.ReportingPolicy;
+import com.byt.freeEdu.service.users.StudentService;
+import com.byt.freeEdu.service.users.TeacherService;
+import org.mapstruct.*;
 
 import java.time.format.DateTimeFormatter;
 

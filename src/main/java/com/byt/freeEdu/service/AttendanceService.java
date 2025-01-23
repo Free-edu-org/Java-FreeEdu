@@ -24,7 +24,7 @@ public class AttendanceService {
         return attendanceRepository.findByStudent_UserId(studentId);
     }
 
-    public AttendanceService(AttendanceRepository attendanceRepository) {
+    public AttendanceService(AttendanceRepository attendanceRepository, UserService userService, StudentService studentService, TeacherService teacherService) {
         this.attendanceRepository = attendanceRepository;
         this.userService = userService;
         this.studentService = studentService;
