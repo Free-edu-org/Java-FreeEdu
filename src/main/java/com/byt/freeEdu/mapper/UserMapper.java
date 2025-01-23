@@ -13,6 +13,7 @@ import org.mapstruct.*;
 public interface UserMapper {
 
     @Mapping(target = "role", source = "user_role", qualifiedByName = "translateRole")
+    @Mapping(target = "id", source = "userId")
     UserDto toDto(User user);
 
     @Named("translateRole")

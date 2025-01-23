@@ -21,7 +21,7 @@ public class TeacherService {
 
     public Teacher getTeacherById(int id) {
         return teacherRepository.findById(id)
-            .orElseThrow(() -> new EntityNotFoundException("Teacher not found with ID: " + id));
+                .orElseThrow(() -> new EntityNotFoundException("Teacher not found with ID: " + id));
     }
 
     public List<Teacher> getAllTeachers() {
@@ -30,7 +30,7 @@ public class TeacherService {
 
     public Teacher updateTeacher(int id, Teacher updatedTeacher) {
         Teacher existingTeacher = teacherRepository.findById(id)
-            .orElseThrow(() -> new EntityNotFoundException("Teacher not found with ID: " + id));
+                .orElseThrow(() -> new EntityNotFoundException("Teacher not found with ID: " + id));
         existingTeacher.setFirstname(updatedTeacher.getFirstname());
         existingTeacher.setLastname(updatedTeacher.getLastname());
         existingTeacher.setEmail(updatedTeacher.getEmail());

@@ -4,7 +4,6 @@ import com.byt.freeEdu.controller.userSesion.SessionService;
 import com.byt.freeEdu.mapper.UserMapper;
 import com.byt.freeEdu.model.DTO.UserDto;
 import com.byt.freeEdu.model.users.User;
-import com.byt.freeEdu.repository.ScheduleRepository;
 import com.byt.freeEdu.service.ScheduleService;
 import com.byt.freeEdu.service.users.UserService;
 import org.springframework.stereotype.Controller;

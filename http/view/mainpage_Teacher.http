@@ -2,9 +2,7 @@ http://localhost:8080/view/teacher/mainpage
 http://localhost:8080/view/teacher/schedule
 http://localhost:8080/view/teacher/remark
 http://localhost:8080/view/teacher/grade
+http://localhost:8080/view/teacher/addGrade
+http://localhost:8080/view/teacher/editGrade
+http://localhost:8080/view/teacher/deleteGrade
 http://localhost:8080/view/teacher/attendance
-http://localhost:8080/view/teacher/schoolclass
-
-
-
-

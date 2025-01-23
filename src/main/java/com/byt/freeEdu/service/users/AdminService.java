@@ -21,7 +21,7 @@ public class AdminService {
 
     public Admin getAdminById(int id) {
         return adminRepository.findById(id)
-            .orElseThrow(() -> new EntityNotFoundException("Admin not found with ID: " + id));
+                .orElseThrow(() -> new EntityNotFoundException("Admin not found with ID: " + id));
     }
 
     public List<Admin> getAllAdmins() {
@@ -30,7 +30,7 @@ public class AdminService {
 
     public Admin updateAdmin(int id, Admin updatedAdmin) {
         Admin existingAdmin = adminRepository.findById(id)
-            .orElseThrow(() -> new EntityNotFoundException("Admin not found with ID: " + id));
+                .orElseThrow(() -> new EntityNotFoundException("Admin not found with ID: " + id));
         existingAdmin.setFirstname(updatedAdmin.getFirstname());
         existingAdmin.setLastname(updatedAdmin.getLastname());
         existingAdmin.setEmail(updatedAdmin.getEmail());

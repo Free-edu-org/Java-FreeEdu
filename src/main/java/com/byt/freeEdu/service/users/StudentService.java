@@ -17,11 +17,14 @@ public class StudentService {
 
     private final RemarkMapper remarkMapper;
     private final StudentRepository studentRepository;
+    private final UserService userService;
+
 
     public StudentService(RemarkRepository remarkRepository, RemarkMapper remarkMapper, StudentRepository studentRepository) {
         this.remarkRepository = remarkRepository;
         this.remarkMapper = remarkMapper;
         this.studentRepository = studentRepository;
+        this.userService = userService;
     }
 
     public Student addStudent(Student student) {
@@ -48,6 +51,25 @@ public class StudentService {
 
     public List<Student> getAllStudents() {
         return studentRepository.findAll();
+    }
+
+    public List<StudentDto> getStudentsBySchoolClassId(int schoolClassId) {
+        return studentRepository.getStudentsBySchoolClassId(schoolClassId)
+                .stream()
+                .map(id -> {
+                    User user = userService.getUserById(id.getUserId());
+                    return new StudentDto(user.getUserId(), user.getFirstname(), user.getLastname());
+                })
+                .collect(Collectors.toList());
+    }
+
+    public List<StudentDto> getAllStudentsDto() {
+        return getAllStudentIds().stream()
+                .map(id -> {
+                    User user = userService.getUserById(id);
+                    return new StudentDto(user.getUserId(), user.getFirstname(), user.getLastname());
+                })
+                .collect(Collectors.toList());
     }
 
     public Student updateStudent(int id, Student updatedStudent) {
