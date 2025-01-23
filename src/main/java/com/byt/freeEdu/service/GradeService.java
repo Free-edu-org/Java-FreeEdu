@@ -50,8 +50,11 @@ public class GradeService {
                 .collect(Collectors.toList());
     }
 
-    public List<Grade> getAllGrades() {
-        return gradeRepository.findAll();
+    public List<GradeDto> getAllGrades() {
+        return gradeRepository.findAll()
+                .stream()
+                .map(gradeMapper::toDto)
+                .collect(Collectors.toList());
     }
 
     public Boolean updateGrade(int id, GradeDto updatedGrade) {

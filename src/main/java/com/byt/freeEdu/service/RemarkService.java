@@ -39,9 +39,13 @@ public class RemarkService {
         this.teacherService = teacherService;
     }
 
-    public List<Remark> getAllRemarks() {
-        return new ArrayList<>(remarkRepository
-                .findAll());
+    public List<RemarkDto> getAllRemarks() {
+        List<Remark> remarks = remarkRepository
+                .findAll();
+
+        return remarks.stream()
+                .map(remarkMapper::toDto)
+                .collect(Collectors.toList());
     }
 
     public RemarkDto getRemarkById(int remarkId) {
