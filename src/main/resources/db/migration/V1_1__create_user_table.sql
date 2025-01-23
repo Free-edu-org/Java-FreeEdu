@@ -5,5 +5,5 @@ CREATE TABLE user (
     username VARCHAR(50) UNIQUE NOT NULL,
     password VARCHAR(255) NOT NULL,
     email VARCHAR(100),
-    user_role ENUM('PARENT', 'TEACHER', 'STUDENT', 'ADMIN') NOT NULL
+    user_role ENUM('PARENT', 'TEACHER', 'STUDENT', 'ADMIN', 'UNKNOWN') NOT NULL
 );

@@ -8,7 +8,6 @@ import org.springframework.security.authentication.UserDetailsRepositoryReactive
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.stereotype.Component;
@@ -72,6 +71,10 @@ public class WebfluxSecurity {
                                 case "ROLE_STUDENT":
                                     redirectUri = URI.create("/view/student/mainpage");
                                     break;
+                                case "UNKNOWN_ROLE":
+                                    System.err.println("Nieznana rola użytkownika. Przekierowanie na stronę logowania.");
+                                    redirectUri = URI.create("/view/login?error=roleNotFound");
+                                    break;
                                 default:
                                     redirectUri = URI.create("/view/login?error=roleNotFound");
                                     break;
@@ -83,8 +86,10 @@ public class WebfluxSecurity {
                             return Mono.empty();
                         })
                         .authenticationFailureHandler((webFilterExchange, exception) -> {
+                            String errorParam = "badCredentials";
+
                             webFilterExchange.getExchange().getResponse().setStatusCode(HttpStatus.FOUND);
-                            webFilterExchange.getExchange().getResponse().getHeaders().setLocation(URI.create("/view/login?error"));
+                            webFilterExchange.getExchange().getResponse().getHeaders().setLocation(URI.create("/view/login?error=" + errorParam));
 
                             return Mono.empty();
                         })

@@ -8,7 +8,7 @@
     <title>Panel użytkownika</title>
 </head>
 <body class="bg-dark text-white">
-<!-- Navbar -->
+
 <header class="container-fluid bg-primary py-3">
     <div class="container d-flex justify-content-between align-items-center">
         <h2 class="text-white">FreeEdu-Panel użytkownika</h2>
@@ -17,30 +17,27 @@
     </div>
 </header>
 
-<!-- Main Content Section -->
 <main class="container my-5">
     <div class="row">
-        <!-- Sidebar with links -->
+
         <nav class="col-md-3">
             <ul class="list-group">
+                <li class="list-group-item bg-dark text-white"><a href="/view/teacher/mainpage"
+                                                                  class="text-decoration-none text-white">Strona
+                    główna</a></li>
                 <li class="list-group-item bg-dark text-white"><a href="/view/teacher/schedule"
                                                                   class="text-decoration-none text-white">Plan
                     lekcji</a></li>
-                <li class="list-group-item bg-dark text-white"><a href="/view/teacher/grade"
+                <li class="list-group-item bg-dark text-white"><a href="/view/teacher/grades"
                                                                   class="text-decoration-none text-white">Oceny</a></li>
-                <li class="list-group-item bg-dark text-white"><a href="/view/teacher/schoolClass"
-                                                                  class="text-decoration-none text-white">Klasy i
-                    uczniowe</a></li>
-                <li class="list-group-item bg-dark text-white"><a href="/view/teacher/attendace"
+                <li class="list-group-item bg-dark text-white"><a href="/view/teacher/attendance"
                                                                   class="text-decoration-none text-white">Frekwencja na
                     zajeciach</a></li>
                 <li class="list-group-item bg-dark text-white"><a href="/view/teacher/remark"
-                                                                  class="text-decoration-none text-white">System
-                    Uwaga</a></li>
+                                                                  class="text-decoration-none text-white">Uwagi</a></li>
             </ul>
         </nav>
 
-        <!-- Content -->
         <section class="col-md-9">
             <div class="card bg-light text-dark p-4">
                 <h3>Witaj, <span th:text="${user.firstname}">Imię</span>!</h3>
@@ -62,9 +59,10 @@
     </div>
 </main>
 
-<!-- Footer -->
 <footer class="bg-primary text-white text-center py-3">
-    <p class="mb-0">&copy; 2025 FreeEdu. Udostępnione na licencji <a href="https://www.gnu.org/licenses/gpl-3.0.html" class="text-white" target="_blank">GNU GPL v3</a>.</p>
+    <p class="mb-0">&copy; 2025 FreeEdu. Udostępnione na licencji <a href="https://www.gnu.org/licenses/gpl-3.0.html"
+                                                                     class="text-white" target="_blank">GNU GPL v3</a>.
+    </p>
 </footer>
 
 

@@ -6,9 +6,18 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 public class RemarkDto {
+
     private int remarkId;
+
+    private int teacherId;
+    private String teacherFirstName;
+    private String teacherLastName;
+
     private String content;
     private String addDate;
-    private String studentName;
+
+    private int studentId;
+    private String studentFirstName;
+    private String studentLastName;
 }
 
