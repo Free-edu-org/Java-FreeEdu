@@ -28,16 +28,16 @@
         </thead>
         <tbody>
         <tr th:each="remark : ${remarks}">
-            <td th:text="${remark.teacherName}">Jan Kowalski</td>
+            <!-- Połączenie pól teacherFirstName i teacherLastName -->
+            <td th:text="${remark.teacherFirstName + ' ' + remark.teacherLastName}">Jan Kowalski</td>
             <td th:text="${remark.content}">Nieprzygotowanie do zajęć</td>
             <td th:text="${remark.addDate}">01-01-2025</td>
         </tr>
         </tbody>
-
     </table>
 </main>
-</body>
 <script>
+    // Funkcja filtrowania w tabeli
     document.getElementById('filterInput').addEventListener('keyup', function() {
         let filter = this.value.toLowerCase();
         let rows = document.querySelectorAll('.table tbody tr');
@@ -51,4 +51,5 @@
 <footer class="bg-primary text-white text-center py-3">
     <p class="mb-0">&copy; 2025 FreeEdu. Wszelkie prawa zastrzeżone.</p>
 </footer>
+</body>
 </html>
