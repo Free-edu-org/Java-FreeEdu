@@ -40,15 +40,13 @@ public class AttendanceService {
         return attendanceRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Attendance not found with ID: " + id));
     }
 
-    public void markAttendance(Map<Integer, AttendanceEnum> attendanceMap, Map<Integer, SubjectEnum> subjectMap, int teacherId) {
+    public void markAttendance(Map<Integer, AttendanceEnum> attendanceMap, SubjectEnum subject, int teacherId) {
         attendanceMap.forEach((studentId, status) -> {
             Attendance attendance = new Attendance();
             attendance.setStudent(studentService.getStudentById(studentId));
             attendance.setTeacher(teacherService.getTeacherById(teacherId));
             attendance.setAttendanceDate(LocalDate.now());
             attendance.setStatus(status);
-
-            SubjectEnum subject = subjectMap.get(studentId);
             attendance.setSubject(subject);
 
             attendanceRepository.save(attendance);

@@ -18,7 +18,7 @@ import java.time.LocalDate;
 public class Remark {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", updatable = false, unique = true, nullable = false)
     private int remarkId;
 

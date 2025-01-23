@@ -14,7 +14,7 @@ import lombok.RequiredArgsConstructor;
 public class SchoolClass {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", unique = true, updatable = false, nullable = false)
     private int schoolClassId;
 

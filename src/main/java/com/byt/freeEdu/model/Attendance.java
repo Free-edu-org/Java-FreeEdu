@@ -20,7 +20,7 @@ import java.time.LocalDate;
 public class Attendance {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", unique = true, updatable = false, nullable = false)
     private int attendanceId;
 
