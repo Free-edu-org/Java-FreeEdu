@@ -40,11 +40,11 @@
                     </div>
                     <div class="mb-3">
                         <label for="subject" class="form-label">Przedmiot</label>
-                        <input type="text" class="form-control" id="subject" th:field="*{subject}">
+                        <input type="text" class="form-control" id="subject" th:field="*{subjectName}">
                     </div>
                     <div class="mb-3">
                         <label for="teacherFullName" class="form-label">Nauczyciel</label>
-                        <input type="text" class="form-control" id="teacherFullName" th:field="*{teacherFullName}">
+                        <input type="text" class="form-control" id="teacherFullName" th:value="${schedule.teacherFirstName} + ' ' + ${schedule.teacherLastName}">
                     </div>
                     <div class="mb-3">
                         <label for="className" class="form-label">Klasa</label>
