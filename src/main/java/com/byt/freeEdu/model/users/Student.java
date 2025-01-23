@@ -13,7 +13,7 @@ import lombok.*;
 public class Student extends User {
 
     @NonNull
-    @OneToOne
+    @ManyToOne // Relacja Many-to-One z Parent
     @JoinColumn(name = "parent_id", nullable = false)
     private Parent parent;
 

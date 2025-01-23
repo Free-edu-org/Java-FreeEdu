@@ -31,22 +31,31 @@
         </nav>
 
         <!-- Content -->
-        <section class="col-md-9">
-            <div class="card bg-light text-dark p-4">
-                <h3>Witaj, <span th:text="${user.firstname}">Imię</span>!</h3>
-                <p class="lead">Tutaj znajdziesz wszystkie potrzebne informacje i funkcje aplikacji.</p>
-                <hr>
-                <h4>Twój Profil</h4>
-                <dl class="row">
-                    <dt class="col-sm-4">Imię i nazwisko:</dt>
-                    <dd class="col-sm-8" th:text="${user.firstname + ' ' + user.lastname}">Jan Kowalski</dd>
+        <!-- Wyświetlanie imienia użytkownika -->
+        <h3>Witaj, <span th:text="${user.firstname}">Imię</span>!</h3>
 
-                    <dt class="col-sm-4">Email:</dt>
-                    <dd class="col-sm-8" th:text="${user.email}">jan.kowalski@example.com</dd>
+        <!-- Wyświetlanie pełnych danych użytkownika -->
+        <dl class="row">
+            <dt class="col-sm-4">Imię i nazwisko:</dt>
+            <dd class="col-sm-8" th:text="${user.firstname + ' ' + user.lastname}">Jan Kowalski</dd>
 
-                    <dt class="col-sm-4">Rola:</dt>
-                    <dd class="col-sm-8" th:text="${user.role}">Nauczyciel</dd>
-                </dl>
+            <dt class="col-sm-4">Email:</dt>
+            <dd class="col-sm-8" th:text="${user.email}">jan.kowalski@example.com</dd>
+
+            <dt class="col-sm-4">Rola:</dt>
+            <dd class="col-sm-8" th:text="${user.role}">Nauczyciel</dd>
+        </dl>
+
+
+
+            <div class="card bg-light text-dark p-4 mt-4">
+                <h4>Twoje Dzieci</h4>
+                <ul class="list-group">
+                    <li class="list-group-item" th:each="student : ${students}">
+                        <span th:text="${student.firstname + ' ' + student.lastname}">Imię i nazwisko ucznia</span>
+                        <a th:href="@{/view/parent/student/{id}(id=${student.userId})}" class="btn btn-primary btn-sm float-end">Szczegóły</a>
+                    </li>
+                </ul>
             </div>
         </section>
     </div>
