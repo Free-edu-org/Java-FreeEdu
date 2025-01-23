@@ -7,8 +7,6 @@ import com.byt.freeEdu.service.users.StudentService;
 import com.byt.freeEdu.service.users.TeacherService;
 import org.mapstruct.*;
 
-import static com.byt.freeEdu.model.enums.SubjectEnum.*;
-
 @org.mapstruct.Mapper(unmappedTargetPolicy = ReportingPolicy.ERROR,
         componentModel = "spring",
         builder = @Builder(disableBuilder = true),
@@ -48,17 +46,21 @@ public interface GradeMapper {
                 return "Nieznany przedmiot";
         }
     }
+
     @Named("mapSubject")
     default SubjectEnum mapSubject(String subject) {
+        if (subject == null) {
+            return SubjectEnum.POLISH; // Domyślna wartość
+        }
         switch (subject) {
-            case "POLISH":
-                return POLISH;
-            case "MATH":
-                return MATH;
-            case "GEOGRAPHY":
-                return GEOGRAPHY;
+            case "Język polski":
+                return SubjectEnum.POLISH;
+            case "Matematyka":
+                return SubjectEnum.MATH;
+            case "Geografia":
+                return SubjectEnum.GEOGRAPHY;
             default:
-                return POLISH;
+                return SubjectEnum.POLISH; // Domyślna wartość
         }
     }
 }

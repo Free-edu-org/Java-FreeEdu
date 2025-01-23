@@ -23,12 +23,20 @@
                 <thead>
                 <tr>
                     <th>Uczeń</th>
+                    <th>Przedmiot</th>
                     <th>Obecność</th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr th:each="student : ${students}">
                     <td th:text="${student.firstName + ' ' + student.lastName}">Jan Kowalski</td>
+                    <td>
+                        <select th:name="'subjectMap[' + ${student.id} + ']'" class="form-select">
+                            <option th:value="POLISH" th:text="'Polski'"></option>
+                            <option th:value="MATH" th:text="'Matematyka'"></option>
+                            <option th:value="GEOGRAPHY" th:text="'Geografia'"></option>
+                        </select>
+                    </td>
                     <td>
                         <select th:name="'attendanceMap[' + ${student.id} + ']'" class="form-select">
                             <option th:value="PRESENT" th:text="'Obecny'"></option>

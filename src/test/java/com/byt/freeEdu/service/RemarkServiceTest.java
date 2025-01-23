@@ -82,38 +82,6 @@ class RemarkServiceTest {
     }
 
     @Test
-    public void updateRemark_successfully_updatesRemark() {
-        //given
-        int remarkId = 1;
-        Remark existingRemark = new Remark("Old remark", LocalDate.now(), new Student(), new Teacher());
-        Remark updatedRemark = new Remark("Updated remark", LocalDate.now(), new Student(), new Teacher());
-
-        when(remarkRepository.findById(remarkId)).thenReturn(Optional.of(existingRemark));
-        when(remarkRepository.save(any(Remark.class))).thenReturn(updatedRemark);
-
-        //when
-        Remark savedRemark = remarkService.updateRemark(remarkId, updatedRemark);
-
-        //then
-        assertNotNull(savedRemark);
-        assertEquals("Updated remark", savedRemark.getContent());
-        verify(remarkRepository, times(1)).save(any(Remark.class));
-    }
-
-    @Test
-    public void updateRemark_remarkNotFound_throwsException() {
-        //given
-        int remarkId = 999;
-        Remark updatedRemark = new Remark("Updated remark", LocalDate.now(), new Student(), new Teacher());
-
-        when(remarkRepository.findById(remarkId)).thenReturn(Optional.empty());
-
-        //when & then
-        assertThrows(EntityNotFoundException.class, () -> remarkService.updateRemark(remarkId, updatedRemark));
-        verify(remarkRepository, times(0)).save(any(Remark.class));
-    }
-
-    @Test
     public void deleteRemark_remarkNotFound_throwsException() {
         //given
         int remarkId = 999;

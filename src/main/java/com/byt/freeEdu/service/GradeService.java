@@ -54,6 +54,10 @@ public class GradeService {
         return gradeRepository.findAll();
     }
 
+    public List<Grade> getGradesForStudent(int studentId) {
+        return gradeRepository.findByStudent_UserId(studentId);
+    }
+
     public Boolean updateGrade(int id, GradeDto updatedGrade) {
         Grade existingGrade = gradeRepository.findById(id).get();
         existingGrade.setValue(updatedGrade.getValue());

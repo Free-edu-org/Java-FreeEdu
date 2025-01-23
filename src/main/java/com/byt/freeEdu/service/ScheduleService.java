@@ -55,4 +55,10 @@ public class ScheduleService {
     public void deleteSchedule(int id) {
         scheduleRepository.deleteById(id);
     }
+
+    public List<Schedule> getScheduleByClassId(int classId) {
+        return scheduleRepository.findBySchoolClass_SchoolClassId(classId);
+    }
+
+
 }
