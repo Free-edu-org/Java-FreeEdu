@@ -65,6 +65,7 @@ public class ViewControllerAdmin {
 
     @PostMapping("/schedule/edit/{id}/confirm")
     public String editScheduleFormConfirm(@PathVariable int id, @ModelAttribute ScheduleDto scheduleDto) {
+        //TODO: Poprawić edycje planu lekcji
         Schedule schedule = new Schedule(
                 scheduleDto.getId(),
                 scheduleDto.getDate(),
