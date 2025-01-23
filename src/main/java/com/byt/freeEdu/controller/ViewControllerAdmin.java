@@ -5,6 +5,9 @@ import com.byt.freeEdu.mapper.UserMapper;
 import com.byt.freeEdu.model.DTO.ScheduleDto;
 import com.byt.freeEdu.model.DTO.UserDto;
 import com.byt.freeEdu.model.Schedule;
+import com.byt.freeEdu.model.SchoolClass;
+import com.byt.freeEdu.model.enums.SubjectEnum;
+import com.byt.freeEdu.model.users.Teacher;
 import com.byt.freeEdu.model.users.User;
 import com.byt.freeEdu.service.ScheduleService;
 import com.byt.freeEdu.service.users.UserService;
@@ -60,9 +63,17 @@ public class ViewControllerAdmin {
         return "admin/schedule_edit";
     }
 
-    @GetMapping("/schedule/edit/{id}")
+    @PostMapping("/schedule/edit/{id}/confirm")
     public String editScheduleFormConfirm(@PathVariable int id, @ModelAttribute ScheduleDto scheduleDto) {
-        //TODO: edycja planu zajęc
+        Schedule schedule = new Schedule(
+                scheduleDto.getId(),
+                scheduleDto.getDate(),
+                SubjectEnum.valueOf(scheduleDto.getSubjectName()),
+                new SchoolClass(),
+                new Teacher()
+        );
+
+        scheduleService.updateSchedule(id, schedule);
         return "redirect:/view/admin/schedule";
     }
 
