@@ -12,7 +12,7 @@ import java.util.Map;
 public class AttendanceFormDto {
 
     private Map<Integer, AttendanceEnum> attendanceMap = new HashMap<>();
-    private Map<Integer, SubjectEnum> subjectMap = new HashMap<>();
+    private SubjectEnum globalSubject;
 
     public Map<Integer, AttendanceEnum> getAttendanceMap() {
         return attendanceMap;
@@ -28,12 +28,12 @@ public class AttendanceFormDto {
         return dto;
     }
 
-    public Map<Integer, SubjectEnum> getSubjectMap() {
-        return subjectMap;
+    public SubjectEnum getGlobalSubject() {
+        return globalSubject;
     }
 
-    public void setSubjectMap(Map<Integer, SubjectEnum> subjectMap) {
-        this.subjectMap = subjectMap;
+    public void setGlobalSubject(SubjectEnum globalSubject) {
+        this.globalSubject = globalSubject;
     }
 
     public static AttendanceFormDto toDto(Attendance attendance) {

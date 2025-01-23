@@ -18,7 +18,7 @@ import java.time.LocalDate;
 public class Schedule {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", updatable = false, unique = true, nullable = false)
     private int scheduleId;
 

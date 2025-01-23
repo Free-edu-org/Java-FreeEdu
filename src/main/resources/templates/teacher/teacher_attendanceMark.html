@@ -19,24 +19,21 @@
     <div class="card bg-light text-dark p-4">
         <h3 class="text-center">Zaznacz obecność - Klasa <span th:text="${schoolClass.name}">Klasa A</span></h3>
         <form th:action="@{/view/teacher/attendance/mark}" method="post">
+            <div class="mb-3">
+                <h5>Wybrany przedmiot: <span th:text="${selectedSubject}"></span></h5>
+                <input type="hidden" name="globalSubject" th:value="${selectedSubject}"/> <!-- Ukryte pole -->
+            </div>
+
             <table class="table table-striped table-dark">
                 <thead>
                 <tr>
                     <th>Uczeń</th>
-                    <th>Przedmiot</th>
                     <th>Obecność</th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr th:each="student : ${students}">
                     <td th:text="${student.firstName + ' ' + student.lastName}">Jan Kowalski</td>
-                    <td>
-                        <select th:name="'subjectMap[' + ${student.id} + ']'" class="form-select">
-                            <option th:value="POLISH" th:text="'Polski'"></option>
-                            <option th:value="MATH" th:text="'Matematyka'"></option>
-                            <option th:value="GEOGRAPHY" th:text="'Geografia'"></option>
-                        </select>
-                    </td>
                     <td>
                         <select th:name="'attendanceMap[' + ${student.id} + ']'" class="form-select">
                             <option th:value="PRESENT" th:text="'Obecny'"></option>
@@ -47,11 +44,9 @@
                 </tr>
                 </tbody>
             </table>
+
             <div class="text-center mt-4">
                 <button type="submit" class="btn btn-success">Zapisz frekwencję</button>
-                <button type="button" onclick="location.href='/view/teacher/attendance'" class="btn btn-secondary">
-                    Powrót
-                </button>
             </div>
         </form>
     </div>
