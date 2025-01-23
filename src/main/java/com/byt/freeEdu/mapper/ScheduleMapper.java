@@ -13,7 +13,7 @@ import org.mapstruct.ReportingPolicy;
         builder = @Builder(disableBuilder = true),
         nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public interface ScheduleMapper {
-
+    @Mapping(target = "id", source = "scheduleId")
     @Mapping(target = "className", source = "schoolClass.name")
     @Mapping(target = "teacherFullName", expression = "java(schedule.getTeacher().getFirstname() + \" \" + schedule.getTeacher().getLastname())")
     ScheduleDto toDto(Schedule schedule);

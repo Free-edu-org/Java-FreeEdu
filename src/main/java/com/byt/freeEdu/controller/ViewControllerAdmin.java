@@ -2,7 +2,9 @@ package com.byt.freeEdu.controller;
 
 import com.byt.freeEdu.controller.userSesion.SessionService;
 import com.byt.freeEdu.mapper.UserMapper;
+import com.byt.freeEdu.model.DTO.ScheduleDto;
 import com.byt.freeEdu.model.DTO.UserDto;
+import com.byt.freeEdu.model.Schedule;
 import com.byt.freeEdu.model.users.User;
 import com.byt.freeEdu.service.ScheduleService;
 import com.byt.freeEdu.service.users.UserService;
@@ -10,6 +12,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
+
+import java.time.format.DateTimeFormatter;
 
 @Controller
 @RequestMapping("/view/admin")
@@ -44,6 +48,25 @@ public class ViewControllerAdmin {
         return "admin/admin_schedule";
     }
 
+    @GetMapping("/schedule/delete/{id}")
+    public String deleteSchedule(@PathVariable int id) {
+        scheduleService.deleteSchedule(id);
+        return "redirect:/view/admin/schedule";
+    }
+
+    @GetMapping("/schedule/edit/{id}")
+    public String editScheduleForm(@PathVariable int id, Model model) {
+        model.addAttribute("schedule", scheduleService.getSchedulesById(id).get(0));
+        return "admin/schedule_edit";
+    }
+
+    @GetMapping("/schedule/edit/{id}")
+    public String editScheduleFormConfirm(@PathVariable int id, @ModelAttribute ScheduleDto scheduleDto) {
+        //TODO: edycja planu zajęc
+        return "redirect:/view/admin/schedule";
+    }
+
+
     @GetMapping("/user_management")
     public String userMenagment(Model model) {
         model.addAttribute("users", userService.getAllUsers());
@@ -65,7 +88,6 @@ public class ViewControllerAdmin {
 
     @PostMapping("/user_management/edit/{id}/confirm")
     public String editUserFormConfirm(@PathVariable int id, @ModelAttribute User user) {
-        User userOld = userService.getUserById(id);
         userService.updateUser(id, user);
         return "redirect:/view/admin/user_management";
     }

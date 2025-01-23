@@ -30,35 +30,29 @@
 
         <section class="col-md-9">
             <div class="card bg-light text-dark p-4">
-                <h3>Plan Lekcji</h3>
-                <p class="lead">Zarządzaj planem lekcji w aplikacji.</p>
+                <h3>Edycja planu lekcji</h3>
+                <p class="lead">Możesz edytować dane planu lekcji</p>
                 <hr>
-                <table class="table table-striped table-dark">
-                    <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Data</th>
-                        <th>Przedmiot</th>
-                        <th>Nauczyciel</th>
-                        <th>Klasa</th>
-                        <th>Akcje</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr th:each="schedule : ${schedules}">
-                        <td th:text="${schedule.id}">1</td>
-                        <td th:text="${schedule.date}">2025-01-01</td>
-                        <td th:text="${schedule.subject}">Matematyka</td>
-                        <td th:text="${schedule.teacherFullName}">Jan Kowalski</td>
-                        <td th:text="${schedule.className}">Klasa 1A</td>
-                        <td>
-                            <a class="btn btn-primary btn-sm" th:href="'/view/admin/schedule/edit/' + ${schedule.id}">Edytuj</a>
-                            <a class="btn btn-danger btn-sm" th:href="'/view/admin/schedule/delete/' + ${schedule.id}">Usuń</a>
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
-                <button class="btn btn-success" onclick="location.href='/view/admin/schedule/add'">Dodaj nowy plan lekcji</button>
+                <form th:action="@{'/view/admin/schedule/edit/' + ${schedule.id} + '/confirm'}" th:object="${schedule}" method="post">
+                    <div class="mb-3">
+                        <label for="date" class="form-label">Data</label>
+                        <input type="date" class="form-control" id="date" th:field="*{date}">
+                    </div>
+                    <div class="mb-3">
+                        <label for="subject" class="form-label">Przedmiot</label>
+                        <input type="text" class="form-control" id="subject" th:field="*{subject}">
+                    </div>
+                    <div class="mb-3">
+                        <label for="teacherFullName" class="form-label">Nauczyciel</label>
+                        <input type="text" class="form-control" id="teacherFullName" th:field="*{teacherFullName}">
+                    </div>
+                    <div class="mb-3">
+                        <label for="className" class="form-label">Klasa</label>
+                        <input type="text" class="form-control" id="className" th:field="*{className}">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Zatwierdź</button>
+                    <a href="/view/admin/schedule" class="btn btn-secondary">Wróć</a>
+                </form>
             </div>
         </section>
     </div>
