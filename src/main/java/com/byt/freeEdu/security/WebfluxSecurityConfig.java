@@ -13,7 +13,7 @@ public class WebfluxSecurityConfig {
     private final WebfluxSecurity webfluxSecurity;
 
     public WebfluxSecurityConfig(
-        WebfluxSecurity webfluxSecurity
+            WebfluxSecurity webfluxSecurity
     ) {
         this.webfluxSecurity = webfluxSecurity;
     }

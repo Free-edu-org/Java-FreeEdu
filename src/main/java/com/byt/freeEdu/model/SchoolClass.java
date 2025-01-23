@@ -21,4 +21,7 @@ public class SchoolClass {
     @NonNull
     @Column(name = "name", nullable = false, unique = true)
     private String name;
+
+    @Transient
+    private long studentCount;
 }

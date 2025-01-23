@@ -7,7 +7,7 @@ import org.springframework.security.authentication.ReactiveAuthenticationManager
 import org.springframework.security.authentication.UserDetailsRepositoryReactiveAuthenticationManager;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.crypto.password.NoOpPasswordEncoder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.stereotype.Component;
@@ -30,6 +30,10 @@ public class WebfluxSecurity {
                 .csrf(csrf -> csrf.disable())
                 .authorizeExchange(exchanges -> exchanges
                         .pathMatchers("/view/homepage", "/view/login", "/view/register").permitAll()
+                        .pathMatchers("/view/admin/**").hasRole("ADMIN")
+                        .pathMatchers("/view/teacher/**").hasRole("TEACHER")
+                        .pathMatchers("/view/parent/**").hasRole("PARENT")
+                        .pathMatchers("/view/student/**").hasRole("STUDENT")
                         .anyExchange().authenticated()
                 )
                 .formLogin(form -> form
@@ -67,6 +71,10 @@ public class WebfluxSecurity {
                                 case "ROLE_STUDENT":
                                     redirectUri = URI.create("/view/student/mainpage");
                                     break;
+                                case "UNKNOWN_ROLE":
+                                    System.err.println("Nieznana rola użytkownika. Przekierowanie na stronę logowania.");
+                                    redirectUri = URI.create("/view/login?error=roleNotFound");
+                                    break;
                                 default:
                                     redirectUri = URI.create("/view/login?error=roleNotFound");
                                     break;
@@ -78,8 +86,10 @@ public class WebfluxSecurity {
                             return Mono.empty();
                         })
                         .authenticationFailureHandler((webFilterExchange, exception) -> {
+                            String errorParam = "badCredentials";
+
                             webFilterExchange.getExchange().getResponse().setStatusCode(HttpStatus.FOUND);
-                            webFilterExchange.getExchange().getResponse().getHeaders().setLocation(URI.create("/view/login?error"));
+                            webFilterExchange.getExchange().getResponse().getHeaders().setLocation(URI.create("/view/login?error=" + errorParam));
 
                             return Mono.empty();
                         })
@@ -89,7 +99,7 @@ public class WebfluxSecurity {
     }
 
     public ReactiveAuthenticationManager noOpEncoderAuthenticationManager() {
-        return createAuthenticationManager(NoOpPasswordEncoder.getInstance());
+        return createAuthenticationManager(new BCryptPasswordEncoder());
     }
 
     public UserDetailsRepositoryReactiveAuthenticationManager createAuthenticationManager(PasswordEncoder passwordEncoder) {

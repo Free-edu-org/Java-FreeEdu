@@ -4,6 +4,8 @@ import com.byt.freeEdu.model.enums.UserRole;
 import com.byt.freeEdu.model.users.User;
 import com.byt.freeEdu.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,12 +30,15 @@ public class UserService {
     }
 
     public User getUserByUsername(String username) {
-        return userRepository.findByUsername(username)
-                .orElseThrow(() -> new EntityNotFoundException("User not found with username: " + username));
+        return userRepository.findByUsername(username).orElse(null);
+    }
+
+    public User getUserByEmail(String email) {
+        return userRepository.findByEmail(email).orElse(null);
     }
 
     @Transactional
-    public User addUser(String username, String firstname, String lastname, String email, String password, UserRole userRole) {
+    public Boolean addUser(String username, String firstname, String lastname, String email, String password) {
         if (username == null || username.trim().isEmpty()) {
             throw new IllegalArgumentException("Username cannot be empty");
         }
@@ -45,14 +50,18 @@ public class UserService {
         }
 
         if (userRepository.existsByUsername(username)) {
-            throw new IllegalArgumentException("Username already exists: " + username);
+            throw new IllegalArgumentException("Istnieje użytkownik o podanej nazwie użytkownika");
         }
         if (userRepository.existsByEmail(email)) {
-            throw new IllegalArgumentException("Email already exists: " + email);
+            throw new IllegalArgumentException("Istnieję użytkownik z takim emailem");
         }
+        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+        String hashedPassword = passwordEncoder.encode(password);
 
-        User user = new User(username, firstname, lastname, email, password, userRole);
-        return userRepository.save(user);
+        User user = new User(username, firstname, lastname, email, hashedPassword, UserRole.UNKNOWN);
+
+        userRepository.save(user);
+        return true;
     }
 
     @Transactional

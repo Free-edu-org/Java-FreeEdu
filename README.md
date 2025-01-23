@@ -1,4 +1,5 @@
 # FreeEdu
+### GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007  
 
 FreeEdu is plug and play e-journal system for schools. It is designed to be easy to use and easy to deploy. It is written in Java and uses Spring Boot.
 
