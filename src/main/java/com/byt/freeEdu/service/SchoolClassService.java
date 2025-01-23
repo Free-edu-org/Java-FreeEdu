@@ -33,6 +33,17 @@ public class SchoolClassService {
                 .orElseThrow(() -> new EntityNotFoundException("School class not found with name: " + name));
     }
 
+    public List<SchoolClass> getAllClassesWithStudentCount() {
+        return schoolClassRepository.findAll()
+                .stream()
+                .map(schoolClass -> {
+                    long studentCount = schoolClassRepository.countStudentsInClass(schoolClass.getSchoolClassId());
+                    schoolClass.setStudentCount(studentCount);
+                    return schoolClass;
+                })
+                .toList();
+    }
+
     @Transactional
     public SchoolClass addSchoolClass(String name) {
         if (name == null || name.trim().isEmpty()) {

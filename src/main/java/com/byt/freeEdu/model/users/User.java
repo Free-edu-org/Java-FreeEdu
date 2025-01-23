@@ -20,7 +20,7 @@ public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", updatable = false, nullable = false)
-    private int userId; // To pole jest dziedziczone przez `Parent` i `Student`
+    private int userId;
 
     @NonNull
     @Column(name = "username", nullable = false, unique = true)

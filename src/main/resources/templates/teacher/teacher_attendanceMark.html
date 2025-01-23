@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="pl-PL" xmlns:th="http://www.thymeleaf.org" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Zaznacz obecność</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+</head>
+<body class="bg-dark text-white">
+
+<header class="container-fluid bg-primary py-3">
+    <div class="container d-flex justify-content-between align-items-center">
+        <h2 class="text-white">FreeEdu - Zaznacz obecność</h2>
+        <button onclick="location.href='/view/login'" class="btn btn-danger">Wyloguj się</button>
+    </div>
+</header>
+
+<main class="container my-5">
+    <div class="card bg-light text-dark p-4">
+        <h3 class="text-center">Zaznacz obecność - Klasa <span th:text="${schoolClass.name}">Klasa A</span></h3>
+        <form th:action="@{/view/teacher/attendance/mark}" method="post">
+            <table class="table table-striped table-dark">
+                <thead>
+                <tr>
+                    <th>Uczeń</th>
+                    <th>Przedmiot</th>
+                    <th>Obecność</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="student : ${students}">
+                    <td th:text="${student.firstName + ' ' + student.lastName}">Jan Kowalski</td>
+                    <td>
+                        <select th:name="'subjectMap[' + ${student.id} + ']'" class="form-select">
+                            <option th:value="POLISH" th:text="'Polski'"></option>
+                            <option th:value="MATH" th:text="'Matematyka'"></option>
+                            <option th:value="GEOGRAPHY" th:text="'Geografia'"></option>
+                        </select>
+                    </td>
+                    <td>
+                        <select th:name="'attendanceMap[' + ${student.id} + ']'" class="form-select">
+                            <option th:value="PRESENT" th:text="'Obecny'"></option>
+                            <option th:value="ABSENT" th:text="'Nieobecny'"></option>
+                            <option th:value="LATE" th:text="'Spóźniony'"></option>
+                        </select>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+            <div class="text-center mt-4">
+                <button type="submit" class="btn btn-success">Zapisz frekwencję</button>
+                <button type="button" onclick="location.href='/view/teacher/attendance'" class="btn btn-secondary">
+                    Powrót
+                </button>
+            </div>
+        </form>
+    </div>
+</main>
+
+<footer class="bg-primary text-white text-center py-3">
+    <p class="mb-0">&copy; 2025 FreeEdu. Udostępnione na licencji <a href="https://www.gnu.org/licenses/gpl-3.0.html"
+                                                                     class="text-white" target="_blank">GNU GPL v3</a>.
+    </p>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

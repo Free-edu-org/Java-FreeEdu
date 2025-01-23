@@ -28,6 +28,7 @@ public class Grade {
     @Column(name = "subject", nullable = false)
     private SubjectEnum subject;
 
+    @NonNull
     @Column(name = "value", nullable = false)
     private double value;
 

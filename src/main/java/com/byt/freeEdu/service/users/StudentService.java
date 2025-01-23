@@ -1,6 +1,11 @@
 package com.byt.freeEdu.service.users;
 
+import com.byt.freeEdu.mapper.RemarkMapper;
+import com.byt.freeEdu.model.DTO.RemarkDto;
+import com.byt.freeEdu.model.DTO.StudentDto;
 import com.byt.freeEdu.model.users.Student;
+import com.byt.freeEdu.model.users.User;
+import com.byt.freeEdu.repository.RemarkRepository;
 import com.byt.freeEdu.repository.StudentRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
@@ -10,10 +15,18 @@ import java.util.stream.Collectors;
 
 @Service
 public class StudentService {
-    private final StudentRepository studentRepository;
+    private final RemarkRepository remarkRepository;
 
-    public StudentService(StudentRepository studentRepository) {
+    private final RemarkMapper remarkMapper;
+    private final StudentRepository studentRepository;
+    private final UserService userService;
+
+
+    public StudentService(RemarkRepository remarkRepository, RemarkMapper remarkMapper, StudentRepository studentRepository, UserService userService) {
+        this.remarkRepository = remarkRepository;
+        this.remarkMapper = remarkMapper;
         this.studentRepository = studentRepository;
+        this.userService = userService;
     }
 
     public Student addStudent(Student student) {
@@ -29,9 +42,36 @@ public class StudentService {
     public Student getStudentById(int id) {
         return studentRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Student not found with ID: " + id));
     }
+    public List<RemarkDto> getRemarksForStudent(int studentId) {
+        return remarkRepository.findByStudent_UserId(studentId) // Użycie poprawionej metody
+                .stream()
+                .map(remarkMapper::toDto)
+                .collect(Collectors.toList());
+    }
+
+
 
     public List<Student> getAllStudents() {
         return studentRepository.findAll();
+    }
+
+    public List<StudentDto> getStudentsBySchoolClassId(int schoolClassId) {
+        return studentRepository.getStudentsBySchoolClassId(schoolClassId)
+                .stream()
+                .map(id -> {
+                    User user = userService.getUserById(id.getUserId());
+                    return new StudentDto(user.getUserId(), user.getFirstname(), user.getLastname());
+                })
+                .collect(Collectors.toList());
+    }
+
+    public List<StudentDto> getAllStudentsDto() {
+        return getAllStudentIds().stream()
+                .map(id -> {
+                    User user = userService.getUserById(id);
+                    return new StudentDto(user.getUserId(), user.getFirstname(), user.getLastname());
+                })
+                .collect(Collectors.toList());
     }
 
     public Student updateStudent(int id, Student updatedStudent) {
