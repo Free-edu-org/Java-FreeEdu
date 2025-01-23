@@ -10,5 +10,6 @@ public class RemarkDto {
     private String content;
     private String addDate;
     private String studentName;
+    private String teacherName;
 }
 

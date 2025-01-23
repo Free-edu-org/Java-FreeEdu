@@ -19,8 +19,10 @@ public interface RemarkMapper {
     @Mapping(target = "content", source = "content")
     @Mapping(target = "addDate", expression = "java(formatDate(remark.getAddDate()))")
     @Mapping(target = "studentName", expression = "java(remark.getStudent().getFirstname() + ' ' + remark.getStudent().getLastname())")
+    @Mapping(target = "teacherName", expression = "java(remark.getTeacher().getFirstname() + ' ' + remark.getTeacher().getLastname())")
     RemarkDto toDto(Remark remark);
 
+    // Formatowanie daty w formacie "dd-MM-yyyy"
     default String formatDate(java.time.LocalDate date) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
         return date.format(formatter);

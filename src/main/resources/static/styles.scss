@@ -3,3 +3,9 @@ $body-bg: #fff;
 $border-radius: .4rem;
 $success: #7952b3;
 $primary: #7952b3;
+
+.table-hover tbody tr:hover {
+  background-color: #343a40;
+  color: #ffffff;
+  transition: background-color 0.3s ease;
+}

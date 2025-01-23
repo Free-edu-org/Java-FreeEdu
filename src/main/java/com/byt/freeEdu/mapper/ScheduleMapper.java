@@ -14,6 +14,7 @@ import org.mapstruct.ReportingPolicy;
         nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public interface ScheduleMapper {
 
+
     @Mapping(target = "className", source = "schoolClass.name")
     @Mapping(target = "teacherFullName", expression = "java(schedule.getTeacher().getFirstname() + \" \" + schedule.getTeacher().getLastname())")
     ScheduleDto toDto(Schedule schedule);
