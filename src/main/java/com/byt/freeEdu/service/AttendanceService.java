@@ -2,6 +2,7 @@ package com.byt.freeEdu.service;
 
 import com.byt.freeEdu.model.Attendance;
 import com.byt.freeEdu.model.enums.AttendanceEnum;
+import com.byt.freeEdu.model.enums.SubjectEnum;
 import com.byt.freeEdu.repository.AttendanceRepository;
 import com.byt.freeEdu.service.users.StudentService;
 import com.byt.freeEdu.service.users.TeacherService;
@@ -39,13 +40,17 @@ public class AttendanceService {
         return attendanceRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Attendance not found with ID: " + id));
     }
 
-    public void markAttendance(Map<Integer, AttendanceEnum> attendanceMap, int teacherId) {
+    public void markAttendance(Map<Integer, AttendanceEnum> attendanceMap, Map<Integer, SubjectEnum> subjectMap, int teacherId) {
         attendanceMap.forEach((studentId, status) -> {
             Attendance attendance = new Attendance();
             attendance.setStudent(studentService.getStudentById(studentId));
             attendance.setTeacher(teacherService.getTeacherById(teacherId));
             attendance.setAttendanceDate(LocalDate.now());
             attendance.setStatus(status);
+
+            SubjectEnum subject = subjectMap.get(studentId);
+            attendance.setSubject(subject);
+
             attendanceRepository.save(attendance);
         });
     }

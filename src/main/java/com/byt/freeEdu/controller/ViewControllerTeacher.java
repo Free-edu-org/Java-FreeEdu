@@ -157,8 +157,6 @@ public class ViewControllerTeacher {
                 });
     }
 
-    //Oceny
-
     @GetMapping("/grades")
     public Mono<String> getGrades(Model model) {
         return sessionService.getUserId()
@@ -283,17 +281,17 @@ public class ViewControllerTeacher {
     public Mono<String> saveAttendance(@ModelAttribute AttendanceFormDto attendanceFormDto, Model model) {
         return sessionService.getUserId()
                 .flatMap(userId -> {
-                    if (attendanceFormDto.getAttendanceMap().isEmpty()) {
-                        model.addAttribute("errorMessage", "Nie zaznaczono żadnej obecności.");
+                    if (attendanceFormDto.getAttendanceMap().isEmpty() || attendanceFormDto.getSubjectMap().isEmpty()) {
+                        model.addAttribute("errorMessage", "Nie zaznaczono wszystkich wymaganych danych.");
                         return Mono.just("teacher/teacher_attendanceMark");
                     }
 
-                    attendanceService.markAttendance(attendanceFormDto.getAttendanceMap(), userId);
+                    attendanceService.markAttendance(
+                            attendanceFormDto.getAttendanceMap(),
+                            attendanceFormDto.getSubjectMap(),
+                            userId
+                    );
                     return Mono.just("redirect:/view/teacher/attendance");
                 });
     }
-
 }
-
-
-

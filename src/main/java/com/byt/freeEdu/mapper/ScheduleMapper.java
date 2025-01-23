@@ -12,7 +12,6 @@ import org.mapstruct.*;
         nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public interface ScheduleMapper {
 
-
     @Mapping(target = "className", source = "schoolClass.name")
     @Mapping(target = "teacherId", expression = "java(schedule.getTeacher().getUserId())")
     @Mapping(target = "teacherFirstName", expression = "java(schedule.getTeacher().getFirstname())")

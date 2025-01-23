@@ -2,7 +2,6 @@ package com.byt.freeEdu.mapper;
 
 import com.byt.freeEdu.model.Attendance;
 import com.byt.freeEdu.model.DTO.AttendanceFormDto;
-import com.byt.freeEdu.model.enums.AttendanceEnum;
 import org.mapstruct.Mapper;
 import org.mapstruct.ReportingPolicy;
 
@@ -12,7 +11,6 @@ import java.util.stream.Collectors;
 
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.ERROR)
 public interface AttendanceMapper {
-
 
     default AttendanceFormDto toDto(Attendance attendance) {
         if (attendance == null) {
@@ -24,7 +22,6 @@ public interface AttendanceMapper {
 
         return attendanceFormDto;
     }
-
 
     default List<AttendanceFormDto> toDtoList(List<Attendance> attendances) {
         if (attendances == null || attendances.isEmpty()) {
