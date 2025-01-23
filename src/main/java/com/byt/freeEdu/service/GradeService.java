@@ -56,6 +56,13 @@ public class GradeService {
 
     public Boolean updateGrade(int id, GradeDto updatedGrade) {
         Grade existingGrade = gradeRepository.findById(id).get();
+    public List<Grade> getGradesForStudent(int studentId) {
+        return gradeRepository.findByStudent_UserId(studentId);
+    }
+
+    public Grade updateGrade(int id, Grade updatedGrade) {
+        Grade existingGrade = gradeRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Grade not found with ID: " + id));
+        existingGrade.setSubject(updatedGrade.getSubject());
         existingGrade.setValue(updatedGrade.getValue());
         existingGrade.setGradeDate(LocalDate.now());
 

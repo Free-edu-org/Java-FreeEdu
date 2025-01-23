@@ -20,7 +20,11 @@ public class AttendanceService {
     private final StudentService studentService;
     private final TeacherService teacherService;
 
-    public AttendanceService(AttendanceRepository attendanceRepository, UserService userService, StudentService studentService, TeacherService teacherService) {
+    public List<Attendance> getAttendancesForStudent(int studentId) {
+        return attendanceRepository.findByStudent_UserId(studentId);
+    }
+
+    public AttendanceService(AttendanceRepository attendanceRepository) {
         this.attendanceRepository = attendanceRepository;
         this.userService = userService;
         this.studentService = studentService;

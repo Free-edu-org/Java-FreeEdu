@@ -1,5 +1,5 @@
 http://localhost:8080/view/student/mainpage
 http://localhost:8080/view/student/remark
 http://localhost:8080/view/student/schedule
-
-
+http://localhost:8080/view/student/grade
+http://localhost:8080/view/student/attendance
