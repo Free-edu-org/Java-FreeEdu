@@ -267,6 +267,40 @@ public class ViewControllerAdmin {
         return Mono.just("admin/remark");
     }
 
+    @PostMapping("/deleteRemark/{id}")
+    public String deleteRemark(@PathVariable("id") int remarkId, Model model) {
+        try {
+            remarkService.deleteRemark(remarkId);
+            model.addAttribute("successMessage", "Uwagi zostały usunięte.");
+        } catch (Exception e) {
+            model.addAttribute("errorMessage", "Nie udało się usunąć uwagi: " + e.getMessage());
+        }
+        return "redirect:/view/admin/remark";
+    }
+
+    @GetMapping("/editRemark/{remarkId}")
+    public String editRemarkForm(@PathVariable int remarkId, Model model) {
+        // Pobierz uwagę na podstawie ID
+        RemarkDto remarkDto = remarkService.getAdminRemarkById(remarkId);
+        if (remarkDto == null) {
+            model.addAttribute("errorMessage", "Nie znaleziono uwagi o podanym ID.");
+            return "admin/remark";
+        }
+
+        // Dodaj dane uwagi do modelu
+        model.addAttribute("remark", remarkDto);
+
+        return "admin/remark_edit";
+    }
+
+    @PostMapping("/editRemark/{remarkId}")
+    public String editRemark(@PathVariable int remarkId, @ModelAttribute RemarkDto remarkDto) {
+        // Zaktualizuj uwagę
+        remarkService.updateRemark(remarkId, remarkDto);
+
+        return "redirect:/view/admin/remark";
+    }
+
     @GetMapping("/user_management")
     public String userMenagment(Model model) {
         model.addAttribute("users", userService.getAllUsers());

@@ -23,8 +23,8 @@
             <ul class="list-group">
                 <li class="list-group-item bg-dark text-white"><a href="/view/admin/schedule" class="text-decoration-none text-white">Plan lekcji</a></li>
                 <li class="list-group-item bg-dark text-white"><a href="/view/admin/grade" class="text-decoration-none text-white">Oceny</a></li>
-                <li class="list-group-item bg-dark text-white"><a href="/view/admin/schoolClass" class="text-decoration-none text-white">Klasy i uczniowe</a></li>
-                <li class="list-group-item bg-dark text-white"><a href="/view/admin/attendance" class="text-decoration-none text-white">Frekwencja na zajeciach</a></li>
+                <li class="list-group-item bg-dark text-white"><a href="/view/admin/schoolClass" class="text-decoration-none text-white">Klasy i uczniowie</a></li>
+                <li class="list-group-item bg-dark text-white"><a href="/view/admin/attendance" class="text-decoration-none text-white">Frekwencja na zajęciach</a></li>
                 <li class="list-group-item bg-dark text-white"><a href="/view/admin/remark" class="text-decoration-none text-white">System Uwaga</a></li>
                 <li class="list-group-item bg-dark text-white"><a href="/view/admin/user_management" class="text-decoration-none text-white">Zarządzanie użytkownikami</a></li>
             </ul>
@@ -37,6 +37,7 @@
                     <thead>
                     <tr>
                         <th>Uczeń</th>
+                        <th>Nauczyciel</th>
                         <th>Treść</th>
                         <th>Data</th>
                         <th>Akcje</th>
@@ -45,6 +46,7 @@
                     <tbody>
                     <tr th:each="remark : ${remarks}">
                         <td th:text="${remark.studentFirstName + ' ' + remark.studentLastName}">Jan Kowalski</td>
+                        <td th:text="${remark.teacherFirstName + ' ' + remark.teacherLastName}">Anna Nowak</td>
                         <td th:text="${remark.content}">Nieprzygotowanie do zajęć</td>
                         <td th:text="${remark.addDate}">01-01-2025</td>
                         <td>
