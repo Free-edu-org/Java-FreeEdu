@@ -3,21 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Frekwencja - Wybierz klasę</title>
+    <link rel="stylesheet" href="../../static/styles.scss">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+    <title>Dodaj Plan Lekcji</title>
 </head>
 <body class="bg-dark text-white">
-
 <header class="container-fluid bg-primary py-3">
     <div class="container d-flex justify-content-between align-items-center">
-        <h2 class="text-white">FreeEdu - Frekwencja</h2>
+        <h2 class="text-white">FreeEdu - Panel użytkownika</h2>
         <button onclick="location.href='/view/login'" class="btn btn-danger">Wyloguj się</button>
     </div>
 </header>
 
 <main class="container my-5">
     <div class="row">
-
         <nav class="col-md-3">
             <ul class="list-group">
                 <li class="list-group-item bg-dark text-white"><a href="/view/admin/schedule" class="text-decoration-none text-white">Plan lekcji</a></li>
@@ -31,35 +30,36 @@
 
         <section class="col-md-9">
             <div class="card bg-light text-dark p-4">
-                <h3 class="text-center">Wybierz klasę</h3>
-                <table class="table table-striped table-dark mt-4">
-                    <thead>
-                    <tr>
-                        <th>Nazwa klasy</th>
-                        <th>Liczba uczniów</th>
-                        <th>Akcje</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr th:each="schoolClass : ${schoolClasses}">
-                        <td th:text="${schoolClass.name}">Klasa A</td>
-                        <td th:text="${schoolClass.studentCount}">25</td>
-                        <td>
-                            <a th:href="@{/view/admin/attendance/{classId}(classId=${schoolClass.schoolClassId})}"
-                               class="btn btn-primary btn-sm">Zobacz</a>
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
+                <h3>Dodaj Plan Lekcji</h3>
+                <p class="lead">Możesz dodać nowy plan lekcji</p>
+                <hr>
+                <form th:action="@{'/view/admin/schedule/add/confirm'}" th:object="${schedule}" method="post">
+                    <div class="mb-3">
+                        <label for="date" class="form-label">Data</label>
+                        <input type="date" class="form-control" id="date" th:field="*{date}">
+                    </div>
+                    <div class="mb-3">
+                        <label for="subject" class="form-label">Przedmiot</label>
+                        <input type="text" class="form-control" id="subject" th:field="*{subjectName}">
+                    </div>
+                    <div class="mb-3">
+                        <label for="teacherFullName" class="form-label">Nauczyciel</label>
+                        <input type="text" class="form-control" id="teacherFullName" th:field="*{teacherFullName}">
+                    </div>
+                    <div class="mb-3">
+                        <label for="className" class="form-label">Klasa</label>
+                        <input type="text" class="form-control" id="className" th:field="*{className}">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Dodaj</button>
+                    <a href="/view/admin/schedule" class="btn btn-secondary">Wróć</a>
+                </form>
             </div>
         </section>
     </div>
 </main>
 
 <footer class="bg-primary text-white text-center py-3">
-    <p class="mb-0">&copy; 2025 FreeEdu. Udostępnione na licencji <a href="https://www.gnu.org/licenses/gpl-3.0.html"
-                                                                     class="text-white" target="_blank">GNU GPL v3</a>.
-    </p>
+    <p class="mb-0">&copy; 2025 FreeEdu. Wszelkie prawa zastrzeżone.</p>
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>

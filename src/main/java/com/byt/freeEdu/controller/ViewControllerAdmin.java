@@ -71,6 +71,11 @@ public class ViewControllerAdmin {
         return "admin/admin_schedule";
     }
 
+    @GetMapping("/schedule/add")
+    public String addScheduleForm() {
+        return "redirect:/view/admin/schedule_form";
+    }
+
     @GetMapping("/schedule/delete/{id}")
     public String deleteSchedule(@PathVariable int id) {
         scheduleService.deleteSchedule(id);
