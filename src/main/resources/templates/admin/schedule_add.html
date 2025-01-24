@@ -29,31 +29,26 @@
         </nav>
 
         <section class="col-md-9">
-            <div class="card bg-light text-dark p-4">
-                <h3>Dodaj Plan Lekcji</h3>
-                <p class="lead">Możesz dodać nowy plan lekcji</p>
-                <hr>
-                <form th:action="@{'/view/admin/schedule/add/confirm'}" th:object="${schedule}" method="post">
-                    <div class="mb-3">
-                        <label for="date" class="form-label">Data</label>
-                        <input type="date" class="form-control" id="date" th:field="*{date}">
-                    </div>
-                    <div class="mb-3">
-                        <label for="subject" class="form-label">Przedmiot</label>
-                        <input type="text" class="form-control" id="subject" th:field="*{subjectName}">
-                    </div>
-                    <div class="mb-3">
-                        <label for="teacherFullName" class="form-label">Nauczyciel</label>
-                        <input type="text" class="form-control" id="teacherFullName" th:field="*{teacherFullName}">
-                    </div>
-                    <div class="mb-3">
-                        <label for="className" class="form-label">Klasa</label>
-                        <input type="text" class="form-control" id="className" th:field="*{className}">
-                    </div>
-                    <button type="submit" class="btn btn-primary">Dodaj</button>
-                    <a href="/view/admin/schedule" class="btn btn-secondary">Wróć</a>
-                </form>
-            </div>
+            <form action="/view/admin/schedule/add/confirm" method="post">
+                <div class="mb-3">
+                    <label for="date" class="form-label">Data</label>
+                    <input type="date" class="form-control" id="date" name="date">
+                </div>
+                <div class="mb-3">
+                    <label for="subject" class="form-label">Przedmiot</label>
+                    <input type="text" class="form-control" id="subject" name="subjectName">
+                </div>
+                <div class="mb-3">
+                    <label for="teacherFullName" class="form-label">Nauczyciel</label>
+                    <input type="text" class="form-control" id="teacherFullName" name="teacherFullName">
+                </div>
+                <div class="mb-3">
+                    <label for="className" class="form-label">Klasa</label>
+                    <input type="text" class="form-control" id="className" name="className">
+                </div>
+                <button type="submit" class="btn btn-primary">Dodaj</button>
+                <a href="/view/admin/schedule" class="btn btn-secondary">Wróć</a>
+            </form>
         </section>
     </div>
 </main>

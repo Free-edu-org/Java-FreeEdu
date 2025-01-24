@@ -10,13 +10,14 @@ import com.byt.freeEdu.model.users.Teacher;
 import com.byt.freeEdu.model.users.User;
 import com.byt.freeEdu.service.*;
 import com.byt.freeEdu.service.users.StudentService;
+import com.byt.freeEdu.service.users.TeacherService;
 import com.byt.freeEdu.service.users.UserService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Controller
@@ -31,6 +32,7 @@ public class ViewControllerAdmin {
     private final StudentService studentService;
     private final AttendanceService attendanceService;
     private final RemarkService remarkService;
+    private final TeacherService teacherService;
 
     public ViewControllerAdmin(
             SessionService sessionService,
@@ -41,7 +43,8 @@ public class ViewControllerAdmin {
             SchoolClassService schoolClassService,
             StudentService studentService,
             AttendanceService attendanceService,
-            RemarkService remarkService
+            RemarkService remarkService,
+            TeacherService teacherService
     ) {
         this.sessionService = sessionService;
         this.userService = userService;
@@ -52,6 +55,7 @@ public class ViewControllerAdmin {
         this.studentService = studentService;
         this.attendanceService = attendanceService;
         this.remarkService = remarkService;
+        this.teacherService = teacherService;
     }
 
     @GetMapping("/mainpage")
@@ -68,12 +72,25 @@ public class ViewControllerAdmin {
     @GetMapping("/schedule")
     public String schedule(Model model) {
         model.addAttribute("schedules", scheduleService.getAllSchedules());
-        return "admin/admin_schedule";
+        return "admin/schedule";
     }
 
     @GetMapping("/schedule/add")
     public String addScheduleForm() {
-        return "redirect:/view/admin/schedule_form";
+        return "admin/schedule_add";
+    }
+
+    @GetMapping("/schedule/add/confirm")
+    public String addScheduleFormConfirm(Model model, @ModelAttribute ScheduleDto scheduleDto) {
+        Schedule schedule = new Schedule(
+                scheduleDto.getId(),
+                scheduleDto.getDate(),
+                SubjectEnum.valueOf(scheduleDto.getSubjectName()),
+                new SchoolClass(),
+                new Teacher()
+        );
+
+        return "admin/schedule_add";
     }
 
     @GetMapping("/schedule/delete/{id}")
@@ -84,20 +101,20 @@ public class ViewControllerAdmin {
 
     @GetMapping("/schedule/edit/{id}")
     public String editScheduleForm(@PathVariable int id, Model model) {
-        model.addAttribute("schedule", scheduleService.getSchedulesById(id).get(0));
+        List<ScheduleDto> schedules = scheduleService.getSchedulesById(id);
+        model.addAttribute("schedule", schedules.get(0));
+
+        List<Teacher> teachers = teacherService.getAllTeachers();
+        model.addAttribute("teachers", teachers);
+
+        List<SchoolClass> schoolClasses = schoolClassService.getAllSchoolClass();
+        model.addAttribute("schoolClasses", schoolClasses);
+
         return "admin/schedule_edit";
     }
 
     @PostMapping("/schedule/edit/{id}/confirm")
-    public String editScheduleFormConfirm(@PathVariable int id, @ModelAttribute ScheduleDto scheduleDto) {
-        //TODO: Poprawić edycje planu lekcji
-        Schedule schedule = new Schedule(
-                scheduleDto.getId(),
-                scheduleDto.getDate(),
-                SubjectEnum.valueOf(scheduleDto.getSubjectName()),
-                new SchoolClass(),
-                new Teacher()
-        );
+    public String editScheduleFormConfirm(@PathVariable int id, @ModelAttribute Schedule schedule) {
 
         scheduleService.updateSchedule(id, schedule);
         return "redirect:/view/admin/schedule";
