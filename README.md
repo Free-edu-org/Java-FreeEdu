@@ -1,6 +1,9 @@
 # FreeEdu
-### GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007  
 
+<img src="public/logo.svg" alt="logo" width="20%" />  
+
+### GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007  
+#### Logo is fork from paomedia https://github.com/paomedia/small-n-flat under CC0 1.0 Universal
 FreeEdu is plug and play e-journal system for schools. It is designed to be easy to use and easy to deploy. It is written in Java and uses Spring Boot.
 
 ## Features
