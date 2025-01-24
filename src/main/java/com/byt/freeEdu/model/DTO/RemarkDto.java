@@ -19,5 +19,7 @@ public class RemarkDto {
     private int studentId;
     private String studentFirstName;
     private String studentLastName;
+
+    private String teacherName;
 }
 

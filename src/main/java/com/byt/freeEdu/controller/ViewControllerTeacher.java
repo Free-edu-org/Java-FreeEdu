@@ -157,8 +157,6 @@ public class ViewControllerTeacher {
                 });
     }
 
-    //Oceny
-
     @GetMapping("/grades")
     public Mono<String> getGrades(Model model) {
         return sessionService.getUserId()
@@ -257,7 +255,7 @@ public class ViewControllerTeacher {
     }
 
     @GetMapping("/attendance/{classId}")
-    public Mono<String> markAttendance(@PathVariable int classId, Model model) {
+    public Mono<String> markAttendance(@PathVariable int classId, @RequestParam String subject, Model model) {
         return sessionService.getUserId()
                 .flatMap(userId -> {
                     SchoolClass schoolClass = schoolClassService.getSchoolClassById(classId);
@@ -274,7 +272,7 @@ public class ViewControllerTeacher {
 
                     model.addAttribute("schoolClass", schoolClass);
                     model.addAttribute("students", students);
-                    model.addAttribute("attendanceForm", new AttendanceFormDto()); // Dodajemy DTO
+                    model.addAttribute("selectedSubject", SubjectEnum.valueOf(subject)); // Konwersja na SubjectEnum
                     return Mono.just("teacher/teacher_attendanceMark");
                 });
     }
@@ -283,17 +281,17 @@ public class ViewControllerTeacher {
     public Mono<String> saveAttendance(@ModelAttribute AttendanceFormDto attendanceFormDto, Model model) {
         return sessionService.getUserId()
                 .flatMap(userId -> {
-                    if (attendanceFormDto.getAttendanceMap().isEmpty()) {
-                        model.addAttribute("errorMessage", "Nie zaznaczono żadnej obecności.");
+                    if (attendanceFormDto.getAttendanceMap().isEmpty() || attendanceFormDto.getGlobalSubject() == null) {
+                        model.addAttribute("errorMessage", "Nie zaznaczono wszystkich wymaganych danych.");
                         return Mono.just("teacher/teacher_attendanceMark");
                     }
 
-                    attendanceService.markAttendance(attendanceFormDto.getAttendanceMap(), userId);
+                    attendanceService.markAttendance(
+                            attendanceFormDto.getAttendanceMap(),
+                            attendanceFormDto.getGlobalSubject(),
+                            userId
+                    );
                     return Mono.just("redirect:/view/teacher/attendance");
                 });
     }
-
 }
-
-
-

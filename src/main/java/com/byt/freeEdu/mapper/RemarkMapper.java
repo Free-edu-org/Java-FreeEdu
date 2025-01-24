@@ -23,6 +23,7 @@ public interface RemarkMapper {
     @Mapping(target = "studentId", expression = "java(remark.getStudent().getUserId())")
     @Mapping(target = "studentFirstName", expression = "java(remark.getStudent().getFirstname())")
     @Mapping(target = "studentLastName", expression = "java(remark.getStudent().getLastname())")
+    @Mapping(target = "teacherName", expression = "java(remark.getTeacher().getFirstname() + ' ' + remark.getTeacher().getLastname())")
     RemarkDto toDto(Remark remark);
 
     @Mapping(target = "remarkId", source = "remarkId")

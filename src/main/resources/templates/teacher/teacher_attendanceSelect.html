@@ -44,6 +44,7 @@
                     <tr>
                         <th>Nazwa klasy</th>
                         <th>Liczba uczniów</th>
+                        <th>Przedmiot</th>
                         <th>Akcje</th>
                     </tr>
                     </thead>
@@ -52,8 +53,17 @@
                         <td th:text="${schoolClass.name}">Klasa A</td>
                         <td th:text="${schoolClass.studentCount}">25</td>
                         <td>
-                            <a th:href="@{/view/teacher/attendance/{classId}(classId=${schoolClass.schoolClassId})}"
-                               class="btn btn-primary btn-sm">Zobacz</a>
+                            <select th:id="'subject_' + ${schoolClass.schoolClassId}" class="form-select">
+                                <option th:value="POLISH" th:text="'Polski'"></option>
+                                <option th:value="MATH" th:text="'Matematyka'"></option>
+                                <option th:value="GEOGRAPHY" th:text="'Geografia'"></option>
+                            </select>
+                        </td>
+                        <td>
+                            <button class="btn btn-primary btn-sm"
+                                    th:onclick="'navigateToAttendance(' + ${schoolClass.schoolClassId} + ')'">Dodaj
+                                obecność
+                            </button>
                         </td>
                     </tr>
                     </tbody>
@@ -68,6 +78,19 @@
                                                                      class="text-white" target="_blank">GNU GPL v3</a>.
     </p>
 </footer>
+
+<script>
+    function navigateToAttendance(classId) {
+        const subjectSelect = document.getElementById('subject_' + classId);
+        const selectedSubject = subjectSelect.value;
+
+        if (selectedSubject) {
+            window.location.href = `/view/teacher/attendance/${classId}?subject=${selectedSubject}`;
+        } else {
+            alert('Wybierz przedmiot przed dodaniem obecności.');
+        }
+    }
+</script>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>

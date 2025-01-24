@@ -1,6 +1,7 @@
 package com.byt.freeEdu.model;
 
 import com.byt.freeEdu.model.enums.AttendanceEnum;
+import com.byt.freeEdu.model.enums.SubjectEnum;
 import com.byt.freeEdu.model.users.Student;
 import com.byt.freeEdu.model.users.Teacher;
 import jakarta.persistence.*;
@@ -19,7 +20,7 @@ import java.time.LocalDate;
 public class Attendance {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", unique = true, updatable = false, nullable = false)
     private int attendanceId;
 
@@ -41,4 +42,14 @@ public class Attendance {
     @ManyToOne
     @JoinColumn(name = "teacher_id", nullable = false)
     private Teacher teacher;
+
+    @NonNull
+    @Enumerated(EnumType.STRING)
+    @Column(name = "subject", nullable = false)
+    private SubjectEnum subject;
+
+    public Integer getId() {
+        return attendanceId;
+    }
+
 }
