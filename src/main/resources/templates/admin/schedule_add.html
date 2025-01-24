@@ -29,26 +29,34 @@
         </nav>
 
         <section class="col-md-9">
-            <form action="/view/admin/schedule/add/confirm" method="post">
-                <div class="mb-3">
-                    <label for="date" class="form-label">Data</label>
-                    <input type="date" class="form-control" id="date" name="date">
-                </div>
-                <div class="mb-3">
-                    <label for="subject" class="form-label">Przedmiot</label>
-                    <input type="text" class="form-control" id="subject" name="subjectName">
-                </div>
-                <div class="mb-3">
-                    <label for="teacherFullName" class="form-label">Nauczyciel</label>
-                    <input type="text" class="form-control" id="teacherFullName" name="teacherFullName">
-                </div>
-                <div class="mb-3">
-                    <label for="className" class="form-label">Klasa</label>
-                    <input type="text" class="form-control" id="className" name="className">
-                </div>
-                <button type="submit" class="btn btn-primary">Dodaj</button>
-                <a href="/view/admin/schedule" class="btn btn-secondary">Wróć</a>
-            </form>
+            <div class="card bg-light text-dark p-4">
+                <form th:action="@{'/view/admin/schedule/add/confirm'}" th:object="${schedule}" method="post">
+                    <div class="mb-3">
+                        <label for="date" class="form-label">Data</label>
+                        <input type="date" class="form-control" id="date" th:field="*{date}">
+                    </div>
+                    <div class="mb-3">
+                        <label for="subject" class="form-label">Przedmiot</label>
+                        <select class="form-control" id="subject" th:field="*{subjectName}">
+                            <option th:each="subject : ${subjects}" th:value="${subject.name()}" th:text="${subject.displayName}"></option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="teacher" class="form-label">Nauczyciel</label>
+                        <select class="form-control" id="teacher" th:field="*{teacherId}">
+                            <option th:each="teacher : ${teachers}" th:value="${teacher.userId}" th:text="${teacher.firstname} + ' ' + ${teacher.lastname}"></option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="className" class="form-label">Klasa</label>
+                        <select class="form-control" id="className" th:field="*{className}">
+                            <option th:each="class : ${schoolClasses}" th:value="${class.schoolClassId}" th:text="${class.name}"></option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Dodaj</button>
+                    <a href="/view/admin/schedule" class="btn btn-secondary">Wróć</a>
+                </form>
+            </div>
         </section>
     </div>
 </main>

@@ -76,21 +76,29 @@ public class ViewControllerAdmin {
     }
 
     @GetMapping("/schedule/add")
-    public String addScheduleForm() {
+    public String addScheduleForm(Model model) {
+        List<Teacher> teachers = teacherService.getAllTeachers();
+        model.addAttribute("teachers", teachers);
+
+        List<SchoolClass> schoolClasses = schoolClassService.getAllSchoolClass();
+        model.addAttribute("schoolClasses", schoolClasses);
+
+        model.addAttribute("subjects", SubjectEnum.values());
+
+        model.addAttribute("schedule", new ScheduleDto());
         return "admin/schedule_add";
     }
 
-    @GetMapping("/schedule/add/confirm")
-    public String addScheduleFormConfirm(Model model, @ModelAttribute ScheduleDto scheduleDto) {
-        Schedule schedule = new Schedule(
-                scheduleDto.getId(),
-                scheduleDto.getDate(),
-                SubjectEnum.valueOf(scheduleDto.getSubjectName()),
-                new SchoolClass(),
-                new Teacher()
-        );
+    @PostMapping("/schedule/add/confirm")
+    public String addScheduleFormConfirm(@ModelAttribute ScheduleDto scheduleDto) {
+        Schedule schedule = new Schedule();
+        schedule.setDate(scheduleDto.getDate());
+        schedule.setSubject(SubjectEnum.valueOf(scheduleDto.getSubjectName()));
+        schedule.setSchoolClass(schoolClassService.getSchoolClassById(Integer.parseInt(scheduleDto.getClassName())));
+        schedule.setTeacher(teacherService.getTeacherById(scheduleDto.getTeacherId()));
 
-        return "admin/schedule_add";
+        scheduleService.addSchedule(schedule);
+        return "redirect:/view/admin/schedule";
     }
 
     @GetMapping("/schedule/delete/{id}")
@@ -114,7 +122,13 @@ public class ViewControllerAdmin {
     }
 
     @PostMapping("/schedule/edit/{id}/confirm")
-    public String editScheduleFormConfirm(@PathVariable int id, @ModelAttribute Schedule schedule) {
+    public String editScheduleFormConfirm(@PathVariable int id, @ModelAttribute ScheduleDto scheduleDto) {
+        Schedule schedule = new Schedule();
+        schedule.setScheduleId(id);
+        schedule.setDate(scheduleDto.getDate());
+        schedule.setSubject(SubjectEnum.valueOf(scheduleDto.getSubjectName()));
+        schedule.setSchoolClass(schoolClassService.getSchoolClassById(Integer.parseInt(scheduleDto.getClassName())));
+        schedule.setTeacher(teacherService.getTeacherById(scheduleDto.getTeacherId()));
 
         scheduleService.updateSchedule(id, schedule);
         return "redirect:/view/admin/schedule";
