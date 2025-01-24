@@ -141,7 +141,11 @@ public class ViewControllerAdmin {
                         return Mono.just("/view/admin/attendanceMark");
                     }
 
-                    attendanceService.markAttendance(attendanceFormDto.getAttendanceMap(), userId);
+                    attendanceService.markAttendance(
+                            attendanceFormDto.getAttendanceMap(),
+                            attendanceFormDto.getGlobalSubject(),
+                            userId
+                    );
                     return Mono.just("redirect:/view/admin/attendance");
                 });
     }
