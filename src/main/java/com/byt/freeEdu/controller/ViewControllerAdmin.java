@@ -1,6 +1,7 @@
 package com.byt.freeEdu.controller;
 
 import com.byt.freeEdu.controller.userSesion.SessionService;
+import com.byt.freeEdu.mapper.GradeMapper;
 import com.byt.freeEdu.mapper.UserMapper;
 import com.byt.freeEdu.model.DTO.*;
 import com.byt.freeEdu.model.Schedule;
@@ -18,6 +19,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Controller
@@ -33,6 +35,7 @@ public class ViewControllerAdmin {
     private final AttendanceService attendanceService;
     private final RemarkService remarkService;
     private final TeacherService teacherService;
+    private final GradeMapper gradeMapper;
 
     public ViewControllerAdmin(
             SessionService sessionService,
@@ -44,7 +47,8 @@ public class ViewControllerAdmin {
             StudentService studentService,
             AttendanceService attendanceService,
             RemarkService remarkService,
-            TeacherService teacherService
+            TeacherService teacherService,
+            GradeMapper gradeMapper
     ) {
         this.sessionService = sessionService;
         this.userService = userService;
@@ -56,6 +60,7 @@ public class ViewControllerAdmin {
         this.attendanceService = attendanceService;
         this.remarkService = remarkService;
         this.teacherService = teacherService;
+        this.gradeMapper = gradeMapper;
     }
 
     @GetMapping("/mainpage")
@@ -138,6 +143,44 @@ public class ViewControllerAdmin {
     public String getGrades(Model model) {
         model.addAttribute("grades", gradeService.getAllGrades());
         return "admin/grade";
+    }
+
+    @GetMapping("/grade/add")
+    public String addGradeForm(Model model) {
+        model.addAttribute("grade", new GradeDto());
+        model.addAttribute("subjects", SubjectEnum.values());
+        model.addAttribute("teachers", teacherService.getAllTeachers());
+        model.addAttribute("students", studentService.getAllStudents());
+        return "admin/grade_add";
+    }
+
+    @PostMapping("/grade/add/confirm")
+    public String addGradeFormConfirm(@ModelAttribute GradeDto gradeDto) {
+        gradeDto.setGradeDate(LocalDate.now());
+        gradeService.saveGrade(gradeDto);
+        return "redirect:/view/admin/grade";
+    }
+
+    @GetMapping("/grade/edit/{id}")
+    public String editGradeForm(@PathVariable int id, Model model) {
+        GradeDto grade = gradeMapper.toDto(gradeService.getGradeById(id));
+        model.addAttribute("grade", grade);
+        model.addAttribute("subjects", SubjectEnum.values());
+        model.addAttribute("teachers", teacherService.getAllTeachers());
+        model.addAttribute("students", studentService.getAllStudents());
+        return "admin/grade_edit";
+    }
+
+    @PostMapping("/grade/edit/{id}/confirm")
+    public String editGradeFormConfirm(@PathVariable int id, @ModelAttribute GradeDto gradeDto) {
+        gradeService.updateGrade(id, gradeDto);
+        return "redirect:/view/admin/grade";
+    }
+
+    @PostMapping("/grade/delete/{id}")
+    public String deleteGrade(@PathVariable int id) {
+        gradeService.deleteGrade(id);
+        return "redirect:/view/admin/grade";
     }
 
     @GetMapping("/attendance")
