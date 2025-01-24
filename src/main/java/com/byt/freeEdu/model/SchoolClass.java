@@ -1,10 +1,13 @@
 package com.byt.freeEdu.model;
 
+import com.byt.freeEdu.model.DTO.StudentDto;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+
+import java.util.List;
 
 @Data
 @Entity
@@ -24,4 +27,7 @@ public class SchoolClass {
 
     @Transient
     private long studentCount;
+
+    @Transient
+    private List<StudentDto> students;
 }

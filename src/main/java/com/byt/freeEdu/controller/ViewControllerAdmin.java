@@ -183,6 +183,37 @@ public class ViewControllerAdmin {
         return "redirect:/view/admin/grade";
     }
 
+    @GetMapping("/schoolClass")
+    public String getSchoolClasses(Model model) {
+        List<SchoolClass> schoolClasses = schoolClassService.getAllSchoolClass();
+        for (SchoolClass schoolClass : schoolClasses) {
+            List<StudentDto> students = studentService.getStudentsBySchoolClassId(schoolClass.getSchoolClassId());
+            schoolClass.setStudents(students);
+        }
+        model.addAttribute("schoolClasses", schoolClasses);
+        model.addAttribute("newClass", new SchoolClass());
+        model.addAttribute("selectedClassId", 0); // Add this line
+        return "admin/schoolClass";
+    }
+
+    @PostMapping("/schoolClass/add")
+    public String addSchoolClass(@ModelAttribute SchoolClass schoolClass) {
+        schoolClassService.addSchoolClass(schoolClass.getName());
+        return "redirect:/view/admin/schoolClass";
+    }
+
+    @PostMapping("/schoolClass/delete/{id}")
+    public String deleteSchoolClass(@PathVariable int id) {
+        schoolClassService.deleteSchoolClassById(id);
+        return "redirect:/view/admin/schoolClass";
+    }
+
+    @PostMapping("/schoolClass/changeStudentClass/{studentId}/{classId}")
+    public String changeStudentClass(@PathVariable("studentId") int studentId, @PathVariable("classId") int classId) {
+        studentService.changeStudentClass(studentId, schoolClassService.getSchoolClassById(classId));
+        return "redirect:/view/admin/schoolClass";
+    }
+
     @GetMapping("/attendance")
     public String attendanceSelect(Model model) {
         List<SchoolClass> schoolClasses = schoolClassService.getAllClassesWithStudentCount();
