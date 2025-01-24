@@ -15,7 +15,6 @@ import com.byt.freeEdu.service.users.TeacherService;
 import com.byt.freeEdu.service.users.UserService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
@@ -215,56 +214,81 @@ public class ViewControllerAdmin {
     }
 
     @GetMapping("/attendance")
-    public String attendanceSelect(Model model) {
-        List<SchoolClass> schoolClasses = schoolClassService.getAllClassesWithStudentCount();
-        model.addAttribute("schoolClasses", schoolClasses);
-        return "admin/attendanceSelect";
+    public String getAttendance(Model model) {
+        List<AttendanceDto> attendances = attendanceService.getAllAttendancesAdmin();
 
+        model.addAttribute("attendances", attendances);
+
+        return "admin/attendance";
     }
 
-    @GetMapping("/attendance/{classId}")
-    public String markAttendance(@PathVariable int classId, Model model) {
-        SchoolClass schoolClass = schoolClassService.getSchoolClassById(classId);
-        if (schoolClass == null) {
-            model.addAttribute("errorMessage", "Nie znaleziono klasy o podanym ID.");
-            return "admin/attendanceMark";
+    @GetMapping("/attendance/edit/{id}")
+    public String editAttendanceForm(@PathVariable("id") int attendanceId, Model model) {
+        AttendanceDto attendance = attendanceService.getAttendanceByIdAdmin(attendanceId);
+        if (attendance == null) {
+            model.addAttribute("errorMessage", "Nie znaleziono obecności o podanym ID.");
+            return "admin/attendance";
         }
 
-        List<StudentDto> students = studentService.getStudentsBySchoolClassId(classId);
-        if (students.isEmpty()) {
-            model.addAttribute("errorMessage", "Brak uczniów w wybranej klasie.");
-            return "admin/attendanceMark";
-        }
+        model.addAttribute("attendance", attendance);
 
-        model.addAttribute("schoolClass", schoolClass);
-        model.addAttribute("students", students);
-        model.addAttribute("attendanceForm", new AttendanceFormDto()); // Dodajemy DTO
-        return "admin/attendanceMark";
+        return "admin/attendance_edit";
     }
 
-    @PostMapping("/attendance/mark")
-    public Mono<String> saveAttendance(@ModelAttribute AttendanceFormDto attendanceFormDto, Model model) {
-        return sessionService.getUserId()
-                .flatMap(userId -> {
-                    if (attendanceFormDto.getAttendanceMap().isEmpty()) {
-                        model.addAttribute("errorMessage", "Nie zaznaczono żadnej obecności.");
-                        return Mono.just("/view/admin/attendanceMark");
-                    }
+    @PostMapping("/attendance/edit/{id}")
+    public String editAttendance(@PathVariable("id") int attendanceId, @ModelAttribute AttendanceDto attendanceDto) {
+        attendanceService.updateAttendanceAdmin(attendanceId, attendanceDto);
 
-                    attendanceService.markAttendance(
-                            attendanceFormDto.getAttendanceMap(),
-                            attendanceFormDto.getGlobalSubject(),
-                            userId
-                    );
-                    return Mono.just("redirect:/view/admin/attendance");
-                });
+        return "redirect:/view/admin/attendance";
+    }
+
+    @PostMapping("/attendance/delete/{id}")
+    public String deleteAttendance(@PathVariable("id") int attendanceId, Model model) {
+        try {
+            attendanceService.deleteAttendance(attendanceId);
+            model.addAttribute("successMessage", "Obecność została usunięta.");
+        } catch (Exception e) {
+            model.addAttribute("errorMessage", "Nie udało się usunąć obecności: " + e.getMessage());
+        }
+        return "redirect:/view/admin/attendance";
     }
 
     @GetMapping("/remark")
     public Mono<String> getRemarksTeacher(Model model) {
-        model.addAttribute("remarks",  remarkService.getAllRemarks());
+        model.addAttribute("remarks", remarkService.getAllRemarks());
 
         return Mono.just("admin/remark");
+    }
+
+    @PostMapping("/deleteRemark/{id}")
+    public String deleteRemark(@PathVariable("id") int remarkId, Model model) {
+        try {
+            remarkService.deleteRemark(remarkId);
+            model.addAttribute("successMessage", "Uwagi zostały usunięte.");
+        } catch (Exception e) {
+            model.addAttribute("errorMessage", "Nie udało się usunąć uwagi: " + e.getMessage());
+        }
+        return "redirect:/view/admin/remark";
+    }
+
+    @GetMapping("/editRemark/{remarkId}")
+    public String editRemarkForm(@PathVariable int remarkId, Model model) {
+        RemarkDto remarkDto = remarkService.getAdminRemarkById(remarkId);
+        if (remarkDto == null) {
+            model.addAttribute("errorMessage", "Nie znaleziono uwagi o podanym ID.");
+            return "admin/remark";
+        }
+
+        model.addAttribute("remark", remarkDto);
+
+        return "admin/remark_edit";
+    }
+
+    @PostMapping("/editRemark/{remarkId}")
+    public String editRemark(@PathVariable int remarkId, @ModelAttribute RemarkDto remarkDto) {
+        remarkService.updateRemark(remarkId, remarkDto);
+
+        return "redirect:/view/admin/remark";
     }
 
     @GetMapping("/user_management")
