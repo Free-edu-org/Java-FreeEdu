@@ -69,11 +69,21 @@ public class UserService {
         User existingUser = userRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("User not found with ID: " + id));
 
-        existingUser.setUsername(updatedUser.getUsername());
-        existingUser.setFirstname(updatedUser.getFirstname());
-        existingUser.setLastname(updatedUser.getLastname());
-        existingUser.setEmail(updatedUser.getEmail());
-        existingUser.setPassword(updatedUser.getPassword());
+        if (updatedUser.getUsername() != null && !updatedUser.getUsername().trim().isEmpty()) {
+            existingUser.setUsername(updatedUser.getUsername());
+        }
+        if (updatedUser.getFirstname() != null && !updatedUser.getFirstname().trim().isEmpty()) {
+            existingUser.setFirstname(updatedUser.getFirstname());
+        }
+        if (updatedUser.getLastname() != null && !updatedUser.getLastname().trim().isEmpty()) {
+            existingUser.setLastname(updatedUser.getLastname());
+        }
+        if (updatedUser.getEmail() != null && !updatedUser.getEmail().trim().isEmpty()) {
+            existingUser.setEmail(updatedUser.getEmail());
+        }
+        if (updatedUser.getPassword() != null && !updatedUser.getPassword().trim().isEmpty()) {
+            existingUser.setPassword(updatedUser.getPassword());
+        }
         existingUser.setUser_role(updatedUser.getUser_role());
 
         return userRepository.save(existingUser);

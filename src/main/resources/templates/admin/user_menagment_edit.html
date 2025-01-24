@@ -35,20 +35,33 @@
         <!-- Content -->
         <section class="col-md-9">
             <div class="card bg-light text-dark p-4">
-                <h3>Witaj, <span th:text="${user.firstname}">Imię</span>!</h3>
-                <p class="lead">Tutaj znajdziesz wszystkie potrzebne informacje i funkcje aplikacji.</p>
+                <h3>Edycja użytkownika</h3>
+                <p class="lead">Możesz edytować dane użytkownika</p>
                 <hr>
-                <h4>Twój Profil</h4>
-                <dl class="row">
-                    <dt class="col-sm-4">Imię i nazwisko:</dt>
-                    <dd class="col-sm-8" th:text="${user.firstname + ' ' + user.lastname}">Jan Kowalski</dd>
-
-                    <dt class="col-sm-4">Email:</dt>
-                    <dd class="col-sm-8" th:text="${user.email}">jan.kowalski@example.com</dd>
-
-                    <dt class="col-sm-4">Rola:</dt>
-                    <dd class="col-sm-8" th:text="${user.role}">Nauczyciel</dd>
-                </dl>
+                <form th:action="@{'/view/admin/user_management/edit/' + ${user.userId} + '/confirm'}" th:object="${user}" method="post">
+                    <div class="mb-3">
+                        <label for="firstname" class="form-label">Imie</label>
+                        <input type="text" class="form-control" id="firstname" th:field="*{firstname}">
+                    </div>
+                    <div class="mb-3">
+                        <label for="lastname" class="form-label">Nazwisko</label>
+                        <input type="text" class="form-control" id="lastname" th:field="*{lastname}">
+                    </div>
+                    <div class="mb-3">
+                        <label for="email" class="form-label">E-mail</label>
+                        <input type="email" class="form-control" id="email" th:field="*{email}">
+                    </div>
+                    <div class="mb-3">
+                        <label for="user_role" class="form-label">Rola</label>
+                        <select class="form-control" id="user_role" th:field="*{user_role}">
+                            <option value="ADMIN">Admin</option>
+                            <option value="STUDENT">Student</option>
+                            <option value="TEACHER">Teacher</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Zatwierdź</button>
+                    <a href="/view/admin/user_management" class="btn btn-secondary">Wróć</a>
+                </form>
             </div>
         </section>
     </div>
@@ -56,9 +69,8 @@
 
 <!-- Footer -->
 <footer class="bg-primary text-white text-center py-3">
-    <p class="mb-0">&copy; 2025 FreeEdu. Udostępnione na licencji <a href="https://www.gnu.org/licenses/gpl-3.0.html" class="text-white" target="_blank">GNU GPL v3</a>.</p>
+    <p class="mb-0">&copy; 2025 FreeEdu. Wszelkie prawa zastrzeżone.</p>
 </footer>
-
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>

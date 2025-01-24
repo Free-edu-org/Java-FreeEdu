@@ -3,6 +3,7 @@ package com.byt.freeEdu.service.users;
 import com.byt.freeEdu.mapper.RemarkMapper;
 import com.byt.freeEdu.model.DTO.RemarkDto;
 import com.byt.freeEdu.model.DTO.StudentDto;
+import com.byt.freeEdu.model.SchoolClass;
 import com.byt.freeEdu.model.users.Student;
 import com.byt.freeEdu.model.users.User;
 import com.byt.freeEdu.repository.RemarkRepository;
@@ -88,5 +89,12 @@ public class StudentService {
 
     public void deleteStudent(int id) {
         studentRepository.deleteById(id);
+    }
+
+    public void changeStudentClass(int studentId, SchoolClass schoolClass) {
+        Student student = studentRepository.findById(studentId)
+                .orElseThrow(() -> new EntityNotFoundException("Student not found with ID: " + studentId));
+        student.setSchoolClass(schoolClass);
+        studentRepository.save(student);
     }
 }

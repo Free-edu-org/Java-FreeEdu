@@ -6,6 +6,7 @@ import java.time.LocalDate;
 
 @Data
 public class ScheduleDto {
+    private int id;
     private LocalDate date;
     private String subjectName;
     private String className;
