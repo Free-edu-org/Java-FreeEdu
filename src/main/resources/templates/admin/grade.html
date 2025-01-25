@@ -33,6 +33,9 @@
         <section class="col-md-9">
             <div class="card bg-light text-dark p-4">
                 <h3 class="text-center">Lista Ocen</h3>
+                <div class="mb-3">
+                    <input type="text" class="form-control" id="filterInput" placeholder="Wyszukaj uwagi...">
+                </div>
                 <table class="table table-striped table-dark mt-4">
                 <thead>
                 <tr>
@@ -73,6 +76,17 @@
                                                                      class="text-white" target="_blank">GNU GPL v3</a>.
     </p>
 </footer>
+
+<script>
+    document.getElementById('filterInput').addEventListener('keyup', function() {
+        let filter = this.value.toLowerCase();
+        let rows = document.querySelectorAll('.table tbody tr');
+        rows.forEach(row => {
+            let text = row.textContent.toLowerCase();
+            row.style.display = text.includes(filter) ? '' : 'none';
+        });
+    });
+</script>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>

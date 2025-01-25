@@ -64,7 +64,7 @@
                         <td th:text="${attendance.teacherFirstName + ' ' + attendance.teacherLastName}"></td>
                         <td th:text="${attendance.subjectName}"></td>
                         <td th:text="${attendance.attendanceDate}"></td>
-                        <td th:text="${attendance.status}"></td>
+                        <td th:text="${attendance.attendance_status}"></td>
                         <td>
                             <a th:href="@{/view/admin/attendance/edit/{id}(id=${attendance.id})}" class="btn btn-primary btn-sm">Edytuj</a>
                             <form th:action="@{/view/admin/attendance/delete/{id}(id=${attendance.id})}" method="post" style="display:inline;">
