@@ -1,5 +1,6 @@
 package com.byt.freeEdu.service.users;
 
+import com.byt.freeEdu.model.DTO.UserDto;
 import com.byt.freeEdu.model.users.Teacher;
 import com.byt.freeEdu.repository.TeacherRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -40,5 +41,9 @@ public class TeacherService {
 
     public void deleteTeacher(int id) {
         teacherRepository.deleteById(id);
+    }
+
+    public void addUserToTeacher(int id) {
+        teacherRepository.addUserToTeachers(id);
     }
 }

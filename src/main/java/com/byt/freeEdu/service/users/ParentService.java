@@ -1,5 +1,6 @@
 package com.byt.freeEdu.service.users;
 
+import com.byt.freeEdu.model.DTO.UserDto;
 import com.byt.freeEdu.model.users.Parent;
 import com.byt.freeEdu.model.users.Student;
 import com.byt.freeEdu.repository.ParentRepository;
@@ -56,5 +57,9 @@ public class ParentService {
     // Pobierz uczniów powiązanych z rodzicem
     public List<Student> getStudentsByParentId(int parentId) {
         return studentRepository.findByParentUserId(parentId); // Użyj poprawnej metody
+    }
+
+    public void addUserToParent(int id, UserDto user) {
+        parentRepository.addUserToParents(id, user.getContactInfo());
     }
 }

@@ -10,9 +10,7 @@ import com.byt.freeEdu.model.enums.SubjectEnum;
 import com.byt.freeEdu.model.users.Teacher;
 import com.byt.freeEdu.model.users.User;
 import com.byt.freeEdu.service.*;
-import com.byt.freeEdu.service.users.StudentService;
-import com.byt.freeEdu.service.users.TeacherService;
-import com.byt.freeEdu.service.users.UserService;
+import com.byt.freeEdu.service.users.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -35,6 +33,8 @@ public class ViewControllerAdmin {
     private final RemarkService remarkService;
     private final TeacherService teacherService;
     private final GradeMapper gradeMapper;
+    private final ParentService parentService;
+    private final AdminService adminService;
 
     public ViewControllerAdmin(
             SessionService sessionService,
@@ -47,7 +47,9 @@ public class ViewControllerAdmin {
             AttendanceService attendanceService,
             RemarkService remarkService,
             TeacherService teacherService,
-            GradeMapper gradeMapper
+            GradeMapper gradeMapper,
+            ParentService parentService,
+            AdminService adminService
     ) {
         this.sessionService = sessionService;
         this.userService = userService;
@@ -60,6 +62,8 @@ public class ViewControllerAdmin {
         this.remarkService = remarkService;
         this.teacherService = teacherService;
         this.gradeMapper = gradeMapper;
+        this.parentService = parentService;
+        this.adminService = adminService;
     }
 
     @GetMapping("/mainpage")
@@ -311,14 +315,23 @@ public class ViewControllerAdmin {
 
     @GetMapping("/user_management/edit/{id}")
     public String editUserForm(@PathVariable int id, Model model) {
-        User user = userService.getUserById(id);
+        UserDto user = userMapper.toDto(userService.getUserById(id));
         model.addAttribute("user", user);
+        model.addAttribute("schoolClasses", schoolClassService.getAllSchoolClass());
+        model.addAttribute("parents", parentService.getAllParents());
+
         return "admin/user_menagment_edit";
     }
 
     @PostMapping("/user_management/edit/{id}/confirm")
-    public String editUserFormConfirm(@PathVariable int id, @ModelAttribute User user) {
+    public String editUserFormConfirm(@PathVariable int id, @ModelAttribute UserDto user) {
         userService.updateUser(id, user);
+        switch (user.getRole()) {
+            case "STUDENT" -> studentService.addUserToStudents(id, user);
+            case "TEACHER" -> teacherService.addUserToTeacher(id);
+            case "PARENT" -> parentService.addUserToParent(id, user);
+            case "ADMIN" -> adminService.addUserToAdmin(id);
+        }
         return "redirect:/view/admin/user_management";
     }
 }

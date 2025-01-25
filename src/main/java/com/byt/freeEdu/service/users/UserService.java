@@ -1,5 +1,6 @@
 package com.byt.freeEdu.service.users;
 
+import com.byt.freeEdu.model.DTO.UserDto;
 import com.byt.freeEdu.model.enums.UserRole;
 import com.byt.freeEdu.model.users.User;
 import com.byt.freeEdu.repository.UserRepository;
@@ -65,7 +66,7 @@ public class UserService {
     }
 
     @Transactional
-    public User updateUser(int id, User updatedUser) {
+    public User updateUser(int id, UserDto updatedUser) {
         User existingUser = userRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("User not found with ID: " + id));
 
@@ -81,10 +82,7 @@ public class UserService {
         if (updatedUser.getEmail() != null && !updatedUser.getEmail().trim().isEmpty()) {
             existingUser.setEmail(updatedUser.getEmail());
         }
-        if (updatedUser.getPassword() != null && !updatedUser.getPassword().trim().isEmpty()) {
-            existingUser.setPassword(updatedUser.getPassword());
-        }
-        existingUser.setUser_role(updatedUser.getUser_role());
+        existingUser.setUser_role(UserRole.valueOf(updatedUser.getRole()));
 
         return userRepository.save(existingUser);
     }
