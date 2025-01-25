@@ -20,6 +20,10 @@ public interface StudentRepository extends JpaRepository<Student, Integer> {
 
     @Modifying
     @Transactional
-    @Query(value = "INSERT INTO FreeEduDB.student (id, class_id, parent_id) VALUES (:userId, :classId, :parentId)", nativeQuery = true)
+    @Query(value =
+            "DELETE FROM admin WHERE id = :id; " +
+            "DELETE FROM parent WHERE id = :id; " +
+            "DELETE FROM teacher WHERE id = :id; " +
+            "INSERT INTO FreeEduDB.student (id, class_id, parent_id) VALUES (:userId, :classId, :parentId)", nativeQuery = true)
     void addUserToStudents(int userId, int classId, int parentId);
 }
