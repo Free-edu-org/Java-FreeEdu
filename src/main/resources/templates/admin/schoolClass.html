@@ -46,11 +46,8 @@
                             <ul>
                                 <li th:each="student : ${class.students}">
                                     <span th:text="${student.firstName + ' ' + student.lastName}">Jan Kowalski</span>
-                                    <form th:action="@{'/view/admin/schoolClass/changeStudentClass/' + ${student.id} + '/' + ${selectedClassId}}" method="post" style="display:inline;">
-                                        <select name="classId" th:field="*{selectedClassId}">
-                                            <option th:each="schoolClass : ${schoolClasses}" th:value="${schoolClass.schoolClassId}" th:text="${schoolClass.name}"></option>
-                                        </select>
-                                        <button type="submit" class="btn btn-primary btn-sm">Zmień</button>
+                                    <form th:action="@{'/view/admin/schoolClass/changeStudentClass/' + ${student.id}}" method="get" style="display:inline;">
+                                        <button type="submit" class="btn btn-primary btn-sm">Edytuj</button>
                                     </form>
                                 </li>
                             </ul>

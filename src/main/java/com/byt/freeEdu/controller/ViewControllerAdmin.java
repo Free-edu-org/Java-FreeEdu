@@ -207,10 +207,18 @@ public class ViewControllerAdmin {
         return "redirect:/view/admin/schoolClass";
     }
 
-    @PostMapping("/schoolClass/changeStudentClass/{studentId}/{classId}")
-    public String changeStudentClass(@PathVariable("studentId") int studentId, @PathVariable("classId") int classId) {
-        studentService.changeStudentClass(studentId, schoolClassService.getSchoolClassById(classId));
-        return "redirect:/view/admin/schoolClass";
+    @GetMapping("/schoolClass/changeStudentClassForm/{studentId}")
+    public String changeStudentClassForm(Model model, @PathVariable("studentId") int studentId) {
+        model.addAttribute("studentId", studentService.getStudentById(studentId));
+        model.addAttribute("schoolClasses", schoolClassService.getAllSchoolClass());
+        return "/view/admin/schoolClass_changeStudentClassForm.html";
+    }
+
+    @GetMapping("/schoolClass/changeStudentClassForm/{studentId}/{schoolClassId}")
+    public String changeStudentClassFormConfirm(Model model, @PathVariable("studentId") int studentId) {
+        model.addAttribute("studentId", studentService.getStudentById(studentId));
+        model.addAttribute("schoolClasses", schoolClassService.getAllSchoolClass());
+        return "/view/admin/schoolClass_changeStudentClassForm.html";
     }
 
     @GetMapping("/attendance")
