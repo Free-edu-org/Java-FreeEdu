@@ -191,7 +191,6 @@ public class ViewControllerAdmin {
         }
         model.addAttribute("schoolClasses", schoolClasses);
         model.addAttribute("newClass", new SchoolClass());
-        model.addAttribute("selectedClassId", 0); // Add this line
         return "admin/schoolClass";
     }
 
@@ -209,16 +208,15 @@ public class ViewControllerAdmin {
 
     @GetMapping("/schoolClass/changeStudentClassForm/{studentId}")
     public String changeStudentClassForm(Model model, @PathVariable("studentId") int studentId) {
-        model.addAttribute("studentId", studentService.getStudentById(studentId));
+        model.addAttribute("student", studentService.getStudentById(studentId));
         model.addAttribute("schoolClasses", schoolClassService.getAllSchoolClass());
-        return "/view/admin/schoolClass_changeStudentClassForm.html";
+        return "admin/schoolClass_changeStudentClassForm";
     }
 
-    @GetMapping("/schoolClass/changeStudentClassForm/{studentId}/{schoolClassId}")
-    public String changeStudentClassFormConfirm(Model model, @PathVariable("studentId") int studentId) {
-        model.addAttribute("studentId", studentService.getStudentById(studentId));
-        model.addAttribute("schoolClasses", schoolClassService.getAllSchoolClass());
-        return "/view/admin/schoolClass_changeStudentClassForm.html";
+    @PostMapping("/schoolClass/changeStudentClassForm/{studentId}/{schoolClassId}")
+    public String changeStudentClassFormConfirm(@PathVariable("studentId") int studentId, @PathVariable("schoolClassId") int schoolClassId) {
+        studentService.changeStudentClass(studentId, schoolClassService.getSchoolClassById(schoolClassId));
+        return "redirect:/view/admin/schoolClass";
     }
 
     @GetMapping("/attendance")
