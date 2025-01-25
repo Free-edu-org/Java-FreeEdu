@@ -6,7 +6,6 @@ import com.byt.freeEdu.model.enums.SubjectEnum;
 import com.byt.freeEdu.repository.AttendanceRepository;
 import com.byt.freeEdu.service.users.StudentService;
 import com.byt.freeEdu.service.users.TeacherService;
-import com.byt.freeEdu.service.users.UserService;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 
@@ -17,19 +16,17 @@ import java.util.Map;
 @Service
 public class AttendanceService {
     private final AttendanceRepository attendanceRepository;
-    private final UserService userService;
     private final StudentService studentService;
     private final TeacherService teacherService;
 
-    public List<Attendance> getAttendancesForStudent(int studentId) {
-        return attendanceRepository.findByStudent_UserId(studentId);
-    }
-
-    public AttendanceService(AttendanceRepository attendanceRepository, UserService userService, StudentService studentService, TeacherService teacherService) {
+    public AttendanceService(AttendanceRepository attendanceRepository, StudentService studentService, TeacherService teacherService) {
         this.attendanceRepository = attendanceRepository;
-        this.userService = userService;
         this.studentService = studentService;
         this.teacherService = teacherService;
+    }
+
+    public List<Attendance> getAttendancesForStudent(int studentId) {
+        return attendanceRepository.findByStudent_UserId(studentId);
     }
 
     public void saveAttendance(Attendance attendance) {

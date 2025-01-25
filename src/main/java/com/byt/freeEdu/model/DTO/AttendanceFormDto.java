@@ -5,6 +5,7 @@ import com.byt.freeEdu.model.enums.AttendanceEnum;
 import com.byt.freeEdu.model.enums.SubjectEnum;
 import lombok.Data;
 
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -13,6 +14,7 @@ public class AttendanceFormDto {
 
     private Map<Integer, AttendanceEnum> attendanceMap = new HashMap<>();
     private SubjectEnum globalSubject;
+    private LocalDate attendanceDate; // Dodane pole
 
     public Map<Integer, AttendanceEnum> getAttendanceMap() {
         return attendanceMap;
@@ -36,11 +38,21 @@ public class AttendanceFormDto {
         this.globalSubject = globalSubject;
     }
 
+    public LocalDate getAttendanceDate() {
+        return attendanceDate;
+    }
+
+    public void setAttendanceDate(LocalDate attendanceDate) {
+        this.attendanceDate = attendanceDate;
+    }
+
     public static AttendanceFormDto toDto(Attendance attendance) {
         AttendanceFormDto dto = new AttendanceFormDto();
         Map<Integer, AttendanceEnum> attendanceMap = new HashMap<>();
         attendanceMap.put(attendance.getId(), attendance.getStatus());
         dto.setAttendanceMap(attendanceMap);
+        dto.setGlobalSubject(attendance.getSubject());
+        dto.setAttendanceDate(attendance.getAttendanceDate()); // Ustawienie daty
         return dto;
     }
 }
