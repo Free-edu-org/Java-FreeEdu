@@ -5,13 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="../../static/styles.scss">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
-    <title>Uwagi</title>
+    <title>Frekwencja - Administrator</title>
 </head>
 <body class="bg-dark text-white">
 
 <header class="container-fluid bg-primary py-3">
     <div class="container d-flex justify-content-between align-items-center">
-        <h2 class="text-white">FreeEdu - Uwagi</h2>
+        <h2 class="text-white">FreeEdu - Frekwencja</h2>
         <button onclick="location.href='/view/login'" class="btn btn-danger">Wyloguj się</button>
     </div>
 </header>
@@ -32,28 +32,38 @@
 
         <section class="col-md-9">
             <div class="card bg-light text-dark p-4">
-                <h3 class="text-center">Lista Uwagi</h3>
-                <table class="table table-striped table-dark mt-4">
+                <h3 class="text-center">Frekwencja</h3>
+                <hr>
+
+                <div class="mb-3">
+                    <label for="sort" class="form-label">Sortuj po:</label>
+                    <select id="sort" class="form-select w-auto d-inline-block">
+                        <option value="date_asc">Data rosnąco</option>
+                        <option value="date_desc">Data malejąco</option>
+                    </select>
+                </div>
+
+                <table id="attendanceTable" class="table table-striped table-dark table-hover">
                     <thead>
                     <tr>
                         <th>Uczeń</th>
                         <th>Nauczyciel</th>
-                        <th>Treść</th>
+                        <th>Przedmiot</th>
                         <th>Data</th>
+                        <th>Status</th>
                         <th>Akcje</th>
                     </tr>
                     </thead>
                     <tbody>
-                    <tr th:each="remark : ${remarks}">
-                        <td th:text="${remark.studentFirstName + ' ' + remark.studentLastName}">Jan Kowalski</td>
-                        <td th:text="${remark.teacherFirstName + ' ' + remark.teacherLastName}">Anna Nowak</td>
-                        <td th:text="${remark.content}">Nieprzygotowanie do zajęć</td>
-                        <td th:text="${remark.addDate}">01-01-2025</td>
+                    <tr th:each="attendance : ${attendances}">
+                        <td th:text="${attendance.studentFirstName + ' ' + attendance.studentLastName}"></td>
+                        <td th:text="${attendance.teacherFirstName + ' ' + attendance.teacherLastName}"></td>
+                        <td th:text="${attendance.subjectName}"></td>
+                        <td th:text="${attendance.attendanceDate}"></td>
+                        <td th:text="${attendance.status}"></td>
                         <td>
-                            <a th:href="@{/view/admin/editRemark/{id}(id=${remark.remarkId})}"
-                               class="btn btn-primary btn-sm">Edytuj</a>
-                            <form th:action="@{/view/admin/deleteRemark/{id}(id=${remark.remarkId})}" method="post"
-                                  style="display:inline;">
+                            <a th:href="@{/view/admin/attendance/edit/{id}(id=${attendance.id})}" class="btn btn-primary btn-sm">Edytuj</a>
+                            <form th:action="@{/view/admin/attendance/delete/{id}(id=${attendance.id})}" method="post" style="display:inline;">
                                 <button type="submit" class="btn btn-danger btn-sm">Usuń</button>
                             </form>
                         </td>
@@ -66,10 +76,29 @@
 </main>
 
 <footer class="bg-primary text-white text-center py-3">
-    <p class="mb-0">&copy; 2025 FreeEdu. Udostępnione na licencji <a href="https://www.gnu.org/licenses/gpl-3.0.html"
-                                                                     class="text-white" target="_blank">GNU GPL v3</a>.
-    </p>
+    <p class="mb-0">&copy; 2025 FreeEdu. Udostępnione na licencji <a href="https://www.gnu.org/licenses/gpl-3.0.html" class="text-white" target="_blank">GNU GPL v3</a>.</p>
 </footer>
+
+<script>
+    document.getElementById('sort').addEventListener('change', function () {
+        const sortValue = this.value;
+        const table = document.getElementById('attendanceTable').getElementsByTagName('tbody')[0];
+        const rows = Array.from(table.getElementsByTagName('tr'));
+
+        rows.sort((rowA, rowB) => {
+            const dateA = new Date(rowA.cells[3].textContent.trim());
+            const dateB = new Date(rowB.cells[3].textContent.trim());
+
+            if (sortValue === 'date_asc') {
+                return dateA - dateB;
+            } else {
+                return dateB - dateA;
+            }
+        });
+
+        rows.forEach(row => table.appendChild(row));
+    });
+</script>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>

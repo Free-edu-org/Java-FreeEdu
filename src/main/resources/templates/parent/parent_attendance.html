@@ -14,7 +14,7 @@
 </header>
 <body class="bg-dark text-white">
 <main class="container my-5">
-    <h2 class="text-center">Frekwencja dla <span th:text="${studentName}"></span></h2>
+    <h2 class="text-center">Frekwencja dla <span th:text="${studentName} ?: 'Brak danych'"></span></h2>
 
     <!-- Tabela frekwencji -->
     <table class="table table-striped table-dark table-hover">
@@ -28,10 +28,22 @@
         </thead>
         <tbody>
         <tr th:each="attendance : ${attendances}">
-            <td th:text="${attendance.attendanceDate}">01-01-1111</td>
-            <td th:text="${attendance.subject}">NaN</td>
-            <td th:text="${attendance.status}">NaN</td>
-            <td th:text="${attendance.teacherId}">NaN</td>
+            <!-- Data -->
+            <td th:text="${attendance.attendanceDate} ?: 'Brak daty'">01-01-1111</td>
+
+            <!-- Przedmiot (używamy subjectName z DTO) -->
+            <td th:text="${attendance.subjectName} ?: 'Brak przedmiotu'">NaN</td>
+
+            <!-- Status (używamy attendance_status z DTO) -->
+            <td th:text="${attendance.attendance_status} ?: 'Nieznany'">NaN</td>
+
+            <!-- Nauczyciel (łączymy imię i nazwisko) -->
+            <td th:text="${(attendance.teacherFirstName + ' ' + attendance.teacherLastName) ?: 'Brak danych'}">NaN</td>
+        </tr>
+
+        <!-- Komunikat jeśli brak frekwencji -->
+        <tr th:if="${attendances.isEmpty()}">
+            <td colspan="4" class="text-center">Brak danych o frekwencji</td>
         </tr>
         </tbody>
     </table>

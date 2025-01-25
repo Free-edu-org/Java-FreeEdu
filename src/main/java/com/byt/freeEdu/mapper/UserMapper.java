@@ -14,6 +14,9 @@ public interface UserMapper {
 
     @Mapping(target = "role", source = "user_role", qualifiedByName = "translateRole")
     @Mapping(target = "id", source = "userId")
+    @Mapping(target = "parentId", ignore = true)
+    @Mapping(target = "schoolClassId", ignore = true)
+    @Mapping(target = "contactInfo", ignore = true)
     UserDto toDto(User user);
 
     @Named("translateRole")

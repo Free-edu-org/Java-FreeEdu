@@ -6,13 +6,32 @@
     <link rel="stylesheet" href="../../static/styles.scss">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
     <title>Panel użytkownika</title>
+    <script>
+        function toggleOptions() {
+            const roleSelect = document.getElementById('user_role');
+            const studentOptions = document.getElementById('studentOptions');
+            const parentOptions = document.getElementById('parentOptions');
+
+            if (roleSelect.value === 'STUDENT') {
+                studentOptions.style.display = 'block';
+            } else {
+                studentOptions.style.display = 'none';
+            }
+
+            if (roleSelect.value === 'PARENT') {
+                parentOptions.style.display = 'block';
+            } else {
+                parentOptions.style.display = 'none';
+            }
+
+        }
+    </script>
 </head>
 <body class="bg-dark text-white">
 <!-- Navbar -->
 <header class="container-fluid bg-primary py-3">
     <div class="container d-flex justify-content-between align-items-center">
         <h2 class="text-white">FreeEdu-Panel użytkownika</h2>
-
         <button onclick="location.href='/view/login'" class="btn btn-danger">Wyloguj się</button>
     </div>
 </header>
@@ -38,7 +57,7 @@
                 <h3>Edycja użytkownika</h3>
                 <p class="lead">Możesz edytować dane użytkownika</p>
                 <hr>
-                <form th:action="@{'/view/admin/user_management/edit/' + ${user.userId} + '/confirm'}" th:object="${user}" method="post">
+                <form th:action="@{'/view/admin/user_management/edit/' + ${user.id} + '/confirm'}" th:object="${user}" method="post">
                     <div class="mb-3">
                         <label for="firstname" class="form-label">Imie</label>
                         <input type="text" class="form-control" id="firstname" th:field="*{firstname}">
@@ -53,11 +72,32 @@
                     </div>
                     <div class="mb-3">
                         <label for="user_role" class="form-label">Rola</label>
-                        <select class="form-control" id="user_role" th:field="*{user_role}">
+                        <select class="form-control" id="user_role" th:field="*{role}" onchange="toggleOptions()">
                             <option value="ADMIN">Admin</option>
                             <option value="STUDENT">Student</option>
                             <option value="TEACHER">Teacher</option>
+                            <option value="PARENT">Parent</option>
                         </select>
+                    </div>
+                    <div id="studentOptions" style="display: none;">
+                        <div class="mb-3">
+                            <label for="schoolClass" class="form-label">Klasa Szkolna</label>
+                            <select class="form-control" id="schoolClass" th:field="*{schoolClassId}">
+                                <option th:each="schoolClass : ${schoolClasses}" th:value="${schoolClass.schoolClassId}" th:text="${schoolClass.name}"></option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="parent" class="form-label">Rodzic</label>
+                            <select class="form-control" id="parent" th:field="*{parentId}">
+                                <option th:each="parent : ${parents}" th:value="${parent.userId}" th:text="${parent.firstname} + ' ' + ${parent.lastname}"></option>
+                            </select>
+                        </div>
+                    </div>
+                    <div id="parentOptions" style="display: none;">
+                        <div class="mb-3">
+                            <label for="contactInfo" class="form-label">Informacje Kontaktowe</label>
+                            <input class="form-control" id="contactInfo" th:field="*{contactInfo}">
+                        </div>
                     </div>
                     <button type="submit" class="btn btn-primary">Zatwierdź</button>
                     <a href="/view/admin/user_management" class="btn btn-secondary">Wróć</a>
@@ -74,12 +114,4 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
-
 </html>
-
-
-
-
-
-
-

@@ -48,9 +48,9 @@ public interface AttendanceMapper {
         attendanceDto.setAttendanceId(attendance.getAttendanceId());
         attendanceDto.setStudentId(attendance.getStudent().getUserId());
         attendanceDto.setTeacherId(attendance.getTeacher().getUserId());
-        attendanceDto.setAttendanceDate(attendance.getAttendanceDate());
-        attendanceDto.setStatus(attendance.getStatus());
-        attendanceDto.setSubject(attendance.getSubject());
+        attendanceDto.setAttendanceDate(attendance.getAttendanceDate().toString()); // Konwersja LocalDate na String
+        attendanceDto.setAttendance_status(attendance.getStatus().name()); // Konwersja AttendanceEnum na String
+        attendanceDto.setSubjectEnum(attendance.getSubject());
 
         return attendanceDto;
     }

@@ -10,12 +10,9 @@ import com.byt.freeEdu.model.enums.SubjectEnum;
 import com.byt.freeEdu.model.users.Teacher;
 import com.byt.freeEdu.model.users.User;
 import com.byt.freeEdu.service.*;
-import com.byt.freeEdu.service.users.StudentService;
-import com.byt.freeEdu.service.users.TeacherService;
-import com.byt.freeEdu.service.users.UserService;
+import com.byt.freeEdu.service.users.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
@@ -36,6 +33,8 @@ public class ViewControllerAdmin {
     private final RemarkService remarkService;
     private final TeacherService teacherService;
     private final GradeMapper gradeMapper;
+    private final ParentService parentService;
+    private final AdminService adminService;
 
     public ViewControllerAdmin(
             SessionService sessionService,
@@ -48,7 +47,9 @@ public class ViewControllerAdmin {
             AttendanceService attendanceService,
             RemarkService remarkService,
             TeacherService teacherService,
-            GradeMapper gradeMapper
+            GradeMapper gradeMapper,
+            ParentService parentService,
+            AdminService adminService
     ) {
         this.sessionService = sessionService;
         this.userService = userService;
@@ -61,6 +62,8 @@ public class ViewControllerAdmin {
         this.remarkService = remarkService;
         this.teacherService = teacherService;
         this.gradeMapper = gradeMapper;
+        this.parentService = parentService;
+        this.adminService = adminService;
     }
 
     @GetMapping("/mainpage")
@@ -192,7 +195,6 @@ public class ViewControllerAdmin {
         }
         model.addAttribute("schoolClasses", schoolClasses);
         model.addAttribute("newClass", new SchoolClass());
-        model.addAttribute("selectedClassId", 0); // Add this line
         return "admin/schoolClass";
     }
 
@@ -208,63 +210,95 @@ public class ViewControllerAdmin {
         return "redirect:/view/admin/schoolClass";
     }
 
-    @PostMapping("/schoolClass/changeStudentClass/{studentId}/{classId}")
-    public String changeStudentClass(@PathVariable("studentId") int studentId, @PathVariable("classId") int classId) {
-        studentService.changeStudentClass(studentId, schoolClassService.getSchoolClassById(classId));
+    @GetMapping("/schoolClass/changeStudentClassForm/{studentId}")
+    public String changeStudentClassForm(Model model, @PathVariable("studentId") int studentId) {
+        model.addAttribute("student", studentService.getStudentById(studentId));
+        model.addAttribute("schoolClasses", schoolClassService.getAllSchoolClass());
+        return "admin/schoolClass_changeStudentClassForm";
+    }
+
+    @PostMapping("/schoolClass/changeStudentClassForm/{studentId}/{schoolClassId}")
+    public String changeStudentClassFormConfirm(@PathVariable("studentId") int studentId, @PathVariable("schoolClassId") int schoolClassId) {
+        studentService.changeStudentClass(studentId, schoolClassService.getSchoolClassById(schoolClassId));
         return "redirect:/view/admin/schoolClass";
     }
 
     @GetMapping("/attendance")
-    public String attendanceSelect(Model model) {
-        List<SchoolClass> schoolClasses = schoolClassService.getAllClassesWithStudentCount();
-        model.addAttribute("schoolClasses", schoolClasses);
-        return "admin/attendanceSelect";
+    public String getAttendance(Model model) {
+        List<AttendanceDto> attendances = attendanceService.getAllAttendancesAdmin();
 
+        model.addAttribute("attendances", attendances);
+
+        return "admin/attendance";
     }
 
-    @GetMapping("/attendance/{classId}")
-    public String markAttendance(@PathVariable int classId, Model model) {
-        SchoolClass schoolClass = schoolClassService.getSchoolClassById(classId);
-        if (schoolClass == null) {
-            model.addAttribute("errorMessage", "Nie znaleziono klasy o podanym ID.");
-            return "admin/attendanceMark";
+    @GetMapping("/attendance/edit/{id}")
+    public String editAttendanceForm(@PathVariable("id") int attendanceId, Model model) {
+        AttendanceDto attendance = attendanceService.getAttendanceByIdAdmin(attendanceId);
+        if (attendance == null) {
+            model.addAttribute("errorMessage", "Nie znaleziono obecności o podanym ID.");
+            return "admin/attendance";
         }
 
-        List<StudentDto> students = studentService.getStudentsBySchoolClassId(classId);
-        if (students.isEmpty()) {
-            model.addAttribute("errorMessage", "Brak uczniów w wybranej klasie.");
-            return "admin/attendanceMark";
-        }
+        model.addAttribute("attendance", attendance);
 
-        model.addAttribute("schoolClass", schoolClass);
-        model.addAttribute("students", students);
-        model.addAttribute("attendanceForm", new AttendanceFormDto()); // Dodajemy DTO
-        return "admin/attendanceMark";
+        return "admin/attendance_edit";
     }
 
-    @PostMapping("/attendance/mark")
-    public Mono<String> saveAttendance(@ModelAttribute AttendanceFormDto attendanceFormDto, Model model) {
-        return sessionService.getUserId()
-                .flatMap(userId -> {
-                    if (attendanceFormDto.getAttendanceMap().isEmpty()) {
-                        model.addAttribute("errorMessage", "Nie zaznaczono żadnej obecności.");
-                        return Mono.just("/view/admin/attendanceMark");
-                    }
+    @PostMapping("/attendance/edit/{id}")
+    public String editAttendance(@PathVariable("id") int attendanceId, @ModelAttribute AttendanceDto attendanceDto) {
+        attendanceService.updateAttendanceAdmin(attendanceId, attendanceDto);
 
-                    attendanceService.markAttendance(
-                            attendanceFormDto.getAttendanceMap(),
-                            attendanceFormDto.getGlobalSubject(),
-                            userId
-                    );
-                    return Mono.just("redirect:/view/admin/attendance");
-                });
+        return "redirect:/view/admin/attendance";
+    }
+
+    @PostMapping("/attendance/delete/{id}")
+    public String deleteAttendance(@PathVariable("id") int attendanceId, Model model) {
+        try {
+            attendanceService.deleteAttendance(attendanceId);
+            model.addAttribute("successMessage", "Obecność została usunięta.");
+        } catch (Exception e) {
+            model.addAttribute("errorMessage", "Nie udało się usunąć obecności: " + e.getMessage());
+        }
+        return "redirect:/view/admin/attendance";
     }
 
     @GetMapping("/remark")
     public Mono<String> getRemarksTeacher(Model model) {
-        model.addAttribute("remarks",  remarkService.getAllRemarks());
+        model.addAttribute("remarks", remarkService.getAllRemarks());
 
         return Mono.just("admin/remark");
+    }
+
+    @PostMapping("/deleteRemark/{id}")
+    public String deleteRemark(@PathVariable("id") int remarkId, Model model) {
+        try {
+            remarkService.deleteRemark(remarkId);
+            model.addAttribute("successMessage", "Uwagi zostały usunięte.");
+        } catch (Exception e) {
+            model.addAttribute("errorMessage", "Nie udało się usunąć uwagi: " + e.getMessage());
+        }
+        return "redirect:/view/admin/remark";
+    }
+
+    @GetMapping("/editRemark/{remarkId}")
+    public String editRemarkForm(@PathVariable int remarkId, Model model) {
+        RemarkDto remarkDto = remarkService.getAdminRemarkById(remarkId);
+        if (remarkDto == null) {
+            model.addAttribute("errorMessage", "Nie znaleziono uwagi o podanym ID.");
+            return "admin/remark";
+        }
+
+        model.addAttribute("remark", remarkDto);
+
+        return "admin/remark_edit";
+    }
+
+    @PostMapping("/editRemark/{remarkId}")
+    public String editRemark(@PathVariable int remarkId, @ModelAttribute RemarkDto remarkDto) {
+        remarkService.updateRemark(remarkId, remarkDto);
+
+        return "redirect:/view/admin/remark";
     }
 
     @GetMapping("/user_management")
@@ -281,14 +315,23 @@ public class ViewControllerAdmin {
 
     @GetMapping("/user_management/edit/{id}")
     public String editUserForm(@PathVariable int id, Model model) {
-        User user = userService.getUserById(id);
+        UserDto user = userMapper.toDto(userService.getUserById(id));
         model.addAttribute("user", user);
+        model.addAttribute("schoolClasses", schoolClassService.getAllSchoolClass());
+        model.addAttribute("parents", parentService.getAllParents());
+
         return "admin/user_menagment_edit";
     }
 
     @PostMapping("/user_management/edit/{id}/confirm")
-    public String editUserFormConfirm(@PathVariable int id, @ModelAttribute User user) {
+    public String editUserFormConfirm(@PathVariable int id, @ModelAttribute UserDto user) {
         userService.updateUser(id, user);
+        switch (user.getRole()) {
+            case "STUDENT" -> studentService.addUserToStudents(id, user);
+            case "TEACHER" -> teacherService.addUserToTeacher(id);
+            case "PARENT" -> parentService.addUserToParent(id, user);
+            case "ADMIN" -> adminService.addUserToAdmin(id);
+        }
         return "redirect:/view/admin/user_management";
     }
 }

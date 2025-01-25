@@ -51,6 +51,12 @@ public class RemarkService {
         return remarkMapper.toDto(remark);
     }
 
+    public RemarkDto getAdminRemarkById(int remarkId) {
+        Remark remark = remarkRepository.findById(remarkId)
+                .orElseThrow(() -> new IllegalArgumentException("Nie znaleziono uwagi o ID " + remarkId));
+        return RemarkDto.fromEntity(remark);
+    }
+
     public List<RemarkDto> getTeacherRemarksById(int id) {
         Teacher teacher = teacherRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Teacher not found with ID: " + id));
