@@ -33,14 +33,22 @@ public interface ScheduleMapper {
             return "Nieznany przedmiot";
         }
         switch (subject) {
-            case POLISH:
-                return "Język polski";
-            case MATH:
-                return "Matematyka";
-            case GEOGRAPHY:
-                return "Geografia";
-            default:
-                return "Nieznany przedmiot";
-        }
+    case POLISH:
+        return "Język polski";
+    case MATH:
+        return "Matematyka";
+    case GEOGRAPHY:
+        return "Geografia";
+    case HISTORY:
+        return "Historia";
+    case SCIENCE:
+        return "Nauki ścisłe";
+    case ART:
+        return "Sztuka";
+    case SPORTS:
+        return "Wychowanie fizyczne";
+    default:
+        return "Nieznany przedmiot";
+}
     }
 }

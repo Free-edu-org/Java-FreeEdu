@@ -1,3 +1,5 @@
 INSERT INTO teacher (id)
 VALUES
-    (2);
+    (2),
+    (6),
+    (10);
