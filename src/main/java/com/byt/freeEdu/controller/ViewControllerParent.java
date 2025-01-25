@@ -62,8 +62,6 @@ public class ViewControllerParent {
                     User user = userService.getUserById(userId);
                     UserDto userDto = userMapper.toDto(user);
                     model.addAttribute("user", userDto);
-
-                    // Pobierz uczniów powiązanych z rodzicem
                     List<Student> students = parentService.getStudentsByParentId(userId);
                     model.addAttribute("students", students);
 
@@ -75,22 +73,15 @@ public class ViewControllerParent {
     public Mono<String> getStudentSchedule(@RequestParam int studentId, Model model) {
         return sessionService.getUserId()
                 .flatMap(parentId -> {
-                    // Pobierz listę uczniów powiązanych z rodzicem
                     List<Student> students = parentService.getStudentsByParentId(parentId);
-
-                    // Znajdź ucznia o podanym studentId
                     Student student = students.stream()
                             .filter(s -> s.getUserId() == studentId)
                             .findFirst()
                             .orElseThrow(() -> new RuntimeException("Uczeń nie znaleziony"));
-
-                    // Pobierz plan lekcji dla klasy ucznia
                     List<ScheduleDto> schedules = scheduleService.getScheduleByClassId(student.getSchoolClass().getSchoolClassId())
                             .stream()
                             .map(scheduleMapper::toDto)
                             .collect(Collectors.toList());
-
-                    // Dodaj dane do modelu
                     model.addAttribute("schedules", schedules);
                     model.addAttribute("studentName", student.getFirstname() + " " + student.getLastname());
 
@@ -102,22 +93,15 @@ public class ViewControllerParent {
     public Mono<String> getStudentGrades(@RequestParam int studentId, Model model) {
         return sessionService.getUserId()
                 .flatMap(parentId -> {
-                    // Pobierz listę uczniów powiązanych z rodzicem
                     List<Student> students = parentService.getStudentsByParentId(parentId);
-
-                    // Znajdź ucznia o podanym studentId
                     Student student = students.stream()
                             .filter(s -> s.getUserId() == studentId)
                             .findFirst()
                             .orElseThrow(() -> new RuntimeException("Uczeń nie znaleziony"));
-
-                    // Pobierz oceny ucznia
                     List<GradeDto> grades = gradeService.getGradesForStudent(studentId)
                             .stream()
                             .map(gradeMapper::toDto)
                             .collect(Collectors.toList());
-
-                    // Dodaj dane do modelu
                     model.addAttribute("grades", grades);
                     model.addAttribute("studentName", student.getFirstname() + " " + student.getLastname());
 
@@ -129,22 +113,15 @@ public class ViewControllerParent {
     public Mono<String> getStudentAttendance(@RequestParam int studentId, Model model) {
         return sessionService.getUserId()
                 .flatMap(parentId -> {
-                    // Pobierz listę uczniów powiązanych z rodzicem
                     List<Student> students = parentService.getStudentsByParentId(parentId);
-
-                    // Znajdź ucznia o podanym studentId
                     Student student = students.stream()
                             .filter(s -> s.getUserId() == studentId)
                             .findFirst()
                             .orElseThrow(() -> new RuntimeException("Uczeń nie znaleziony"));
-
-                    // Pobierz frekwencję ucznia
                     List<Attendance> attendances = attendanceService.getAttendancesForStudent(studentId);
                     List<AttendanceDto> attendanceDtos = attendances.stream()
-                            .map(attendanceMapper::toAttendanceDto) // Użyj toAttendanceDto zamiast toDto
+                            .map(attendanceMapper::toAttendanceDto)
                             .collect(Collectors.toList());
-
-                    // Dodaj dane do modelu
                     model.addAttribute("attendances", attendanceDtos);
                     model.addAttribute("studentName", student.getFirstname() + " " + student.getLastname());
 
@@ -156,19 +133,12 @@ public class ViewControllerParent {
     public Mono<String> getStudentRemarks(@PathVariable int id, Model model) {
         return sessionService.getUserId()
                 .flatMap(parentId -> {
-                    // Pobierz listę uczniów powiązanych z rodzicem
                     List<Student> students = parentService.getStudentsByParentId(parentId);
-
-                    // Znajdź ucznia o podanym studentId
                     Student student = students.stream()
                             .filter(s -> s.getUserId() == id)
                             .findFirst()
                             .orElseThrow(() -> new RuntimeException("Uczeń nie znaleziony"));
-
-                    // Pobierz uwagi ucznia
                     var remarks = remarkService.getRemarksByStudentId(id);
-
-                    // Dodaj dane do modelu
                     model.addAttribute("remarks", remarks);
                     model.addAttribute("studentName", student.getFirstname() + " " + student.getLastname());
 
