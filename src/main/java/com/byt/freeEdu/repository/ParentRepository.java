@@ -9,10 +9,6 @@ import org.springframework.data.jpa.repository.Query;
 public interface ParentRepository extends JpaRepository<Parent, Integer> {
     @Modifying
     @Transactional
-    @Query(value =
-            "DELETE FROM admin WHERE id = :id; " +
-            "DELETE FROM student WHERE id = :id; " +
-            "DELETE FROM teacher WHERE id = :id; " +
-            "INSERT INTO FreeEduDB.parent(id, contact_info) VALUES (:id, :contactInfo)", nativeQuery = true)
+    @Query(value = "CALL addUserToParents(:id, :contactInfo)", nativeQuery = true)
     void addUserToParents(int id, String contactInfo);
 }

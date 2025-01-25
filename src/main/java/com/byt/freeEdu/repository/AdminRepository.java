@@ -9,10 +9,6 @@ import org.springframework.data.jpa.repository.Query;
 public interface AdminRepository extends JpaRepository<Admin, Integer> {
     @Modifying
     @Transactional
-    @Query(value =
-            "DELETE FROM admin WHERE id = :id; " +
-            "DELETE FROM student WHERE id = :id; " +
-            "DELETE FROM teacher WHERE id = :id; " +
-            "INSERT INTO FreeEduDB.admin(id) VALUES (:id)", nativeQuery = true)
+    @Query(value = "CALL addUserToAdmins(:id)", nativeQuery = true)
     void addUserToAdmins(int id);
 }
