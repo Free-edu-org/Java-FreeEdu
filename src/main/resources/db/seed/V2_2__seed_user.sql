@@ -10,8 +10,8 @@ VALUES
     ('Grace', 'Black', 'graceb', '$2b$12$tic1YzfYHAz1487CVMAaausEXkBdb1UWYe7kAYX6GbU/gOOpPXytK', 'grace.black@example.com', 'Student'),
     ('Henry', 'Brown', 'henryb', '$2b$12$tic1YzfYHAz1487CVMAaausEXkBdb1UWYe7kAYX6GbU/gOOpPXytK', 'henry.brown@example.com', 'Parent'),
     ('Ivy', 'Davis', 'ivyd', '$2b$12$tic1YzfYHAz1487CVMAaausEXkBdb1UWYe7kAYX6GbU/gOOpPXytK', 'ivy.davis@example.com', 'Teacher'),
-    ('Marek', 'kowalski', 'student1', 'MTIzNDU2Nzg=', 'marek1@example.com', 'Student'),
-    ('Julia', 'kowalska', 'student2', 'MTIzNDU2Nzg=', 'marek2@example.com', 'Student'),
-    ('Marek', 'kowalski', 'admin', 'MTIzNDU2Nzg=', 'marek3@example.com', 'Admin'),
-    ('Marek', 'kowalski', 'parent', 'MTIzNDU2Nzg=', 'marek4@example.com', 'Parent'),
-    ('Marek', 'kowalski', 'teacher', 'MTIzNDU2Nzg=', 'marek5@example.com', 'Teacher');
+    ('Marek', 'kowalski', 'student1', '$2b$12$tic1YzfYHAz1487CVMAaausEXkBdb1UWYe7kAYX6GbU/gOOpPXytK', 'marek1@example.com', 'Student'),
+    ('Julia', 'kowalska', 'student2', '$2b$12$tic1YzfYHAz1487CVMAaausEXkBdb1UWYe7kAYX6GbU/gOOpPXytK', 'marek2@example.com', 'Student'),
+    ('Marek', 'kowalski', 'admin', '$2b$12$tic1YzfYHAz1487CVMAaausEXkBdb1UWYe7kAYX6GbU/gOOpPXytK', 'marek3@example.com', 'Admin'),
+    ('Marek', 'kowalski', 'parent', '$2b$12$tic1YzfYHAz1487CVMAaausEXkBdb1UWYe7kAYX6GbU/gOOpPXytK', 'marek4@example.com', 'Parent'),
+    ('Marek', 'kowalski', 'teacher', '$2b$12$tic1YzfYHAz1487CVMAaausEXkBdb1UWYe7kAYX6GbU/gOOpPXytK', 'marek5@example.com', 'Teacher');
