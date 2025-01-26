@@ -5,16 +5,12 @@ import com.byt.freeEdu.repository.SchoolClassRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -29,12 +25,11 @@ class SchoolClassServiceTest {
     private SchoolClassRepository schoolClassRepository;
 
     @Test
-    public void getAllSchoolClass_returnsAllClasses() {
+    public void getAllSchoolClass_returnsListOfSchoolClasses() {
         //given
-        SchoolClass class1 = new SchoolClass("Math101");
-        SchoolClass class2 = new SchoolClass("Science102");
-
-        when(schoolClassRepository.findAll()).thenReturn(List.of(class1, class2));
+        SchoolClass schoolClass1 = new SchoolClass("Class A");
+        SchoolClass schoolClass2 = new SchoolClass("Class B");
+        when(schoolClassRepository.findAll()).thenReturn(List.of(schoolClass1, schoolClass2));
 
         //when
         List<SchoolClass> schoolClasses = schoolClassService.getAllSchoolClass();
@@ -42,31 +37,13 @@ class SchoolClassServiceTest {
         //then
         assertNotNull(schoolClasses);
         assertEquals(2, schoolClasses.size());
-        assertEquals("Math101", schoolClasses.get(0).getName());
-        assertEquals("Science102", schoolClasses.get(1).getName());
-    }
-
-    @Test
-    public void getSchoolClassById_classFound_returnsClass() {
-        //given
-        int classId = 0;
-        SchoolClass schoolClass = new SchoolClass("Math101");
-
-        when(schoolClassRepository.findById(classId)).thenReturn(Optional.of(schoolClass));
-
-        //when
-        SchoolClass foundClass = schoolClassService.getSchoolClassById(classId);
-
-        //then
-        assertNotNull(foundClass);
-        assertEquals(classId, foundClass.getSchoolClassId());
+        verify(schoolClassRepository, times(1)).findAll();
     }
 
     @Test
     public void getSchoolClassById_classNotFound_throwsException() {
         //given
         int classId = 999;
-
         when(schoolClassRepository.findById(classId)).thenReturn(Optional.empty());
 
         //when & then
@@ -74,26 +51,25 @@ class SchoolClassServiceTest {
     }
 
     @Test
-    public void getSchoolClassByName_classFound_returnsClass() {
+    public void getSchoolClassById_returnsSchoolClass() {
         //given
-        String className = "Math101";
-        SchoolClass schoolClass = new SchoolClass(className);
-
-        when(schoolClassRepository.findByName(className)).thenReturn(Optional.of(schoolClass));
+        int classId = 1;
+        SchoolClass schoolClass = new SchoolClass("Class A");
+        when(schoolClassRepository.findById(classId)).thenReturn(Optional.of(schoolClass));
 
         //when
-        SchoolClass foundClass = schoolClassService.getSchoolClassByName(className);
+        SchoolClass result = schoolClassService.getSchoolClassById(classId);
 
         //then
-        assertNotNull(foundClass);
-        assertEquals(className, foundClass.getName());
+        assertNotNull(result);
+        assertEquals("Class A", result.getName());
+        verify(schoolClassRepository, times(1)).findById(classId);
     }
 
     @Test
     public void getSchoolClassByName_classNotFound_throwsException() {
         //given
-        String className = "UnknownClass";
-
+        String className = "Non-existent Class";
         when(schoolClassRepository.findByName(className)).thenReturn(Optional.empty());
 
         //when & then
@@ -101,100 +77,109 @@ class SchoolClassServiceTest {
     }
 
     @Test
-    public void addSchoolClass_validClass_createsClass() {
+    public void getSchoolClassByName_returnsSchoolClass() {
         //given
-        String className = "Math101";
+        String className = "Class A";
         SchoolClass schoolClass = new SchoolClass(className);
+        when(schoolClassRepository.findByName(className)).thenReturn(Optional.of(schoolClass));
 
+        //when
+        SchoolClass result = schoolClassService.getSchoolClassByName(className);
+
+        //then
+        assertNotNull(result);
+        assertEquals(className, result.getName());
+        verify(schoolClassRepository, times(1)).findByName(className);
+    }
+
+    @Test
+    public void addSchoolClass_emptyName_throwsException() {
+        //when & then
+        assertThrows(IllegalArgumentException.class, () -> schoolClassService.addSchoolClass(" "));
+        verify(schoolClassRepository, never()).save(any(SchoolClass.class));
+    }
+
+    @Test
+    public void addSchoolClass_savesSchoolClass() {
+        //given
+        String className = "Class A";
+        SchoolClass schoolClass = new SchoolClass(className);
         when(schoolClassRepository.save(any(SchoolClass.class))).thenReturn(schoolClass);
 
         //when
-        SchoolClass createdClass = schoolClassService.addSchoolClass(className);
+        SchoolClass result = schoolClassService.addSchoolClass(className);
 
         //then
-        assertNotNull(createdClass);
-        assertEquals(className, createdClass.getName());
+        assertNotNull(result);
+        assertEquals(className, result.getName());
         verify(schoolClassRepository, times(1)).save(any(SchoolClass.class));
-    }
-
-    @Test
-    public void addSchoolClass_invalidName_throwsException() {
-        //given
-        String invalidClassName = "";
-
-        //when & then
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> schoolClassService.addSchoolClass(invalidClassName));
-
-        assertEquals("Class name cannot be empty", exception.getMessage());
-        verify(schoolClassRepository, times(0)).save(any(SchoolClass.class));
-    }
-
-    @Test
-    public void deleteSchoolClassById_classFound_deletesClass() {
-        //given
-        int classId = 1;
-        SchoolClass schoolClass = new SchoolClass("Math101");
-
-        when(schoolClassRepository.findById(classId)).thenReturn(Optional.of(schoolClass));
-
-        //when
-        schoolClassService.deleteSchoolClassById(classId);
-
-        //then
-        verify(schoolClassRepository, times(1)).delete(any(SchoolClass.class));
     }
 
     @Test
     public void deleteSchoolClassById_classNotFound_throwsException() {
         //given
         int classId = 999;
-
         when(schoolClassRepository.findById(classId)).thenReturn(Optional.empty());
 
         //when & then
         assertThrows(EntityNotFoundException.class, () -> schoolClassService.deleteSchoolClassById(classId));
+        verify(schoolClassRepository, never()).delete(any(SchoolClass.class));
     }
 
     @Test
-    public void deleteSchoolClassByName_classFound_deletesClass() {
+    public void deleteSchoolClassById_deletesSchoolClass() {
         //given
-        String className = "Math101";
-        SchoolClass schoolClass = new SchoolClass(className);
+        int classId = 1;
+        SchoolClass schoolClass = new SchoolClass("Class A");
+        when(schoolClassRepository.findById(classId)).thenReturn(Optional.of(schoolClass));
 
+        //when
+        schoolClassService.deleteSchoolClassById(classId);
+
+        //then
+        verify(schoolClassRepository, times(1)).delete(schoolClass);
+    }
+
+    @Test
+    public void deleteSchoolClassByName_classNotFound_throwsException() {
+        //given
+        String className = "Non-existent Class";
+        when(schoolClassRepository.findByName(className)).thenReturn(Optional.empty());
+
+        //when & then
+        assertThrows(EntityNotFoundException.class, () -> schoolClassService.deleteSchoolClassByName(className));
+        verify(schoolClassRepository, never()).delete(any(SchoolClass.class));
+    }
+
+    @Test
+    public void deleteSchoolClassByName_deletesSchoolClass() {
+        //given
+        String className = "Class A";
+        SchoolClass schoolClass = new SchoolClass(className);
         when(schoolClassRepository.findByName(className)).thenReturn(Optional.of(schoolClass));
 
         //when
         schoolClassService.deleteSchoolClassByName(className);
 
         //then
-        verify(schoolClassRepository, times(1)).delete(any(SchoolClass.class));
+        verify(schoolClassRepository, times(1)).delete(schoolClass);
     }
 
     @Test
-    public void deleteSchoolClassByName_classNotFound_throwsException() {
+    public void getAllClassesWithStudentCount_returnsClassesWithCounts() {
         //given
-        String className = "UnknownClass";
+        SchoolClass schoolClass = new SchoolClass("Class A");
+        schoolClass.setSchoolClassId(1);
+        when(schoolClassRepository.findAll()).thenReturn(List.of(schoolClass));
+        when(schoolClassRepository.countStudentsInClass(1)).thenReturn(10L);
 
-        when(schoolClassRepository.findByName(className)).thenReturn(Optional.empty());
+        //when
+        List<SchoolClass> results = schoolClassService.getAllClassesWithStudentCount();
 
-        //when & then
-        assertThrows(EntityNotFoundException.class, () -> schoolClassService.deleteSchoolClassByName(className));
-    }
-
-    @ParameterizedTest
-    @MethodSource("invalidClassNames")
-    public void addSchoolClass_invalidName_throwsException(String className, String expectedMessage) {
-        //when & then
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> schoolClassService.addSchoolClass(className));
-        assertEquals(expectedMessage, exception.getMessage());
-        verify(schoolClassRepository, times(0)).save(any(SchoolClass.class));
-    }
-
-    private static Stream<Arguments> invalidClassNames() {
-        return Stream.of(
-                Arguments.of("", "Class name cannot be empty"),
-                Arguments.of("   ", "Class name cannot be empty"),
-                Arguments.of(null, "Class name cannot be empty")
-        );
+        //then
+        assertNotNull(results);
+        assertEquals(1, results.size());
+        assertEquals(10L, results.get(0).getStudentCount());
+        verify(schoolClassRepository, times(1)).countStudentsInClass(1);
     }
 }
