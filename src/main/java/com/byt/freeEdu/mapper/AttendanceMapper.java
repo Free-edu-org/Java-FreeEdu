@@ -13,7 +13,6 @@ import java.util.stream.Collectors;
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.ERROR)
 public interface AttendanceMapper {
 
-    // Metoda do mapowania Attendance na AttendanceFormDto (istniejąca)
     default AttendanceFormDto toDto(Attendance attendance) {
         if (attendance == null) {
             return null;
@@ -27,7 +26,6 @@ public interface AttendanceMapper {
         return attendanceFormDto;
     }
 
-    // Metoda do mapowania listy Attendance na listę AttendanceFormDto (istniejąca)
     default List<AttendanceFormDto> toDtoList(List<Attendance> attendances) {
         if (attendances == null || attendances.isEmpty()) {
             return Collections.emptyList();
@@ -38,7 +36,6 @@ public interface AttendanceMapper {
                 .collect(Collectors.toList());
     }
 
-    // Nowa metoda do mapowania Attendance na AttendanceDto
     default AttendanceDto toAttendanceDto(Attendance attendance) {
         if (attendance == null) {
             return null;
@@ -46,16 +43,23 @@ public interface AttendanceMapper {
 
         AttendanceDto attendanceDto = new AttendanceDto();
         attendanceDto.setAttendanceId(attendance.getAttendanceId());
+
         attendanceDto.setStudentId(attendance.getStudent().getUserId());
+        attendanceDto.setStudentFirstName(attendance.getStudent().getFirstname());
+        attendanceDto.setStudentLastName(attendance.getStudent().getLastname());
+
         attendanceDto.setTeacherId(attendance.getTeacher().getUserId());
-        attendanceDto.setAttendanceDate(attendance.getAttendanceDate().toString()); // Konwersja LocalDate na String
-        attendanceDto.setAttendance_status(attendance.getStatus().name()); // Konwersja AttendanceEnum na String
+        attendanceDto.setTeacherFirstName(attendance.getTeacher().getFirstname());
+        attendanceDto.setTeacherLastName(attendance.getTeacher().getLastname());
+
+        attendanceDto.setAttendanceDate(attendance.getAttendanceDate().toString());
+        attendanceDto.setAttendance_status(attendance.getStatus().getDisplayName());
         attendanceDto.setSubjectEnum(attendance.getSubject());
+        attendanceDto.setSubjectName(attendance.getSubject().getDisplayName());
 
         return attendanceDto;
     }
 
-    // Nowa metoda do mapowania listy Attendance na listę AttendanceDto
     default List<AttendanceDto> toAttendanceDtoList(List<Attendance> attendances) {
         if (attendances == null || attendances.isEmpty()) {
             return Collections.emptyList();

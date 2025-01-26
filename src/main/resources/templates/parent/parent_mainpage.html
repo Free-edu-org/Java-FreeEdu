@@ -8,7 +8,7 @@
     <title>Panel rodzica</title>
 </head>
 <body class="bg-dark text-white">
-<!-- Navbar -->
+
 <header class="container-fluid bg-primary py-3">
     <div class="container d-flex justify-content-between align-items-center">
         <h2 class="text-white">FreeEdu - Panel rodzica</h2>
@@ -16,51 +16,34 @@
     </div>
 </header>
 
-<!-- Main Content Section -->
 <main class="container my-5">
-    <div class="row">
-
-
-        <!-- Content -->
-        <section class="col-md-9">
-            <!-- Wyświetlanie imienia użytkownika -->
+    <section class="col-12">
+        <div class="card bg-light text-dark p-4">
             <h3>Witaj, <span th:text="${user.firstname}">Imię</span>!</h3>
-
-            <!-- Wyświetlanie pełnych danych użytkownika -->
+            <hr>
             <dl class="row">
                 <dt class="col-sm-4">Imię i nazwisko:</dt>
                 <dd class="col-sm-8" th:text="${user.firstname + ' ' + user.lastname}">Jan Kowalski</dd>
-
                 <dt class="col-sm-4">Email:</dt>
                 <dd class="col-sm-8" th:text="${user.email}">jan.kowalski@example.com</dd>
-
                 <dt class="col-sm-4">Rola:</dt>
                 <dd class="col-sm-8" th:text="${user.role}">Rodzic</dd>
             </dl>
 
-            <!-- Lista dzieci -->
-            <div class="card bg-light text-dark p-4 mt-4">
-                <h4>Twoje Dzieci</h4>
-                <ul class="list-group">
-                    <li class="list-group-item" th:each="student : ${students}">
-                        <span th:text="${student.firstname + ' ' + student.lastname}">Imię i nazwisko ucznia</span>
-                        <!-- Przycisk "Plan lekcji" dla każdego dziecka -->
-                        <a th:href="@{/view/parent/schedule(studentId=${student.userId})}" class="btn btn-primary btn-sm float-end me-2">Plan lekcji</a>
-                        <!-- Przycisk "Oceny" dla każdego dziecka -->
-                        <a th:href="@{/view/parent/grade(studentId=${student.userId})}" class="btn btn-success btn-sm float-end me-2">Oceny</a>
-                        <!-- Przycisk "Frekwencja" dla każdego dziecka -->
-                        <a th:href="@{/view/parent/attendance(studentId=${student.userId})}" class="btn btn-warning btn-sm float-end me-2">Frekwencja</a>
-                        <!-- Przycisk "Szczegóły" dla każdego dziecka -->
-
-                        <a th:href="@{/view/parent/remark/{id}(id=${student.userId})}" class="btn btn-info btn-sm float-end">Uwagi</a>
-                    </li>
-                </ul>
-            </div>
-        </section>
-    </div>
+            <h4 class="mt-4">Twoje Dzieci</h4>
+            <ul class="list-group">
+                <li class="list-group-item bg-dark text-white" th:each="student : ${students}">
+                    <span th:text="${student.firstname + ' ' + student.lastname}">Imię i nazwisko ucznia</span>
+                    <a th:href="@{/view/parent/schedule(studentId=${student.userId})}" class="btn btn-primary btn-sm float-end me-2">Plan lekcji</a>
+                    <a th:href="@{/view/parent/grade(studentId=${student.userId})}" class="btn btn-success btn-sm float-end me-2">Oceny</a>
+                    <a th:href="@{/view/parent/attendance(studentId=${student.userId})}" class="btn btn-warning btn-sm float-end me-2">Frekwencja</a>
+                    <a th:href="@{/view/parent/remark/{id}(id=${student.userId})}" class="btn btn-info btn-sm float-end">Uwagi</a>
+                </li>
+            </ul>
+        </div>
+    </section>
 </main>
 
-<!-- Footer -->
 <footer class="bg-primary text-white text-center py-3">
     <p class="mb-0">&copy; 2025 FreeEdu. Udostępnione na licencji <a href="https://www.gnu.org/licenses/gpl-3.0.html" class="text-white" target="_blank">GNU GPL v3</a>.</p>
 </footer>

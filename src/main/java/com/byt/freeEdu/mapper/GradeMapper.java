@@ -42,6 +42,14 @@ public interface GradeMapper {
                 return "Matematyka";
             case GEOGRAPHY:
                 return "Geografia";
+            case HISTORY:
+                return "Historia";
+            case SCIENCE:
+                return "Nauka";
+            case ART:
+                return "Sztuka";
+            case SPORTS:
+                return "Sport";
             default:
                 return "Nieznany przedmiot";
         }
