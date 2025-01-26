@@ -68,7 +68,7 @@ public class ViewControllerTeacher {
     public Mono<String> getScheduleTeacher(Model model) {
         return sessionService.getUserId()
                 .map(userId -> {
-                    List<ScheduleDto> scheduleDto = scheduleService.getSchedulesById(userId);
+                    List<ScheduleDto> scheduleDto = scheduleService.getSchedulesByTeacherId(userId);
                     model.addAttribute("schedule", scheduleDto);
 
                     Teacher teacher = teacherService.getTeacherById(userId);
