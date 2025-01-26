@@ -18,5 +18,5 @@ public interface RemarkRepository extends JpaRepository<Remark, Integer> {
 
     List<Remark> findByStudent_UserId(int studentId);
 
-
+    List<Remark> findByTeacher(Teacher teacher);
 }

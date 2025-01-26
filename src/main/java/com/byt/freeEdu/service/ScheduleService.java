@@ -5,6 +5,7 @@ import com.byt.freeEdu.model.DTO.ScheduleAdminDto;
 import com.byt.freeEdu.model.DTO.ScheduleDto;
 import com.byt.freeEdu.model.Schedule;
 import com.byt.freeEdu.repository.ScheduleRepository;
+import com.byt.freeEdu.service.users.TeacherService;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 
@@ -16,10 +17,12 @@ import java.util.stream.Collectors;
 public class ScheduleService {
     private final ScheduleRepository scheduleRepository;
     private final ScheduleMapper scheduleMapper;
+    private final TeacherService teacherService;
 
-    public ScheduleService(ScheduleRepository scheduleRepository, ScheduleMapper scheduleMapper) {
+    public ScheduleService(ScheduleRepository scheduleRepository, ScheduleMapper scheduleMapper, TeacherService teacherService) {
         this.scheduleRepository = scheduleRepository;
         this.scheduleMapper = scheduleMapper;
+        this.teacherService = teacherService;
     }
 
     public Schedule addSchedule(Schedule schedule) {
@@ -27,10 +30,16 @@ public class ScheduleService {
     }
 
     public List<ScheduleDto> getSchedulesById(int userId) {
-        // Pobierz dane z repozytorium
         List<Schedule> schedules = scheduleRepository.findAllById(Collections.singleton(userId));
 
-        // Użyj mappera do konwersji
+        return schedules.stream()
+                .map(scheduleMapper::toDto)
+                .collect(Collectors.toList());
+    }
+
+    public List<ScheduleDto> getSchedulesByTeacherId(int teacherId) {
+        List<Schedule> schedules = scheduleRepository.getAllByTeacher(teacherService.getTeacherById(teacherId));
+
         return schedules.stream()
                 .map(scheduleMapper::toDto)
                 .collect(Collectors.toList());
