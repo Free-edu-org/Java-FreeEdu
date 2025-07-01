@@ -1,0 +1,396 @@
+name: PR Validation
+
+on:
+  pull_request:
+    branches:
+      - master
+
+permissions:
+  contents: read
+  checks: write
+  pull-requests: write
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    outputs:
+      cache-key: ${{ steps.cache-key.outputs.key }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      - name: Compute Maven cache key
+        id: cache-key
+        run: echo "key=maven-${{ runner.os }}-${{ hashFiles('**/pom.xml') }}" >> $GITHUB_OUTPUT
+
+      - name: Cache Maven repo
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2/repository
+          key: maven-${{ runner.os }}-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            maven-${{ runner.os }}-
+
+  formatting-check:
+    name: Formatter Validation
+    runs-on: ubuntu-latest
+    needs: setup
+    outputs:
+      summary: ${{ steps.formatting-summary.outputs.summary }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      - name: Restore Maven cache
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2/repository
+          key: ${{ needs.setup.outputs.cache-key }}
+
+      - name: Validate formatting
+        id: validate-formatting
+        continue-on-error: true
+        run: |
+          if mvn formatter:validate; then
+            echo "✅ Code formatting is correct" > formatting-summary.txt
+          else
+            echo "## ❌ Code formatting validation failed" > formatting-summary.txt
+            echo "👉 Run \`mvn formatter:format\` locally to auto-fix formatting" >> formatting-summary.txt
+            exit 1
+          fi
+
+      - name: Show formatting result
+        run: cat formatting-summary.txt || echo "Plik nie istnieje"
+
+      - name: Export Formatting Summary
+        id: formatting-summary
+        run: |
+          summary="$(cat formatting-summary.txt)"
+          echo "summary<<EOF" >> $GITHUB_OUTPUT
+          echo "$summary" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Fail job if formatting failed
+        if: steps.validate-formatting.outcome == 'failure'
+        run: |
+          echo "❌ Formatting issues found. Failing the job."
+          exit 1
+
+  code-style:
+    name: Code-Style Validation
+    runs-on: ubuntu-latest
+    needs: setup
+    outputs:
+      summary: ${{ steps.checkstyle-summary.outputs.summary }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      - name: Restore Maven cache
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2/repository
+          key: ${{ needs.setup.outputs.cache-key }}
+
+      - name: Run Checkstyle
+        run: |
+          mvn checkstyle:check | tee checkstyle.log
+          if grep -q "\[ERROR\]" checkstyle.log; then
+            echo "## ❌ Checkstyle Report - violations found" > checkstyle-report.txt
+            echo "" >> checkstyle-report.txt
+            echo "<details><summary>🔽 Click to expand full table</summary>" >> checkstyle-report.txt
+            echo "" >> checkstyle-report.txt
+            echo "| File | Line | Column | Error |" >> checkstyle-report.txt
+            echo "|------|------|--------|-------|" >> checkstyle-report.txt
+            grep "\[ERROR\]" checkstyle.log | awk '
+              match($0, /^\[ERROR\] ([^:]+):\[([0-9]+)(,([0-9]+))?\] \([^)]*\) (.+)$/, m) {
+                file = m[1]
+                line = m[2]
+                column = (m[4] ? m[4] : "-")
+                msg = m[5]
+                printf("| %s | %s | %s | %s |\n", file, line, column, msg)
+              }
+            ' | head -n 1000 >> checkstyle-report.txt
+            echo "| ... | ... | ... | ... |" >> checkstyle-report.txt
+            echo "**⚠️ Output truncated. See local logs for full report.**" >> checkstyle-report.txt
+            echo "</details>" >> checkstyle-report.txt
+          else
+            echo "✅ No Checkstyle issues found." > checkstyle-report.txt
+          fi
+
+      - name: Read Checkstyle summary
+        id: checkstyle-summary
+        run: |
+          summary="$(cat checkstyle-report.txt)"
+          echo "summary<<EOF" >> $GITHUB_OUTPUT
+          echo "$summary" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Post Checkstyle comment
+        if: always()
+        uses: peter-evans/create-or-update-comment@v4
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          body: |
+            ${{ steps.checkstyle-summary.outputs.summary }}
+
+      - name: Fail if Checkstyle errors found
+        if: always() && steps.checkstyle-summary.outputs.summary != ''
+        run: |
+          if grep -q "\[ERROR\]" checkstyle.log; then
+            echo "❌ Checkstyle violations detected. Failing the job."
+            exit 1
+          fi
+
+  pmd-analysis:
+    name: PMD Analysis
+    runs-on: ubuntu-latest
+    needs: setup
+    outputs:
+      summary: ${{ steps.pmd-summary.outputs.summary }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      - name: Restore Maven cache
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2/repository
+          key: ${{ needs.setup.outputs.cache-key }}
+
+      - name: Install xmlstarlet
+        run: sudo apt-get install -y xmlstarlet
+
+      - name: Run PMD with XML output
+        continue-on-error: true
+        run: |
+          mvn pmd:check
+
+      - name: Summarize PMD violations
+        id: pmd-summary
+        run: |
+          if [ -f target/pmd.xml ] && grep -q "<violation" target/pmd.xml; then
+            echo "## ❌ PMD Report - violations found" > pmd-summary.txt
+            echo "" >> pmd-summary.txt
+            echo "<details><summary>🔽 Click to expand full table</summary>" >> pmd-summary.txt
+            echo "" >> pmd-summary.txt
+            echo "| File | Line | Rule | Message |" >> pmd-summary.txt
+            echo "|------|------|------|---------|" >> pmd-summary.txt
+
+            xmlstarlet sel -N p="http://pmd.sourceforge.net/report/2.0.0" -t -m '//p:file/p:violation' \
+              -v 'concat(../@name,"|",@beginline,"|",@rule,"|",normalize-space(.))' -n target/pmd.xml | \
+              head -n 1000 | \
+              while IFS="|" read -r file line rule msg; do
+                echo "| $file | $line | $rule | $msg |" >> pmd-summary.txt
+              done
+
+            echo "| ... | ... | ... | ... |" >> pmd-summary.txt
+            echo "" >> pmd-summary.txt
+            echo "</details>" >> pmd-summary.txt
+          else
+            echo "✅ No PMD violations found." > pmd-summary.txt
+          fi
+
+          summary="$(cat pmd-summary.txt)"
+          echo "summary<<EOF" >> $GITHUB_OUTPUT
+          echo "$summary" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Post PMD comment
+        if: always()
+        uses: peter-evans/create-or-update-comment@v4
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          body: |
+            ${{ steps.pmd-summary.outputs.summary }}
+
+      - name: Fail if PMD violations found
+        if: always()
+        run: |
+          if [ -f target/pmd.xml ] && grep -q "<violation" target/pmd.xml; then
+            echo "❌ PMD violations detected. Failing the job."
+            exit 1
+          fi
+
+  spotbugs-analysis:
+    name: SpotBugs Analysis
+    runs-on: ubuntu-latest
+    needs: setup
+    outputs:
+      summary: ${{ steps.spotbugs-summary.outputs.summary }}
+    steps:
+    - uses: actions/checkout@v4
+
+    - uses: actions/setup-java@v4
+      with:
+        distribution: 'temurin'
+        java-version: '21'
+
+    - name: Restore Maven cache
+      uses: actions/cache@v3
+      with:
+        path: ~/.m2/repository
+        key: ${{ needs.setup.outputs.cache-key }}
+
+    - name: Run SpotBugs
+      continue-on-error: true
+      run: |
+        mvn com.github.spotbugs:spotbugs-maven-plugin:4.7.3.0:check -Dspotbugs.failOnError=false
+
+    - name: Summarize SpotBugs Issues
+      id: spotbugs-summary
+      run: |
+        if [ -f target/spotbugsXml.xml ] && grep -q "<BugInstance" target/spotbugsXml.xml; then
+          echo "## ❌ SpotBugs Report - issues found" > spotbugs-summary.txt
+          echo "" >> spotbugs-summary.txt
+          echo "<details><summary>🔽 Click to expand full table</summary>" >> spotbugs-summary.txt
+          echo "" >> spotbugs-summary.txt
+          echo "| File | Line | Type | Message |" >> spotbugs-summary.txt
+          echo "|------|------|------|---------|" >> spotbugs-summary.txt
+
+          xmllint --xpath '//BugInstance' target/spotbugsXml.xml 2>/dev/null | \
+          sed -E 's/.*classname="([^"]+)".*line="([^"]+)".*type="([^"]+)".*>([^<]+)<\/BugInstance>.*/| \1 | \2 | \3 | \4 |/' | \
+          head -n 1000 >> spotbugs-summary.txt
+
+          echo "| ... | ... | ... | ... |" >> spotbugs-summary.txt
+          echo "" >> spotbugs-summary.txt
+          echo "**⚠️ Output truncated. See full report in HTML (not generated by default)**" >> spotbugs-summary.txt
+          echo "</details>" >> spotbugs-summary.txt
+        else
+          echo "✅ SpotBugs: No issues found." > spotbugs-summary.txt
+        fi
+
+        summary="$(cat spotbugs-summary.txt)"
+        echo "summary<<EOF" >> $GITHUB_OUTPUT
+        echo "$summary" >> $GITHUB_OUTPUT
+        echo "EOF" >> $GITHUB_OUTPUT
+
+    - name: Fail if SpotBugs found issues
+      if: always()
+      run: |
+        if [ -f target/spotbugsXml.xml ] && grep -q "<BugInstance" target/spotbugsXml.xml; then
+          echo "❌ SpotBugs issues detected. Failing the job."
+          exit 1
+        fi
+
+  semgrep-sast:
+    name: Semgrep SAST
+    runs-on: ubuntu-latest
+    needs: setup
+    outputs:
+      summary: ${{ steps.semgrep-summary.outputs.summary }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Semgrep
+        run: pip install semgrep
+
+      - name: Run Semgrep with JSON output
+        continue-on-error: true
+        run: |
+          semgrep --config=auto --json > semgrep-report.json || echo "Semgrep completed with findings"
+
+      - name: Summarize Semgrep results
+        id: semgrep-summary
+        run: |
+          if [ -s semgrep-report.json ] && grep -q '"check_id":' semgrep-report.json; then
+            echo "❌ Failed – see comment" > summary.txt
+            echo "## ❌ Semgrep Report - issues found" > semgrep-comment.txt
+            echo "" >> semgrep-comment.txt
+            echo "<details><summary>🔽 Click to expand Semgrep results</summary>" >> semgrep-comment.txt
+            echo "" >> semgrep-comment.txt
+            echo "| File | Line | Rule | Message |" >> semgrep-comment.txt
+            echo "|------|------|------|---------|" >> semgrep-comment.txt
+
+            jq -r '.results[] | "| \(.path) | \(.start.line) | \(.check_id) | \(.extra.message) |"' semgrep-report.json | \
+            head -n 1000 >> semgrep-comment.txt
+
+            echo "| ... | ... | ... | ... |" >> semgrep-comment.txt
+            echo "" >> semgrep-comment.txt
+            echo "**⚠️ Output truncated. For full results, run Semgrep locally.**" >> semgrep-comment.txt
+            echo "</details>" >> semgrep-comment.txt
+          else
+            echo "✅ No issues" > summary.txt
+          fi
+
+          summary="$(cat summary.txt)"
+          echo "summary<<EOF" >> $GITHUB_OUTPUT
+          echo "$summary" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Fail job if Semgrep found issues
+        if: always()
+        run: |
+          if grep -q '"check_id":' semgrep-report.json; then
+            echo "❌ Semgrep found issues. Failing the job."
+            exit 1
+          fi
+
+      - name: Post Semgrep comment (only on failure)
+        if: failure()
+        uses: peter-evans/create-or-update-comment@v4
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          body-path: semgrep-comment.txt
+
+  build:
+    runs-on: ubuntu-latest
+    needs: [formatting-check, code-style, pmd-analysis, spotbugs-analysis, semgrep-sast]
+    if: always()
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+      - name: Restore Maven cache
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2/repository
+          key: ${{ needs.setup.outputs.cache-key }}
+      - name: Compile and Test
+        run: mvn clean install
+
+  pr-summary:
+    runs-on: ubuntu-latest
+    needs: [build, formatting-check, code-style, pmd-analysis, spotbugs-analysis, semgrep-sast]
+    if: always()
+    steps:
+      - name: PR Summary Report
+        uses: peter-evans/create-or-update-comment@v4
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          body: |
+            ## 🧾 PR Validation Summary
+            
+            🧪 Build: ${{ needs.build.result }}
+            
+            ### 📌 Formatter
+            ${{ needs.formatting-check.outputs.summary }}
+            
+            ### 📌 Checkstyle
+            ${{ needs.code-style.result == 'success' && '✅ No issues' || '❌ Failed – see comment' }}
+            
+            ### 📌 PMD
+            ${{ needs.pmd-analysis.result == 'success' && '✅ No issues' || '❌ Failed – see comment' }}
+
+            ### 📌 SpotBugs
+            ${{ needs.spotbugs-analysis.result == 'success' && '✅ No issues' || '❌ Failed – see comment' }}
+            
+            ### 📌 Semgrep SAST
+            ${{ needs.semgrep-sast.result == 'success' && '✅ No issues' || '❌ Failed – see comment' }}
