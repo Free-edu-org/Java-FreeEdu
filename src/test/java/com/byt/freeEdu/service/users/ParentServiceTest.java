@@ -19,127 +19,128 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class ParentServiceTest {
+class ParentServiceTest{
 
-    @InjectMocks
-    private ParentService parentService;
+  @InjectMocks
+  private ParentService parentService;
 
-    @Mock
-    private ParentRepository parentRepository;
+  @Mock
+  private ParentRepository parentRepository;
 
-    @Mock
-    private StudentRepository studentRepository;
+  @Mock
+  private StudentRepository studentRepository;
 
-    @Test
-    public void addParent_savesParentSuccessfully() {
-        //given
-        Parent parent = new Parent();
-        when(parentRepository.save(parent)).thenReturn(parent);
+  @Test
+  public void addParent_savesParentSuccessfully() {
+    // given
+    Parent parent = new Parent();
+    when(parentRepository.save(parent)).thenReturn(parent);
 
-        //when
-        Parent result = parentService.addParent(parent);
+    // when
+    Parent result = parentService.addParent(parent);
 
-        //then
-        assertNotNull(result);
-        verify(parentRepository, times(1)).save(parent);
-    }
+    // then
+    assertNotNull(result);
+    verify(parentRepository,times(1)).save(parent);
+  }
 
-    @Test
-    public void getParentById_parentNotFound_throwsException() {
-        //given
-        int parentId = 999;
-        when(parentRepository.findById(parentId)).thenReturn(Optional.empty());
+  @Test
+  public void getParentById_parentNotFound_throwsException() {
+    // given
+    int parentId = 999;
+    when(parentRepository.findById(parentId)).thenReturn(Optional.empty());
 
-        //when & then
-        assertThrows(EntityNotFoundException.class, () -> parentService.getParentById(parentId));
-        verify(parentRepository, times(1)).findById(parentId);
-    }
+    // when & then
+    assertThrows(EntityNotFoundException.class,() -> parentService.getParentById(parentId));
+    verify(parentRepository,times(1)).findById(parentId);
+  }
 
-    @Test
-    public void getParentById_returnsParent() {
-        //given
-        int parentId = 1;
-        Parent parent = new Parent();
-        parent.setFirstname("John");
-        when(parentRepository.findById(parentId)).thenReturn(Optional.of(parent));
+  @Test
+  public void getParentById_returnsParent() {
+    // given
+    int parentId = 1;
+    Parent parent = new Parent();
+    parent.setFirstname("John");
+    when(parentRepository.findById(parentId)).thenReturn(Optional.of(parent));
 
-        //when
-        Parent result = parentService.getParentById(parentId);
+    // when
+    Parent result = parentService.getParentById(parentId);
 
-        //then
-        assertNotNull(result);
-        assertEquals("John", result.getFirstname());
-        verify(parentRepository, times(1)).findById(parentId);
-    }
+    // then
+    assertNotNull(result);
+    assertEquals("John",result.getFirstname());
+    verify(parentRepository,times(1)).findById(parentId);
+  }
 
-    @Test
-    public void getAllParents_returnsListOfParents() {
-        //given
-        Parent parent1 = new Parent();
-        Parent parent2 = new Parent();
-        when(parentRepository.findAll()).thenReturn(List.of(parent1, parent2));
+  @Test
+  public void getAllParents_returnsListOfParents() {
+    // given
+    Parent parent1 = new Parent();
+    Parent parent2 = new Parent();
+    when(parentRepository.findAll()).thenReturn(List.of(parent1,parent2));
 
-        //when
-        List<Parent> result = parentService.getAllParents();
+    // when
+    List<Parent> result = parentService.getAllParents();
 
-        //then
-        assertNotNull(result);
-        assertEquals(2, result.size());
-        verify(parentRepository, times(1)).findAll();
-    }
+    // then
+    assertNotNull(result);
+    assertEquals(2,result.size());
+    verify(parentRepository,times(1)).findAll();
+  }
 
-    @Test
-    public void updateParent_parentNotFound_throwsException() {
-        //given
-        int parentId = 999;
-        Parent updatedParent = new Parent();
-        when(parentRepository.findById(parentId)).thenReturn(Optional.empty());
+  @Test
+  public void updateParent_parentNotFound_throwsException() {
+    // given
+    int parentId = 999;
+    Parent updatedParent = new Parent();
+    when(parentRepository.findById(parentId)).thenReturn(Optional.empty());
 
-        //when & then
-        assertThrows(EntityNotFoundException.class, () -> parentService.updateParent(parentId, updatedParent));
-        verify(parentRepository, never()).save(any(Parent.class));
-    }
+    // when & then
+    assertThrows(EntityNotFoundException.class,
+        () -> parentService.updateParent(parentId,updatedParent));
+    verify(parentRepository,never()).save(any(Parent.class));
+  }
 
-    @Test
-    public void deleteParent_deletesParentSuccessfully() {
-        //given
-        int parentId = 1;
+  @Test
+  public void deleteParent_deletesParentSuccessfully() {
+    // given
+    int parentId = 1;
 
-        //when
-        parentService.deleteParent(parentId);
+    // when
+    parentService.deleteParent(parentId);
 
-        //then
-        verify(parentRepository, times(1)).deleteById(parentId);
-    }
+    // then
+    verify(parentRepository,times(1)).deleteById(parentId);
+  }
 
-    @Test
-    public void getStudentsByParentId_returnsListOfStudents() {
-        //given
-        int parentId = 1;
-        Student student1 = new Student();
-        Student student2 = new Student();
-        when(studentRepository.findByParentUserId(parentId)).thenReturn(List.of(student1, student2));
+  @Test
+  public void getStudentsByParentId_returnsListOfStudents() {
+    // given
+    int parentId = 1;
+    Student student1 = new Student();
+    Student student2 = new Student();
+    when(studentRepository.findByParentUserId(parentId)).thenReturn(List.of(student1,student2));
 
-        //when
-        List<Student> result = parentService.getStudentsByParentId(parentId);
+    // when
+    List<Student> result = parentService.getStudentsByParentId(parentId);
 
-        //then
-        assertNotNull(result);
-        assertEquals(2, result.size());
-        verify(studentRepository, times(1)).findByParentUserId(parentId);
-    }
+    // then
+    assertNotNull(result);
+    assertEquals(2,result.size());
+    verify(studentRepository,times(1)).findByParentUserId(parentId);
+  }
 
-    @Test
-    public void addUserToParent_executesSuccessfully() {
-        //given
-        int parentId = 1;
-        UserDto userDto = new UserDto();
-        userDto.setContactInfo("123-456-789");
+  @Test
+  public void addUserToParent_executesSuccessfully() {
+    // given
+    int parentId = 1;
+    UserDto userDto = new UserDto();
+    userDto.setContactInfo("123-456-789");
 
-        //when
-        parentService.addUserToParent(parentId, userDto);
+    // when
+    parentService.addUserToParent(parentId,userDto);
 
-        //then
-        verify(parentRepository, times(1)).addUserToParents(parentId, userDto.getContactInfo());
-    }
+    // then
+    verify(parentRepository,times(1)).addUserToParents(parentId,userDto.getContactInfo());
+  }
 }

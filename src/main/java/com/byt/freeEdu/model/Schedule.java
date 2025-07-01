@@ -15,29 +15,29 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "schedule")
-public class Schedule {
+public class Schedule{
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", updatable = false, unique = true, nullable = false)
-    private int scheduleId;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Column(name = "id", updatable = false, unique = true, nullable = false)
+  private int scheduleId;
 
-    @NonNull
-    @Column(name = "date", nullable = false)
-    private LocalDate date;
+  @NonNull
+  @Column(name = "date", nullable = false)
+  private LocalDate date;
 
-    @NonNull
-    @Enumerated(EnumType.STRING)
-    @Column(name = "subject", nullable = false)
-    private SubjectEnum subject;
+  @NonNull
+  @Enumerated(EnumType.STRING)
+  @Column(name = "subject", nullable = false)
+  private SubjectEnum subject;
 
-    @NonNull
-    @ManyToOne
-    @JoinColumn(name = "class_id", nullable = false)
-    private SchoolClass schoolClass;
+  @NonNull
+  @ManyToOne
+  @JoinColumn(name = "class_id", nullable = false)
+  private SchoolClass schoolClass;
 
-    @NonNull
-    @ManyToOne
-    @JoinColumn(name = "teacher_id", nullable = false)
-    private Teacher teacher;
+  @NonNull
+  @ManyToOne
+  @JoinColumn(name = "teacher_id", nullable = false)
+  private Teacher teacher;
 }
