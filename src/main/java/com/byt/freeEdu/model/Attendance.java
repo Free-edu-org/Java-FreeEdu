@@ -27,39 +27,39 @@ import lombok.NonNull;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "attendance")
-public class Attendance {
+public class Attendance{
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", unique = true, updatable = false, nullable = false)
-    private int attendanceId;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Column(name = "id", unique = true, updatable = false, nullable = false)
+  private int attendanceId;
 
-    @NonNull
-    @ManyToOne
-    @JoinColumn(name = "student_id", nullable = false)
-    private Student student;
+  @NonNull
+  @ManyToOne
+  @JoinColumn(name = "student_id", nullable = false)
+  private Student student;
 
-    @NonNull
-    @Column(name = "date", nullable = false)
-    private LocalDate attendanceDate;
+  @NonNull
+  @Column(name = "date", nullable = false)
+  private LocalDate attendanceDate;
 
-    @NonNull
-    @Enumerated(EnumType.STRING)
-    @Column(name = "status", nullable = false)
-    private AttendanceEnum status;
+  @NonNull
+  @Enumerated(EnumType.STRING)
+  @Column(name = "status", nullable = false)
+  private AttendanceEnum status;
 
-    @NonNull
-    @ManyToOne
-    @JoinColumn(name = "teacher_id", nullable = false)
-    private Teacher teacher;
+  @NonNull
+  @ManyToOne
+  @JoinColumn(name = "teacher_id", nullable = false)
+  private Teacher teacher;
 
-    @NonNull
-    @Enumerated(EnumType.STRING)
-    @Column(name = "subject", nullable = false)
-    private SubjectEnum subject;
+  @NonNull
+  @Enumerated(EnumType.STRING)
+  @Column(name = "subject", nullable = false)
+  private SubjectEnum subject;
 
-    public Integer getId() {
-        return attendanceId;
-    }
+  public Integer getId() {
+    return attendanceId;
+  }
 
 }

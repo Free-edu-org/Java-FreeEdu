@@ -32,7 +32,7 @@ class AttendanceServiceTest{
   private TeacherService teacherService;
 
   @Test
-  public void getAttendancesForStudent_returnsAttendances(){
+  public void getAttendancesForStudent_returnsAttendances() {
     // given
     int studentId = 1;
     Attendance attendance = new Attendance();
@@ -48,7 +48,7 @@ class AttendanceServiceTest{
   }
 
   @Test
-  public void saveAttendance_savesAttendanceSuccessfully(){
+  public void saveAttendance_savesAttendanceSuccessfully() {
     // given
     Attendance attendance = new Attendance();
     when(attendanceRepository.save(attendance)).thenReturn(attendance);
@@ -61,7 +61,7 @@ class AttendanceServiceTest{
   }
 
   @Test
-  public void getAttendanceById_attendanceNotFound_throwsException(){
+  public void getAttendanceById_attendanceNotFound_throwsException() {
     // given
     int attendanceId = 999;
     when(attendanceRepository.findById(attendanceId)).thenReturn(Optional.empty());
@@ -72,7 +72,7 @@ class AttendanceServiceTest{
   }
 
   @Test
-  public void getAttendanceById_returnsAttendance(){
+  public void getAttendanceById_returnsAttendance() {
     // given
     int attendanceId = 1;
     Attendance attendance = new Attendance();
@@ -87,7 +87,7 @@ class AttendanceServiceTest{
   }
 
   @Test
-  public void getAllAttendances_returnsAllAttendances(){
+  public void getAllAttendances_returnsAllAttendances() {
     // given
     Attendance attendance = new Attendance();
     when(attendanceRepository.findAll()).thenReturn(List.of(attendance));
@@ -102,7 +102,7 @@ class AttendanceServiceTest{
   }
 
   @Test
-  public void deleteAttendance_deletesAttendanceSuccessfully(){
+  public void deleteAttendance_deletesAttendanceSuccessfully() {
     // given
     int attendanceId = 1;
 

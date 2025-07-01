@@ -5,11 +5,11 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class StudentDto {
+public class StudentDto{
 
-    private Integer id;
+  private Integer id;
 
-    private String firstName;
+  private String firstName;
 
-    private String lastName;
+  private String lastName;
 }

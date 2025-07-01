@@ -3,23 +3,23 @@ package com.byt.freeEdu.model.DTO;
 import lombok.Data;
 
 @Data
-public class UserDto {
+public class UserDto{
 
-    private int id;
+  private int id;
 
-    private String firstname;
+  private String firstname;
 
-    private String lastname;
+  private String lastname;
 
-    private String username;
+  private String username;
 
-    private String email;
+  private String email;
 
-    private String role;
+  private String role;
 
-    private int parentId;
+  private int parentId;
 
-    private int schoolClassId;
+  private int schoolClassId;
 
-    private String contactInfo;
+  private String contactInfo;
 }
