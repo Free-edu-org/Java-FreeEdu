@@ -8,10 +8,10 @@ import com.byt.freeEdu.model.users.Teacher;
 
 import jakarta.transaction.Transactional;
 
-public interface TeacherRepository extends JpaRepository<Teacher, Integer> {
+public interface TeacherRepository extends JpaRepository<Teacher, Integer>{
 
-    @Modifying
-    @Transactional
-    @Query(value = "CALL addUserToTeachers(:id)", nativeQuery = true)
-    void addUserToTeachers(int id);
+  @Modifying
+  @Transactional
+  @Query(value = "CALL addUserToTeachers(:id)", nativeQuery = true)
+  void addUserToTeachers(int id);
 }

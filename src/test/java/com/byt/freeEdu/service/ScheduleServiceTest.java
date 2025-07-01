@@ -37,7 +37,7 @@ class ScheduleServiceTest{
   private TeacherService teacherService;
 
   @Test
-  public void addSchedule_successfullySavesSchedule(){
+  public void addSchedule_successfullySavesSchedule() {
     // given
     Schedule schedule = new Schedule();
     when(scheduleRepository.save(schedule)).thenReturn(schedule);
@@ -51,7 +51,7 @@ class ScheduleServiceTest{
   }
 
   @Test
-  public void getSchedulesById_returnsMappedSchedules(){
+  public void getSchedulesById_returnsMappedSchedules() {
     // given
     int userId = 1;
     Schedule schedule = new Schedule();
@@ -71,7 +71,7 @@ class ScheduleServiceTest{
   }
 
   @Test
-  public void getSchedulesByTeacherId_returnsMappedSchedules(){
+  public void getSchedulesByTeacherId_returnsMappedSchedules() {
     // given
     int teacherId = 1;
     Teacher teacher = new Teacher();
@@ -92,7 +92,7 @@ class ScheduleServiceTest{
   }
 
   @Test
-  public void getAllSchedules_returnsMappedAdminSchedules(){
+  public void getAllSchedules_returnsMappedAdminSchedules() {
     // given
     Schedule schedule = new Schedule();
     ScheduleAdminDto scheduleAdminDto = new ScheduleAdminDto();
@@ -110,7 +110,7 @@ class ScheduleServiceTest{
   }
 
   @Test
-  public void updateSchedule_scheduleNotFound_throwsException(){
+  public void updateSchedule_scheduleNotFound_throwsException() {
     // given
     int scheduleId = 1;
     Schedule updatedSchedule = new Schedule();
@@ -124,7 +124,7 @@ class ScheduleServiceTest{
   }
 
   @Test
-  public void deleteSchedule_successfullyDeletesSchedule(){
+  public void deleteSchedule_successfullyDeletesSchedule() {
     // given
     int scheduleId = 1;
 
@@ -136,7 +136,7 @@ class ScheduleServiceTest{
   }
 
   @Test
-  public void getScheduleByClassId_returnsSchedules(){
+  public void getScheduleByClassId_returnsSchedules() {
     // given
     int classId = 1;
     Schedule schedule = new Schedule();

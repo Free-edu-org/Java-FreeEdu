@@ -23,28 +23,28 @@ import lombok.RequiredArgsConstructor;
 @NoArgsConstructor
 @RequiredArgsConstructor
 @Table(name = "remark")
-public class Remark {
+public class Remark{
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", updatable = false, unique = true, nullable = false)
-    private int remarkId;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Column(name = "id", updatable = false, unique = true, nullable = false)
+  private int remarkId;
 
-    @NonNull
-    @Column(name = "content", nullable = false)
-    private String content;
+  @NonNull
+  @Column(name = "content", nullable = false)
+  private String content;
 
-    @NonNull
-    @Column(name = "add_date", nullable = false)
-    private LocalDate addDate;
+  @NonNull
+  @Column(name = "add_date", nullable = false)
+  private LocalDate addDate;
 
-    @NonNull
-    @ManyToOne
-    @JoinColumn(name = "student_id", nullable = false)
-    private Student student;
+  @NonNull
+  @ManyToOne
+  @JoinColumn(name = "student_id", nullable = false)
+  private Student student;
 
-    @NonNull
-    @ManyToOne
-    @JoinColumn(name = "teacher_id", nullable = false)
-    private Teacher teacher;
+  @NonNull
+  @ManyToOne
+  @JoinColumn(name = "teacher_id", nullable = false)
+  private Teacher teacher;
 }

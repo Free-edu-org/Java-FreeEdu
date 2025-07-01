@@ -5,19 +5,19 @@ import java.time.LocalDate;
 import lombok.Data;
 
 @Data
-public class ScheduleAdminDto {
+public class ScheduleAdminDto{
 
-    private int id;
+  private int id;
 
-    private LocalDate date;
+  private LocalDate date;
 
-    private String subjectName;
+  private String subjectName;
 
-    private String className;
+  private String className;
 
-    private int teacherId;
+  private int teacherId;
 
-    private String teacherFirstName;
+  private String teacherFirstName;
 
-    private String teacherLastName;
+  private String teacherLastName;
 }

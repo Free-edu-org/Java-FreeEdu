@@ -41,7 +41,7 @@ class StudentServiceTest{
   private UserService userService;
 
   @Test
-  public void addStudent_savesStudentSuccessfully(){
+  public void addStudent_savesStudentSuccessfully() {
     // given
     Student student = new Student();
     when(studentRepository.save(student)).thenReturn(student);
@@ -55,7 +55,7 @@ class StudentServiceTest{
   }
 
   @Test
-  public void getStudentById_studentNotFound_throwsException(){
+  public void getStudentById_studentNotFound_throwsException() {
     // given
     int studentId = 999;
     when(studentRepository.findById(studentId)).thenReturn(Optional.empty());
@@ -65,7 +65,7 @@ class StudentServiceTest{
   }
 
   @Test
-  public void getStudentById_returnsStudent(){
+  public void getStudentById_returnsStudent() {
     // given
     int studentId = 1;
     Student student = new Student();

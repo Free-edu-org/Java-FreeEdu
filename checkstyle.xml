@@ -31,7 +31,10 @@
         <module name="LeftCurly"/>
         <module name="RightCurly"/>
         <module name="OperatorWrap"/>
-        <module name="SeparatorWrap"/>
+        <module name="SeparatorWrap">
+            <property name="tokens" value="DOT"/>
+            <property name="option" value="nl"/>
+        </module>
         <module name="ParenPad"/>
 
         <!-- Imports -->

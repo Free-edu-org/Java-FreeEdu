@@ -9,11 +9,11 @@ public class AppConfig{
 
   private boolean debugMode;
 
-  public boolean isDebugMode(){
+  public boolean isDebugMode() {
     return debugMode;
   }
 
-  public void setDebugMode(boolean debugMode){
+  public void setDebugMode(boolean debugMode) {
     this.debugMode = debugMode;
   }
 }

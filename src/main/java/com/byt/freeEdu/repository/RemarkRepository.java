@@ -10,15 +10,15 @@ import com.byt.freeEdu.model.users.Student;
 import com.byt.freeEdu.model.users.Teacher;
 
 @Repository
-public interface RemarkRepository extends JpaRepository<Remark, Integer> {
+public interface RemarkRepository extends JpaRepository<Remark, Integer>{
 
-    Remark findByContent(String content);
+  Remark findByContent(String content);
 
-    List<Remark> findByStudent(Student student);
+  List<Remark> findByStudent(Student student);
 
-    List<Remark> getRemarkByTeacher(Teacher teacher);
+  List<Remark> getRemarkByTeacher(Teacher teacher);
 
-    List<Remark> findByStudentUserId(int studentId);
+  List<Remark> findByStudentUserId(int studentId);
 
-    List<Remark> findByTeacher(Teacher teacher);
+  List<Remark> findByTeacher(Teacher teacher);
 }

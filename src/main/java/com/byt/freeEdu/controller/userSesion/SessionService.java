@@ -11,11 +11,11 @@ public class SessionService{
 
   private final UserUtils userUtils;
 
-  public SessionService(UserUtils userUtils){
+  public SessionService(UserUtils userUtils) {
     this.userUtils = userUtils;
   }
 
-  public Mono<Integer> getUserId(){
+  public Mono<Integer> getUserId() {
     return userUtils.getCurrentUserId();
   }
 }

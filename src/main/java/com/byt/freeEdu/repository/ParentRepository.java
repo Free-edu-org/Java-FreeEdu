@@ -8,10 +8,10 @@ import com.byt.freeEdu.model.users.Parent;
 
 import jakarta.transaction.Transactional;
 
-public interface ParentRepository extends JpaRepository<Parent, Integer> {
+public interface ParentRepository extends JpaRepository<Parent, Integer>{
 
-    @Modifying
-    @Transactional
-    @Query(value = "CALL addUserToParents(:id, :contactInfo)", nativeQuery = true)
-    void addUserToParents(int id, String contactInfo);
+  @Modifying
+  @Transactional
+  @Query(value = "CALL addUserToParents(:id, :contactInfo)", nativeQuery = true)
+  void addUserToParents(int id, String contactInfo);
 }

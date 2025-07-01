@@ -11,27 +11,27 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class GradeDto {
+public class GradeDto{
 
-    private int gradeId;
+  private int gradeId;
 
-    private String subject;
+  private String subject;
 
-    private SubjectEnum subjectEnum;
+  private SubjectEnum subjectEnum;
 
-    private double value;
+  private double value;
 
-    private int studentId;
+  private int studentId;
 
-    private String studentFirstName;
+  private String studentFirstName;
 
-    private String studentLastName;
+  private String studentLastName;
 
-    private int teacherId;
+  private int teacherId;
 
-    private String teacherFirstName;
+  private String teacherFirstName;
 
-    private String teacherLastName;
+  private String teacherLastName;
 
-    private LocalDate gradeDate;
+  private LocalDate gradeDate;
 }

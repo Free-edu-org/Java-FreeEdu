@@ -8,10 +8,10 @@ import com.byt.freeEdu.model.users.Admin;
 
 import jakarta.transaction.Transactional;
 
-public interface AdminRepository extends JpaRepository<Admin, Integer> {
+public interface AdminRepository extends JpaRepository<Admin, Integer>{
 
-    @Modifying
-    @Transactional
-    @Query(value = "CALL addUserToAdmins(:id)", nativeQuery = true)
-    void addUserToAdmins(int id);
+  @Modifying
+  @Transactional
+  @Query(value = "CALL addUserToAdmins(:id)", nativeQuery = true)
+  void addUserToAdmins(int id);
 }
