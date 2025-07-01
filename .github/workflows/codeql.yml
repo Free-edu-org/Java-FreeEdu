@@ -6,7 +6,7 @@ on:
   pull_request:
     branches: [ "master" ]
   schedule:
-    - cron: '0 0 * * 0'
+    - cron: '0 0 * * 0'  # co tydzień
 
 jobs:
   analyze:
@@ -16,7 +16,6 @@ jobs:
       actions: read
       contents: read
       security-events: write
-      pull-requests: write
 
     strategy:
       fail-fast: false
@@ -43,22 +42,3 @@ jobs:
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v3
-      with:
-        output: sarif
-        upload: true
-
-    - name: Post CodeQL alert comment if issues found
-      if: github.event_name == 'pull_request' && failure()
-      uses: peter-evans/create-or-update-comment@v4
-      with:
-        issue-number: ${{ github.event.pull_request.number }}
-        body: |
-          ## ❌ CodeQL found security/code issues
-          Please review the report here:
-          🔗 [View Code Scanning Alerts](../../security/code-scanning)
-
-    - name: Fail job if CodeQL found issues
-      if: failure()
-      run: |
-        echo "❌ CodeQL found issues. Failing job."
-        exit 1
