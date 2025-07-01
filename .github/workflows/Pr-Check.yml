@@ -210,7 +210,7 @@ jobs:
           fi
 
       - name: Post PMD comment
-        if: always()
+        if: steps.pmd-summary.outputs.summary != ''
         uses: peter-evans/create-or-update-comment@v4
         with:
           issue-number: ${{ github.event.pull_request.number }}
