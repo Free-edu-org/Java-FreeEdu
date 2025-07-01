@@ -30,8 +30,6 @@
         <module name="NeedBraces"/>
         <module name="LeftCurly"/>
         <module name="RightCurly"/>
-        <module name="WhitespaceAround"/>
-        <module name="WhitespaceAfter"/>
         <module name="OperatorWrap"/>
         <module name="SeparatorWrap"/>
         <module name="ParenPad"/>
@@ -47,23 +45,19 @@
         </module>
 
         <!-- Code practices -->
-        <module name="FinalLocalVariable"/>
-        <module name="FinalParameters"/>
-        <module name="EqualsAvoidNull"/>
-        <module name="SimplifyBooleanExpression"/>
         <module name="SimplifyBooleanReturn"/>
+        <module name="EqualsAvoidNull"/>
 
-        <!-- Disable javadoc -->
-        <!-- <module name="JavadocType"/> -->
-        <!-- <module name="JavadocMethod"> -->
-        <!--    <property name="allowMissingParamTags" value="true"/> -->
-        <!--    <property name="allowMissingReturnTag" value="true"/> -->
-        <!-- </module>  -->
-
-        <!-- Disable annoying rules -->
-        <!-- <module name="JavadocPackage"/> -->
-        <!-- <module name="DesignForExtension"/> -->
+        <!-- DISABLED -->
+        <!-- <module name="FinalParameters"/> -->
+        <!-- <module name="WhitespaceAround"/> -->
+        <!-- <module name="WhitespaceAfter"/> -->
+        <!-- <module name="FinalLocalVariable"/> -->
+        <!-- <module name="SeparatorWrap"/> -->
+        <!-- <module name="JavadocMethod"/> -->
         <!-- <module name="JavadocVariable"/> -->
+        <!-- <module name="JavadocType"/> -->
+        <!-- <module name="JavadocPackage"/> -->
 
     </module>
 </module>

@@ -1,5 +1,11 @@
 package com.byt.freeEdu.service;
 
+import java.time.LocalDate;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.springframework.stereotype.Service;
+
 import com.byt.freeEdu.mapper.GradeMapper;
 import com.byt.freeEdu.model.DTO.GradeDto;
 import com.byt.freeEdu.model.Grade;
@@ -8,71 +14,72 @@ import com.byt.freeEdu.repository.GradeRepository;
 import com.byt.freeEdu.repository.TeacherRepository;
 import com.byt.freeEdu.service.users.StudentService;
 import com.byt.freeEdu.service.users.TeacherService;
-import jakarta.persistence.EntityNotFoundException;
-import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
-import java.util.List;
-import java.util.stream.Collectors;
+import jakarta.persistence.EntityNotFoundException;
 
 @Service
-public class GradeService{
-  private final GradeRepository gradeRepository;
-  private final TeacherRepository teacherRepository;
-  private final GradeMapper gradeMapper;
-  private final StudentService studentService;
-  private final TeacherService teacherService;
+public class GradeService {
 
-  public GradeService(GradeRepository gradeRepository, TeacherRepository teacherRepository,
-      GradeMapper gradeMapper, StudentService studentService, TeacherService teacherService) {
-    this.gradeRepository = gradeRepository;
-    this.teacherRepository = teacherRepository;
-    this.gradeMapper = gradeMapper;
-    this.studentService = studentService;
-    this.teacherService = teacherService;
-  }
+    private final GradeRepository gradeRepository;
 
-  public Boolean saveGrade(GradeDto grade) {
-    Grade entity = gradeMapper.toEntity(grade,studentService,teacherService);
-    entity.setSubject(SubjectEnum.valueOf(grade.getSubject()));
-    entity.setGradeDate(LocalDate.now());
-    gradeRepository.save(entity);
-    return true;
-  }
+    private final TeacherRepository teacherRepository;
 
-  public Grade getGradeById(int id) {
-    return gradeRepository.findById(id)
-        .orElseThrow(() -> new EntityNotFoundException("Grade not found with ID: " + id));
-  }
+    private final GradeMapper gradeMapper;
 
-  public List<GradeDto> getGradesByTeacherId(int teacherId) {
-    return gradeRepository.getGradeByTeacher(teacherRepository.findById(teacherId).get()).stream()
-        .map(gradeMapper::toDto).collect(Collectors.toList());
-  }
+    private final StudentService studentService;
 
-  public List<GradeDto> getAllGrades() {
-    return gradeRepository.findAll().stream().map(gradeMapper::toDto).collect(Collectors.toList());
-  }
+    private final TeacherService teacherService;
 
-  public List<Grade> getGradesForStudent(int studentId) {
-    return gradeRepository.findByStudent_UserId(studentId);
-  }
-
-  public Boolean updateGrade(int id, GradeDto updatedGrade) {
-    Grade existingGrade = gradeRepository.findById(id).get();
-    existingGrade.setValue(updatedGrade.getValue());
-    existingGrade.setGradeDate(LocalDate.now());
-
-    gradeRepository.save(existingGrade);
-    return true;
-  }
-
-  public boolean deleteGrade(int id) {
-    if (gradeRepository.existsById(id)) {
-      gradeRepository.deleteById(id);
-    } else {
-      throw new IllegalArgumentException("Ocena o podanym ID nie istnieje.");
+    public GradeService(GradeRepository gradeRepository, TeacherRepository teacherRepository,
+                        GradeMapper gradeMapper, StudentService studentService, TeacherService teacherService) {
+        this.gradeRepository = gradeRepository;
+        this.teacherRepository = teacherRepository;
+        this.gradeMapper = gradeMapper;
+        this.studentService = studentService;
+        this.teacherService = teacherService;
     }
-    return true;
-  }
+
+    public Boolean saveGrade(GradeDto grade) {
+        Grade entity = gradeMapper.toEntity(grade, studentService, teacherService);
+        entity.setSubject(SubjectEnum.valueOf(grade.getSubject()));
+        entity.setGradeDate(LocalDate.now());
+        gradeRepository.save(entity);
+        return true;
+    }
+
+    public Grade getGradeById(int id) {
+        return gradeRepository.findById(id).
+                orElseThrow(() -> new EntityNotFoundException("Grade not found with ID: " + id));
+    }
+
+    public List<GradeDto> getGradesByTeacherId(int teacherId) {
+        return gradeRepository.getGradeByTeacher(teacherRepository.findById(teacherId).get()).stream().
+                map(gradeMapper::toDto).collect(Collectors.toList());
+    }
+
+    public List<GradeDto> getAllGrades() {
+        return gradeRepository.findAll().stream().map(gradeMapper::toDto).collect(Collectors.toList());
+    }
+
+    public List<Grade> getGradesForStudent(int studentId) {
+        return gradeRepository.findByStudentUserId(studentId);
+    }
+
+    public Boolean updateGrade(int id, GradeDto updatedGrade) {
+        Grade existingGrade = gradeRepository.findById(id).get();
+        existingGrade.setValue(updatedGrade.getValue());
+        existingGrade.setGradeDate(LocalDate.now());
+
+        gradeRepository.save(existingGrade);
+        return true;
+    }
+
+    public boolean deleteGrade(int id) {
+        if (gradeRepository.existsById(id)) {
+            gradeRepository.deleteById(id);
+        } else {
+            throw new IllegalArgumentException("Ocena o podanym ID nie istnieje.");
+        }
+        return true;
+    }
 }

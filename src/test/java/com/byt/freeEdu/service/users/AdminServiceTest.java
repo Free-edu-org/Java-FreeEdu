@@ -25,7 +25,7 @@ class AdminServiceTest{
   private AdminRepository adminRepository;
 
   @Test
-  void addAdmin_savesAdminSuccessfully() {
+  void addAdmin_savesAdminSuccessfully(){
     // given
     Admin admin = new Admin();
     admin.setFirstname("John");
@@ -41,7 +41,7 @@ class AdminServiceTest{
   }
 
   @Test
-  void getAdminById_adminNotFound_throwsException() {
+  void getAdminById_adminNotFound_throwsException(){
     // given
     int adminId = 999;
     when(adminRepository.findById(adminId)).thenReturn(Optional.empty());
@@ -52,7 +52,7 @@ class AdminServiceTest{
   }
 
   @Test
-  void getAdminById_returnsAdmin() {
+  void getAdminById_returnsAdmin(){
     // given
     int adminId = 1;
     Admin admin = new Admin();
@@ -69,7 +69,7 @@ class AdminServiceTest{
   }
 
   @Test
-  void getAllAdmins_returnsListOfAdmins() {
+  void getAllAdmins_returnsListOfAdmins(){
     // given
     Admin admin1 = new Admin();
     Admin admin2 = new Admin();
@@ -85,7 +85,7 @@ class AdminServiceTest{
   }
 
   @Test
-  void updateAdmin_adminNotFound_throwsException() {
+  void updateAdmin_adminNotFound_throwsException(){
     // given
     int adminId = 999;
     Admin updatedAdmin = new Admin();
@@ -98,7 +98,7 @@ class AdminServiceTest{
   }
 
   @Test
-  void deleteAdmin_deletesAdminSuccessfully() {
+  void deleteAdmin_deletesAdminSuccessfully(){
     // given
     int adminId = 1;
 
@@ -110,7 +110,7 @@ class AdminServiceTest{
   }
 
   @Test
-  void addUserToAdmin_executesSuccessfully() {
+  void addUserToAdmin_executesSuccessfully(){
     // given
     int userId = 1;
 

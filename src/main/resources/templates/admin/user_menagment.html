@@ -60,7 +60,7 @@
                         <td th:text="${user.lastname}">Kowalski</td>
                         <td th:text="${user.username}">Kowalski</td>
                         <td th:text="${user.email}">Marekowalski@gmail.com</td>
-                        <td th:text="${user.user_role}">Nauczyciel</td>
+                        <td th:text="${user.getUserRole}">Nauczyciel</td>
                         <td>
                             <a class="btn btn-primary btn-sm" th:href="@{'/view/admin/user_management/edit/' + ${user.userId}}">Edytuj</a>
                             <a class="btn btn-danger btn-sm" th:href="@{'/view/admin/user_management/delete/' + ${user.userId}}">Usuń</a>

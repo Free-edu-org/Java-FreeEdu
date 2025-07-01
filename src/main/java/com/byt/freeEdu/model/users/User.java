@@ -1,13 +1,28 @@
 package com.byt.freeEdu.model.users;
 
-import com.byt.freeEdu.model.enums.UserRole;
-import jakarta.persistence.*;
-import lombok.*;
+import java.util.Collection;
+import java.util.List;
+
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.Collection;
-import java.util.List;
+import com.byt.freeEdu.model.enums.UserRole;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Inheritance;
+import jakarta.persistence.InheritanceType;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 
 @Data
 @Entity
@@ -16,59 +31,60 @@ import java.util.List;
 @NoArgsConstructor
 @Inheritance(strategy = InheritanceType.JOINED)
 @Table(name = "user")
-public class User implements UserDetails{
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  @Column(name = "id", updatable = false, nullable = false)
-  private int userId;
+public class User implements UserDetails {
 
-  @NonNull
-  @Column(name = "username", nullable = false, unique = true)
-  private String username;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", updatable = false, nullable = false)
+    private int userId;
 
-  @NonNull
-  @Column(name = "firstname", nullable = false)
-  private String firstname;
+    @NonNull
+    @Column(name = "username", nullable = false, unique = true)
+    private String username;
 
-  @NonNull
-  @Column(name = "lastname", nullable = false)
-  private String lastname;
+    @NonNull
+    @Column(name = "firstname", nullable = false)
+    private String firstname;
 
-  @NonNull
-  @Column(name = "email", nullable = false, unique = true)
-  private String email;
+    @NonNull
+    @Column(name = "lastname", nullable = false)
+    private String lastname;
 
-  @NonNull
-  @Column(name = "password", nullable = false)
-  private String password;
+    @NonNull
+    @Column(name = "email", nullable = false, unique = true)
+    private String email;
 
-  @NonNull
-  @Enumerated(EnumType.STRING)
-  @Column(name = "user_role", nullable = false)
-  private UserRole user_role;
+    @NonNull
+    @Column(name = "password", nullable = false)
+    private String password;
 
-  @Override
-  public Collection<? extends GrantedAuthority> getAuthorities() {
-    return List.of();
-  }
+    @NonNull
+    @Enumerated(EnumType.STRING)
+    @Column(name = "user_role", nullable = false)
+    private UserRole userRole;
 
-  @Override
-  public boolean isAccountNonExpired() {
-    return UserDetails.super.isAccountNonExpired();
-  }
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of();
+    }
 
-  @Override
-  public boolean isAccountNonLocked() {
-    return UserDetails.super.isAccountNonLocked();
-  }
+    @Override
+    public boolean isAccountNonExpired() {
+        return UserDetails.super.isAccountNonExpired();
+    }
 
-  @Override
-  public boolean isCredentialsNonExpired() {
-    return UserDetails.super.isCredentialsNonExpired();
-  }
+    @Override
+    public boolean isAccountNonLocked() {
+        return UserDetails.super.isAccountNonLocked();
+    }
 
-  @Override
-  public boolean isEnabled() {
-    return UserDetails.super.isEnabled();
-  }
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return UserDetails.super.isCredentialsNonExpired();
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return UserDetails.super.isEnabled();
+    }
 }

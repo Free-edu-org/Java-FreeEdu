@@ -25,7 +25,7 @@ class TeacherServiceTest{
   private TeacherRepository teacherRepository;
 
   @Test
-  public void addTeacher_savesTeacherSuccessfully() {
+  public void addTeacher_savesTeacherSuccessfully(){
     // given
     Teacher teacher = new Teacher();
     teacher.setFirstname("John");
@@ -43,7 +43,7 @@ class TeacherServiceTest{
   }
 
   @Test
-  public void getTeacherById_teacherNotFound_throwsException() {
+  public void getTeacherById_teacherNotFound_throwsException(){
     // given
     int teacherId = 999;
     when(teacherRepository.findById(teacherId)).thenReturn(Optional.empty());
@@ -54,7 +54,7 @@ class TeacherServiceTest{
   }
 
   @Test
-  public void getTeacherById_returnsTeacher() {
+  public void getTeacherById_returnsTeacher(){
     // given
     int teacherId = 1;
     Teacher teacher = new Teacher();
@@ -72,7 +72,7 @@ class TeacherServiceTest{
   }
 
   @Test
-  public void getAllTeachers_returnsListOfTeachers() {
+  public void getAllTeachers_returnsListOfTeachers(){
     // given
     Teacher teacher1 = new Teacher();
     Teacher teacher2 = new Teacher();
@@ -88,7 +88,7 @@ class TeacherServiceTest{
   }
 
   @Test
-  public void updateTeacher_teacherNotFound_throwsException() {
+  public void updateTeacher_teacherNotFound_throwsException(){
     // given
     int teacherId = 999;
     Teacher updatedTeacher = new Teacher();
@@ -102,7 +102,7 @@ class TeacherServiceTest{
   }
 
   @Test
-  public void deleteTeacher_deletesTeacherSuccessfully() {
+  public void deleteTeacher_deletesTeacherSuccessfully(){
     // given
     int teacherId = 1;
 
@@ -114,7 +114,7 @@ class TeacherServiceTest{
   }
 
   @Test
-  public void addUserToTeacher_addsUserSuccessfully() {
+  public void addUserToTeacher_addsUserSuccessfully(){
     // given
     int userId = 1;
 

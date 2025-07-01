@@ -25,7 +25,7 @@ class SchoolClassServiceTest{
   private SchoolClassRepository schoolClassRepository;
 
   @Test
-  public void getAllSchoolClass_returnsListOfSchoolClasses() {
+  public void getAllSchoolClass_returnsListOfSchoolClasses(){
     // given
     SchoolClass schoolClass1 = new SchoolClass("Class A");
     SchoolClass schoolClass2 = new SchoolClass("Class B");
@@ -41,7 +41,7 @@ class SchoolClassServiceTest{
   }
 
   @Test
-  public void getSchoolClassById_classNotFound_throwsException() {
+  public void getSchoolClassById_classNotFound_throwsException(){
     // given
     int classId = 999;
     when(schoolClassRepository.findById(classId)).thenReturn(Optional.empty());
@@ -52,7 +52,7 @@ class SchoolClassServiceTest{
   }
 
   @Test
-  public void getSchoolClassById_returnsSchoolClass() {
+  public void getSchoolClassById_returnsSchoolClass(){
     // given
     int classId = 1;
     SchoolClass schoolClass = new SchoolClass("Class A");
@@ -68,7 +68,7 @@ class SchoolClassServiceTest{
   }
 
   @Test
-  public void getSchoolClassByName_classNotFound_throwsException() {
+  public void getSchoolClassByName_classNotFound_throwsException(){
     // given
     String className = "Non-existent Class";
     when(schoolClassRepository.findByName(className)).thenReturn(Optional.empty());
@@ -79,7 +79,7 @@ class SchoolClassServiceTest{
   }
 
   @Test
-  public void getSchoolClassByName_returnsSchoolClass() {
+  public void getSchoolClassByName_returnsSchoolClass(){
     // given
     String className = "Class A";
     SchoolClass schoolClass = new SchoolClass(className);
@@ -95,14 +95,14 @@ class SchoolClassServiceTest{
   }
 
   @Test
-  public void addSchoolClass_emptyName_throwsException() {
+  public void addSchoolClass_emptyName_throwsException(){
     // when & then
     assertThrows(IllegalArgumentException.class,() -> schoolClassService.addSchoolClass(" "));
     verify(schoolClassRepository,never()).save(any(SchoolClass.class));
   }
 
   @Test
-  public void addSchoolClass_savesSchoolClass() {
+  public void addSchoolClass_savesSchoolClass(){
     // given
     String className = "Class A";
     SchoolClass schoolClass = new SchoolClass(className);
@@ -118,7 +118,7 @@ class SchoolClassServiceTest{
   }
 
   @Test
-  public void deleteSchoolClassById_classNotFound_throwsException() {
+  public void deleteSchoolClassById_classNotFound_throwsException(){
     // given
     int classId = 999;
     when(schoolClassRepository.findById(classId)).thenReturn(Optional.empty());
@@ -130,7 +130,7 @@ class SchoolClassServiceTest{
   }
 
   @Test
-  public void deleteSchoolClassById_deletesSchoolClass() {
+  public void deleteSchoolClassById_deletesSchoolClass(){
     // given
     int classId = 1;
     SchoolClass schoolClass = new SchoolClass("Class A");
@@ -144,7 +144,7 @@ class SchoolClassServiceTest{
   }
 
   @Test
-  public void deleteSchoolClassByName_classNotFound_throwsException() {
+  public void deleteSchoolClassByName_classNotFound_throwsException(){
     // given
     String className = "Non-existent Class";
     when(schoolClassRepository.findByName(className)).thenReturn(Optional.empty());
@@ -156,7 +156,7 @@ class SchoolClassServiceTest{
   }
 
   @Test
-  public void deleteSchoolClassByName_deletesSchoolClass() {
+  public void deleteSchoolClassByName_deletesSchoolClass(){
     // given
     String className = "Class A";
     SchoolClass schoolClass = new SchoolClass(className);
@@ -170,7 +170,7 @@ class SchoolClassServiceTest{
   }
 
   @Test
-  public void getAllClassesWithStudentCount_returnsClassesWithCounts() {
+  public void getAllClassesWithStudentCount_returnsClassesWithCounts(){
     // given
     SchoolClass schoolClass = new SchoolClass("Class A");
     schoolClass.setSchoolClassId(1);

@@ -1,9 +1,6 @@
 package com.byt.freeEdu.service;
 
 import com.byt.freeEdu.model.Attendance;
-import com.byt.freeEdu.model.DTO.AttendanceDto;
-import com.byt.freeEdu.model.enums.AttendanceEnum;
-import com.byt.freeEdu.model.enums.SubjectEnum;
 import com.byt.freeEdu.repository.AttendanceRepository;
 import com.byt.freeEdu.service.users.StudentService;
 import com.byt.freeEdu.service.users.TeacherService;
@@ -14,7 +11,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.time.LocalDate;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -36,11 +32,11 @@ class AttendanceServiceTest{
   private TeacherService teacherService;
 
   @Test
-  public void getAttendancesForStudent_returnsAttendances() {
+  public void getAttendancesForStudent_returnsAttendances(){
     // given
     int studentId = 1;
     Attendance attendance = new Attendance();
-    when(attendanceRepository.findByStudent_UserId(studentId)).thenReturn(List.of(attendance));
+    when(attendanceRepository.findByStudentUserId(studentId)).thenReturn(List.of(attendance));
 
     // when
     List<Attendance> attendances = attendanceService.getAttendancesForStudent(studentId);
@@ -48,11 +44,11 @@ class AttendanceServiceTest{
     // then
     assertNotNull(attendances);
     assertEquals(1,attendances.size());
-    verify(attendanceRepository,times(1)).findByStudent_UserId(studentId);
+    verify(attendanceRepository,times(1)).findByStudentUserId(studentId);
   }
 
   @Test
-  public void saveAttendance_savesAttendanceSuccessfully() {
+  public void saveAttendance_savesAttendanceSuccessfully(){
     // given
     Attendance attendance = new Attendance();
     when(attendanceRepository.save(attendance)).thenReturn(attendance);
@@ -65,7 +61,7 @@ class AttendanceServiceTest{
   }
 
   @Test
-  public void getAttendanceById_attendanceNotFound_throwsException() {
+  public void getAttendanceById_attendanceNotFound_throwsException(){
     // given
     int attendanceId = 999;
     when(attendanceRepository.findById(attendanceId)).thenReturn(Optional.empty());
@@ -76,7 +72,7 @@ class AttendanceServiceTest{
   }
 
   @Test
-  public void getAttendanceById_returnsAttendance() {
+  public void getAttendanceById_returnsAttendance(){
     // given
     int attendanceId = 1;
     Attendance attendance = new Attendance();
@@ -91,7 +87,7 @@ class AttendanceServiceTest{
   }
 
   @Test
-  public void getAllAttendances_returnsAllAttendances() {
+  public void getAllAttendances_returnsAllAttendances(){
     // given
     Attendance attendance = new Attendance();
     when(attendanceRepository.findAll()).thenReturn(List.of(attendance));
@@ -106,7 +102,7 @@ class AttendanceServiceTest{
   }
 
   @Test
-  public void deleteAttendance_deletesAttendanceSuccessfully() {
+  public void deleteAttendance_deletesAttendanceSuccessfully(){
     // given
     int attendanceId = 1;
 

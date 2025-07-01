@@ -9,20 +9,21 @@ import org.springframework.security.web.server.SecurityWebFilterChain;
 
 @Configuration
 @EnableWebFluxSecurity
-public class WebfluxSecurityConfig{
-  private final WebfluxSecurity webfluxSecurity;
+public class WebfluxSecurityConfig {
 
-  public WebfluxSecurityConfig(WebfluxSecurity webfluxSecurity) {
-    this.webfluxSecurity = webfluxSecurity;
-  }
+    private final WebfluxSecurity webfluxSecurity;
 
-  @Bean
-  public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
-    return webfluxSecurity.enforcingAuthenticationWithoutCSRF(http);
-  }
+    public WebfluxSecurityConfig(WebfluxSecurity webfluxSecurity) {
+        this.webfluxSecurity = webfluxSecurity;
+    }
 
-  @Bean
-  public ReactiveAuthenticationManager authenticationManager() {
-    return webfluxSecurity.noOpEncoderAuthenticationManager();
-  }
+    @Bean
+    public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
+        return webfluxSecurity.enforcingAuthenticationWithoutCSRF(http);
+    }
+
+    @Bean
+    public ReactiveAuthenticationManager authenticationManager() {
+        return webfluxSecurity.noOpEncoderAuthenticationManager();
+    }
 }

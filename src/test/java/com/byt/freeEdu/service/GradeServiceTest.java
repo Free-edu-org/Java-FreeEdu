@@ -3,7 +3,6 @@ package com.byt.freeEdu.service;
 import com.byt.freeEdu.mapper.GradeMapper;
 import com.byt.freeEdu.model.DTO.GradeDto;
 import com.byt.freeEdu.model.Grade;
-import com.byt.freeEdu.model.enums.SubjectEnum;
 import com.byt.freeEdu.model.users.Teacher;
 import com.byt.freeEdu.repository.GradeRepository;
 import com.byt.freeEdu.repository.TeacherRepository;
@@ -45,7 +44,7 @@ class GradeServiceTest{
   private TeacherService teacherService;
 
   @Test
-  public void saveGrade_successfullySavesGrade() {
+  public void saveGrade_successfullySavesGrade(){
     // given
     GradeDto gradeDto = new GradeDto();
     gradeDto.setSubject("MATH");
@@ -65,7 +64,7 @@ class GradeServiceTest{
   }
 
   @Test
-  public void getGradeById_gradeNotFound_throwsException() {
+  public void getGradeById_gradeNotFound_throwsException(){
     // given
     int gradeId = 999;
     when(gradeRepository.findById(gradeId)).thenReturn(Optional.empty());
@@ -75,7 +74,7 @@ class GradeServiceTest{
   }
 
   @Test
-  public void getGradeById_returnsGrade() {
+  public void getGradeById_returnsGrade(){
     // given
     int gradeId = 1;
     Grade grade = new Grade();
@@ -90,7 +89,7 @@ class GradeServiceTest{
   }
 
   @Test
-  public void getGradesByTeacherId_returnsMappedGrades() {
+  public void getGradesByTeacherId_returnsMappedGrades(){
     // given
     int teacherId = 1;
     Grade grade = new Grade();
@@ -110,7 +109,7 @@ class GradeServiceTest{
   }
 
   @Test
-  public void getAllGrades_returnsMappedGrades() {
+  public void getAllGrades_returnsMappedGrades(){
     // given
     Grade grade = new Grade();
     GradeDto gradeDto = new GradeDto();
@@ -128,12 +127,12 @@ class GradeServiceTest{
   }
 
   @Test
-  public void getGradesForStudent_returnsGrades() {
+  public void getGradesForStudent_returnsGrades(){
     // given
     int studentId = 1;
     Grade grade = new Grade();
 
-    when(gradeRepository.findByStudent_UserId(studentId)).thenReturn(List.of(grade));
+    when(gradeRepository.findByStudentUserId(studentId)).thenReturn(List.of(grade));
 
     // when
     List<Grade> results = gradeService.getGradesForStudent(studentId);
@@ -141,11 +140,11 @@ class GradeServiceTest{
     // then
     assertNotNull(results);
     assertEquals(1,results.size());
-    verify(gradeRepository,times(1)).findByStudent_UserId(studentId);
+    verify(gradeRepository,times(1)).findByStudentUserId(studentId);
   }
 
   @Test
-  public void updateGrade_successfullyUpdatesGrade() {
+  public void updateGrade_successfullyUpdatesGrade(){
     // given
     int gradeId = 1;
     Grade existingGrade = new Grade();
@@ -166,7 +165,7 @@ class GradeServiceTest{
   }
 
   @Test
-  public void deleteGrade_gradeNotFound_throwsException() {
+  public void deleteGrade_gradeNotFound_throwsException(){
     // given
     int gradeId = 999;
     when(gradeRepository.existsById(gradeId)).thenReturn(false);
@@ -177,7 +176,7 @@ class GradeServiceTest{
   }
 
   @Test
-  public void deleteGrade_successfullyDeletesGrade() {
+  public void deleteGrade_successfullyDeletesGrade(){
     // given
     int gradeId = 1;
     when(gradeRepository.existsById(gradeId)).thenReturn(true);

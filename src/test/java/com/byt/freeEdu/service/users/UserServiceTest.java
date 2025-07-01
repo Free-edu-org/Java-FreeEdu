@@ -29,7 +29,7 @@ class UserServiceTest{
   private UserRepository userRepository;
 
   @Test
-  public void getAllUsers_returnsListOfUsers() {
+  public void getAllUsers_returnsListOfUsers(){
     // given
     User user1 = new User("user1", "John", "Doe", "john.doe@example.com", "password",
         UserRole.UNKNOWN);
@@ -47,7 +47,7 @@ class UserServiceTest{
   }
 
   @Test
-  public void getUserById_userNotFound_throwsException() {
+  public void getUserById_userNotFound_throwsException(){
     // given
     int userId = 999;
     when(userRepository.findById(userId)).thenReturn(Optional.empty());
@@ -57,7 +57,7 @@ class UserServiceTest{
   }
 
   @Test
-  public void getUserById_returnsUser() {
+  public void getUserById_returnsUser(){
     // given
     int userId = 1;
     User user = new User();
@@ -72,7 +72,7 @@ class UserServiceTest{
   }
 
   @Test
-  public void addUser_duplicateUsername_throwsException() {
+  public void addUser_duplicateUsername_throwsException(){
     // given
     when(userRepository.existsByUsername("duplicate")).thenReturn(true);
 
@@ -83,7 +83,7 @@ class UserServiceTest{
   }
 
   @Test
-  public void addUser_duplicateEmail_throwsException() {
+  public void addUser_duplicateEmail_throwsException(){
     // given
     when(userRepository.existsByEmail("duplicate@example.com")).thenReturn(true);
 
@@ -94,7 +94,7 @@ class UserServiceTest{
   }
 
   @Test
-  public void addUser_savesUserSuccessfully() {
+  public void addUser_savesUserSuccessfully(){
     // given
     PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
     String rawPassword = "password";
@@ -115,7 +115,7 @@ class UserServiceTest{
   }
 
   @Test
-  public void updateUser_userNotFound_throwsException() {
+  public void updateUser_userNotFound_throwsException(){
     // given
     int userId = 999;
     UserDto updatedUser = new UserDto();
@@ -126,7 +126,7 @@ class UserServiceTest{
   }
 
   @Test
-  public void updateUser_updatesUserSuccessfully() {
+  public void updateUser_updatesUserSuccessfully(){
     // given
     int userId = 1;
     User existingUser = new User("user1", "John", "Doe", "john.doe@example.com", "password",
@@ -144,12 +144,12 @@ class UserServiceTest{
     // then
     assertNotNull(result);
     assertEquals("updatedUser",result.getUsername());
-    assertEquals(UserRole.ADMIN,result.getUser_role());
+    assertEquals(UserRole.ADMIN,result.getUserRole());
     verify(userRepository,times(1)).save(existingUser);
   }
 
   @Test
-  public void deleteUserById_userNotFound_throwsException() {
+  public void deleteUserById_userNotFound_throwsException(){
     // given
     int userId = 999;
     when(userRepository.findById(userId)).thenReturn(Optional.empty());
@@ -160,7 +160,7 @@ class UserServiceTest{
   }
 
   @Test
-  public void deleteUserById_deletesUserSuccessfully() {
+  public void deleteUserById_deletesUserSuccessfully(){
     // given
     int userId = 1;
     User user = new User();
@@ -174,7 +174,7 @@ class UserServiceTest{
   }
 
   @Test
-  public void deleteUserByUsername_userNotFound_throwsException() {
+  public void deleteUserByUsername_userNotFound_throwsException(){
     // given
     String username = "nonexistent";
     when(userRepository.findByUsername(username)).thenReturn(Optional.empty());
@@ -185,7 +185,7 @@ class UserServiceTest{
   }
 
   @Test
-  public void deleteUserByUsername_deletesUserSuccessfully() {
+  public void deleteUserByUsername_deletesUserSuccessfully(){
     // given
     String username = "existingUser";
     User user = new User();

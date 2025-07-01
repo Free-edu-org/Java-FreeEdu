@@ -1,22 +1,24 @@
 package com.byt.freeEdu.repository;
 
-import com.byt.freeEdu.model.Remark;
-import com.byt.freeEdu.model.users.Student;
-import com.byt.freeEdu.model.users.Teacher;
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
+import com.byt.freeEdu.model.Remark;
+import com.byt.freeEdu.model.users.Student;
+import com.byt.freeEdu.model.users.Teacher;
 
 @Repository
-public interface RemarkRepository extends JpaRepository<Remark, Integer>{
-  Remark findByContent(String content);
+public interface RemarkRepository extends JpaRepository<Remark, Integer> {
 
-  List<Remark> findByStudent(Student student);
+    Remark findByContent(String content);
 
-  List<Remark> getRemarkByTeacher(Teacher teacher);
+    List<Remark> findByStudent(Student student);
 
-  List<Remark> findByStudent_UserId(int studentId);
+    List<Remark> getRemarkByTeacher(Teacher teacher);
 
-  List<Remark> findByTeacher(Teacher teacher);
+    List<Remark> findByStudentUserId(int studentId);
+
+    List<Remark> findByTeacher(Teacher teacher);
 }

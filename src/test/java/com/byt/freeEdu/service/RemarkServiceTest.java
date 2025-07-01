@@ -39,7 +39,7 @@ class RemarkServiceTest{
   private RemarkMapper remarkMapper;
 
   @Test
-  public void getAllRemarks_returnsMappedRemarkDtos() {
+  public void getAllRemarks_returnsMappedRemarkDtos(){
     // given
     Remark remark = new Remark("Test content", LocalDate.now(), new Student(), new Teacher());
     when(remarkRepository.findAll()).thenReturn(List.of(remark));
@@ -55,7 +55,7 @@ class RemarkServiceTest{
   }
 
   @Test
-  public void getRemarkById_remarkNotFound_throwsException() {
+  public void getRemarkById_remarkNotFound_throwsException(){
     // given
     int remarkId = 999;
     when(remarkRepository.findById(remarkId)).thenReturn(Optional.empty());
@@ -65,7 +65,7 @@ class RemarkServiceTest{
   }
 
   @Test
-  public void getRemarkById_returnsRemarkDto() {
+  public void getRemarkById_returnsRemarkDto(){
     // given
     int remarkId = 1;
     Remark remark = new Remark("Content", LocalDate.now(), new Student(), new Teacher());
@@ -81,7 +81,7 @@ class RemarkServiceTest{
   }
 
   @Test
-  public void addRemark_emptyContent_throwsException() {
+  public void addRemark_emptyContent_throwsException(){
     // given
     String content = " ";
     int studentId = 1;
@@ -95,7 +95,7 @@ class RemarkServiceTest{
   }
 
   @Test
-  public void addRemark_studentOrTeacherNotFound_throwsException() {
+  public void addRemark_studentOrTeacherNotFound_throwsException(){
     // given
     String content = "Remark content";
     int studentId = 1;
@@ -109,7 +109,7 @@ class RemarkServiceTest{
   }
 
   @Test
-  public void addRemark_successfullySavesRemark() {
+  public void addRemark_successfullySavesRemark(){
     // given
     String content = "Remark content";
     int studentId = 1;
@@ -137,7 +137,7 @@ class RemarkServiceTest{
   }
 
   @Test
-  public void deleteRemark_remarkNotFound_throwsException() {
+  public void deleteRemark_remarkNotFound_throwsException(){
     // given
     int remarkId = 999;
     when(remarkRepository.findById(remarkId)).thenReturn(Optional.empty());
@@ -148,7 +148,7 @@ class RemarkServiceTest{
   }
 
   @Test
-  public void deleteRemark_successfullyDeletesRemark() {
+  public void deleteRemark_successfullyDeletesRemark(){
     // given
     int remarkId = 1;
     Remark remark = new Remark("Test", LocalDate.now(), new Student(), new Teacher());
@@ -163,7 +163,7 @@ class RemarkServiceTest{
   }
 
   @Test
-  public void getRemarksByStudentId_studentNotFound_throwsException() {
+  public void getRemarksByStudentId_studentNotFound_throwsException(){
     // given
     int studentId = 999;
     when(studentRepository.findById(studentId)).thenReturn(Optional.empty());
@@ -174,7 +174,7 @@ class RemarkServiceTest{
   }
 
   @Test
-  public void getRemarksByStudentId_returnsMappedRemarkDtos() {
+  public void getRemarksByStudentId_returnsMappedRemarkDtos(){
     // given
     int studentId = 1;
     Student student = new Student();

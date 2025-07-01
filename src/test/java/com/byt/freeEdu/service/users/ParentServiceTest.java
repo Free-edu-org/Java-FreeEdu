@@ -31,7 +31,7 @@ class ParentServiceTest{
   private StudentRepository studentRepository;
 
   @Test
-  public void addParent_savesParentSuccessfully() {
+  public void addParent_savesParentSuccessfully(){
     // given
     Parent parent = new Parent();
     when(parentRepository.save(parent)).thenReturn(parent);
@@ -45,7 +45,7 @@ class ParentServiceTest{
   }
 
   @Test
-  public void getParentById_parentNotFound_throwsException() {
+  public void getParentById_parentNotFound_throwsException(){
     // given
     int parentId = 999;
     when(parentRepository.findById(parentId)).thenReturn(Optional.empty());
@@ -56,7 +56,7 @@ class ParentServiceTest{
   }
 
   @Test
-  public void getParentById_returnsParent() {
+  public void getParentById_returnsParent(){
     // given
     int parentId = 1;
     Parent parent = new Parent();
@@ -73,7 +73,7 @@ class ParentServiceTest{
   }
 
   @Test
-  public void getAllParents_returnsListOfParents() {
+  public void getAllParents_returnsListOfParents(){
     // given
     Parent parent1 = new Parent();
     Parent parent2 = new Parent();
@@ -89,7 +89,7 @@ class ParentServiceTest{
   }
 
   @Test
-  public void updateParent_parentNotFound_throwsException() {
+  public void updateParent_parentNotFound_throwsException(){
     // given
     int parentId = 999;
     Parent updatedParent = new Parent();
@@ -102,7 +102,7 @@ class ParentServiceTest{
   }
 
   @Test
-  public void deleteParent_deletesParentSuccessfully() {
+  public void deleteParent_deletesParentSuccessfully(){
     // given
     int parentId = 1;
 
@@ -114,7 +114,7 @@ class ParentServiceTest{
   }
 
   @Test
-  public void getStudentsByParentId_returnsListOfStudents() {
+  public void getStudentsByParentId_returnsListOfStudents(){
     // given
     int parentId = 1;
     Student student1 = new Student();
@@ -131,7 +131,7 @@ class ParentServiceTest{
   }
 
   @Test
-  public void addUserToParent_executesSuccessfully() {
+  public void addUserToParent_executesSuccessfully(){
     // given
     int parentId = 1;
     UserDto userDto = new UserDto();

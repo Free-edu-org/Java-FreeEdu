@@ -1,58 +1,61 @@
 package com.byt.freeEdu.model.DTO;
 
-import com.byt.freeEdu.model.Attendance;
-import com.byt.freeEdu.model.enums.AttendanceEnum;
-import com.byt.freeEdu.model.enums.SubjectEnum;
-import lombok.Data;
-
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.byt.freeEdu.model.Attendance;
+import com.byt.freeEdu.model.enums.AttendanceEnum;
+import com.byt.freeEdu.model.enums.SubjectEnum;
+
+import lombok.Data;
+
 @Data
-public class AttendanceFormDto{
+public class AttendanceFormDto {
 
-  private Map<Integer, AttendanceEnum> attendanceMap = new HashMap<>();
-  private SubjectEnum globalSubject;
-  private LocalDate attendanceDate; // Dodane pole
+    private Map<Integer, AttendanceEnum> attendanceMap = new HashMap<>();
 
-  public Map<Integer, AttendanceEnum> getAttendanceMap() {
-    return attendanceMap;
-  }
+    private SubjectEnum globalSubject;
 
-  public void setAttendanceMap(Map<Integer, AttendanceEnum> attendanceMap) {
-    this.attendanceMap = attendanceMap;
-  }
+    private LocalDate attendanceDate; // Dodane pole
 
-  public static AttendanceFormDto toDto(Integer id, AttendanceEnum status) {
-    AttendanceFormDto dto = new AttendanceFormDto();
-    dto.getAttendanceMap().put(id,status);
-    return dto;
-  }
+    public Map<Integer, AttendanceEnum> getAttendanceMap() {
+        return attendanceMap;
+    }
 
-  public SubjectEnum getGlobalSubject() {
-    return globalSubject;
-  }
+    public void setAttendanceMap(Map<Integer, AttendanceEnum> attendanceMap) {
+        this.attendanceMap = attendanceMap;
+    }
 
-  public void setGlobalSubject(SubjectEnum globalSubject) {
-    this.globalSubject = globalSubject;
-  }
+    public static AttendanceFormDto toDto(Integer id, AttendanceEnum status) {
+        AttendanceFormDto dto = new AttendanceFormDto();
+        dto.getAttendanceMap().put(id, status);
+        return dto;
+    }
 
-  public LocalDate getAttendanceDate() {
-    return attendanceDate;
-  }
+    public SubjectEnum getGlobalSubject() {
+        return globalSubject;
+    }
 
-  public void setAttendanceDate(LocalDate attendanceDate) {
-    this.attendanceDate = attendanceDate;
-  }
+    public void setGlobalSubject(SubjectEnum globalSubject) {
+        this.globalSubject = globalSubject;
+    }
 
-  public static AttendanceFormDto toDto(Attendance attendance) {
-    AttendanceFormDto dto = new AttendanceFormDto();
-    Map<Integer, AttendanceEnum> attendanceMap = new HashMap<>();
-    attendanceMap.put(attendance.getId(),attendance.getStatus());
-    dto.setAttendanceMap(attendanceMap);
-    dto.setGlobalSubject(attendance.getSubject());
-    dto.setAttendanceDate(attendance.getAttendanceDate()); // Ustawienie daty
-    return dto;
-  }
+    public LocalDate getAttendanceDate() {
+        return attendanceDate;
+    }
+
+    public void setAttendanceDate(LocalDate attendanceDate) {
+        this.attendanceDate = attendanceDate;
+    }
+
+    public static AttendanceFormDto toDto(Attendance attendance) {
+        AttendanceFormDto dto = new AttendanceFormDto();
+        Map<Integer, AttendanceEnum> attendanceMap = new HashMap<>();
+        attendanceMap.put(attendance.getId(), attendance.getStatus());
+        dto.setAttendanceMap(attendanceMap);
+        dto.setGlobalSubject(attendance.getSubject());
+        dto.setAttendanceDate(attendance.getAttendanceDate()); // Ustawienie daty
+        return dto;
+    }
 }

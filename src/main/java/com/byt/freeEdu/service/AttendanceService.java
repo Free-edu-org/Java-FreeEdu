@@ -1,5 +1,12 @@
 package com.byt.freeEdu.service;
 
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import org.springframework.stereotype.Service;
+
 import com.byt.freeEdu.model.Attendance;
 import com.byt.freeEdu.model.DTO.AttendanceDto;
 import com.byt.freeEdu.model.enums.AttendanceEnum;
@@ -7,91 +14,89 @@ import com.byt.freeEdu.model.enums.SubjectEnum;
 import com.byt.freeEdu.repository.AttendanceRepository;
 import com.byt.freeEdu.service.users.StudentService;
 import com.byt.freeEdu.service.users.TeacherService;
-import jakarta.persistence.EntityNotFoundException;
-import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+import jakarta.persistence.EntityNotFoundException;
 
 @Service
-public class AttendanceService{
-  private final AttendanceRepository attendanceRepository;
-  private final StudentService studentService;
-  private final TeacherService teacherService;
+public class AttendanceService {
 
-  public AttendanceService(AttendanceRepository attendanceRepository, StudentService studentService,
-      TeacherService teacherService) {
-    this.attendanceRepository = attendanceRepository;
-    this.studentService = studentService;
-    this.teacherService = teacherService;
-  }
+    private final AttendanceRepository attendanceRepository;
 
-  public List<Attendance> getAttendancesForStudent(int studentId) {
-    return attendanceRepository.findByStudent_UserId(studentId);
-  }
+    private final StudentService studentService;
 
-  public void saveAttendance(Attendance attendance) {
-    attendanceRepository.save(attendance);
-  }
+    private final TeacherService teacherService;
 
-  public Attendance getAttendanceById(int id) {
-    return attendanceRepository.findById(id)
-        .orElseThrow(() -> new EntityNotFoundException("Attendance not found with ID: " + id));
-  }
+    public AttendanceService(AttendanceRepository attendanceRepository, StudentService studentService,
+                             TeacherService teacherService) {
+        this.attendanceRepository = attendanceRepository;
+        this.studentService = studentService;
+        this.teacherService = teacherService;
+    }
 
-  public AttendanceDto getAttendanceByIdAdmin(int attendanceId) {
-    Attendance attendance = attendanceRepository.findById(attendanceId).orElseThrow(
-        () -> new IllegalArgumentException("Nie znaleziono obecności o ID " + attendanceId));
-    return AttendanceDto.fromEntity(attendance);
-  }
+    public List<Attendance> getAttendancesForStudent(int studentId) {
+        return attendanceRepository.findByStudentUserId(studentId);
+    }
 
-  public void markAttendance(Map<Integer, AttendanceEnum> attendanceMap, SubjectEnum subject,
-      int teacherId) {
-    attendanceMap.forEach((studentId, status) -> {
-      Attendance attendance = new Attendance();
-      attendance.setStudent(studentService.getStudentById(studentId));
-      attendance.setTeacher(teacherService.getTeacherById(teacherId));
-      attendance.setAttendanceDate(LocalDate.now());
-      attendance.setStatus(status);
-      attendance.setSubject(subject);
+    public void saveAttendance(Attendance attendance) {
+        attendanceRepository.save(attendance);
+    }
 
-      attendanceRepository.save(attendance);
-    });
-  }
+    public Attendance getAttendanceById(int id) {
+        return attendanceRepository.findById(id).
+                orElseThrow(() -> new EntityNotFoundException("Attendance not found with ID: " + id));
+    }
 
-  public List<Attendance> getAllAttendances() {
-    return attendanceRepository.findAll();
-  }
+    public AttendanceDto getAttendanceByIdAdmin(int attendanceId) {
+        Attendance attendance = attendanceRepository.findById(attendanceId).orElseThrow(
+                () -> new IllegalArgumentException("Nie znaleziono obecności o ID " + attendanceId));
+        return AttendanceDto.fromEntity(attendance);
+    }
 
-  public List<AttendanceDto> getAllAttendancesAdmin() {
-    List<Attendance> attendances = attendanceRepository.findAll();
+    public void markAttendance(Map<Integer, AttendanceEnum> attendanceMap, SubjectEnum subject,
+                               int teacherId) {
+        attendanceMap.forEach((studentId, status) -> {
+            Attendance attendance = new Attendance();
+            attendance.setStudent(studentService.getStudentById(studentId));
+            attendance.setTeacher(teacherService.getTeacherById(teacherId));
+            attendance.setAttendanceDate(LocalDate.now());
+            attendance.setStatus(status);
+            attendance.setSubject(subject);
 
-    return attendances.stream().map(AttendanceDto::fromEntity).collect(Collectors.toList());
-  }
+            attendanceRepository.save(attendance);
+        });
+    }
 
-  public Attendance updateAttendance(int id, Attendance updatedAttendance) {
-    Attendance existingAttendance = attendanceRepository.findById(id)
-        .orElseThrow(() -> new EntityNotFoundException("Attendance not found with ID: " + id));
-    existingAttendance.setStudent(updatedAttendance.getStudent());
-    existingAttendance.setAttendanceDate(updatedAttendance.getAttendanceDate());
-    existingAttendance.setStatus(updatedAttendance.getStatus());
-    existingAttendance.setTeacher(updatedAttendance.getTeacher());
+    public List<Attendance> getAllAttendances() {
+        return attendanceRepository.findAll();
+    }
 
-    return attendanceRepository.save(existingAttendance);
-  }
+    public List<AttendanceDto> getAllAttendancesAdmin() {
+        List<Attendance> attendances = attendanceRepository.findAll();
 
-  public void updateAttendanceAdmin(int attendanceId, AttendanceDto attendanceDto) {
-    Attendance attendance = attendanceRepository.findById(attendanceId).orElseThrow(
-        () -> new IllegalArgumentException("Nie znaleziono obecności o ID " + attendanceId));
+        return attendances.stream().map(AttendanceDto::fromEntity).collect(Collectors.toList());
+    }
 
-    attendance.setStatus(AttendanceEnum.valueOf(attendanceDto.getAttendance_status()));
-    attendance.setAttendanceDate(LocalDate.parse(attendanceDto.getAttendanceDate()));
-    attendanceRepository.save(attendance);
-  }
+    public Attendance updateAttendance(int id, Attendance updatedAttendance) {
+        Attendance existingAttendance = attendanceRepository.findById(id).
+                orElseThrow(() -> new EntityNotFoundException("Attendance not found with ID: " + id));
+        existingAttendance.setStudent(updatedAttendance.getStudent());
+        existingAttendance.setAttendanceDate(updatedAttendance.getAttendanceDate());
+        existingAttendance.setStatus(updatedAttendance.getStatus());
+        existingAttendance.setTeacher(updatedAttendance.getTeacher());
 
-  public void deleteAttendance(int id) {
-    attendanceRepository.deleteById(id);
-  }
+        return attendanceRepository.save(existingAttendance);
+    }
+
+    public void updateAttendanceAdmin(int attendanceId, AttendanceDto attendanceDto) {
+        Attendance attendance = attendanceRepository.findById(attendanceId).orElseThrow(
+                () -> new IllegalArgumentException("Nie znaleziono obecności o ID " + attendanceId));
+
+        attendance.setStatus(AttendanceEnum.valueOf(attendanceDto.getAttendanceStatus()));
+        attendance.setAttendanceDate(LocalDate.parse(attendanceDto.getAttendanceDate()));
+        attendanceRepository.save(attendance);
+    }
+
+    public void deleteAttendance(int id) {
+        attendanceRepository.deleteById(id);
+    }
 }
