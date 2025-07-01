@@ -104,16 +104,19 @@ jobs:
           path: ~/.m2/repository
           key: ${{ needs.setup.outputs.cache-key }}
 
-      - name: Run Checkstyle
+      - name: Summarize Checkstyle violations
+        id: checkstyle-summary
         run: |
           mvn checkstyle:check | tee checkstyle.log
+
           if grep -q "\[ERROR\]" checkstyle.log; then
-            echo "## ❌ Checkstyle Report - violations found" > checkstyle-result.txt
-            echo "" >> checkstyle-result.txt
-            echo "<details><summary>🔽 Click to expand full table</summary>" >> checkstyle-result.txt
-            echo "" >> checkstyle-result.txt
-            echo "| File | Line | Column | Error |" >> checkstyle-result.txt
-            echo "|------|------|--------|-------|" >> checkstyle-result.txt
+            echo "## ❌ Checkstyle Report - violations found" > checkstyle-summary.txt
+            echo "" >> checkstyle-summary.txt
+            echo "<details><summary>🔽 Click to expand full table</summary>" >> checkstyle-summary.txt
+            echo "" >> checkstyle-summary.txt
+            echo "| File | Line | Column | Error |" >> checkstyle-summary.txt
+            echo "|------|------|--------|-------|" >> checkstyle-summary.txt
+
             grep "\[ERROR\]" checkstyle.log | awk '
               match($0, /^\[ERROR\] ([^:]+):\[([0-9]+)(,([0-9]+))?\] \([^)]*\) (.+)$/, m) {
                 file = m[1]
@@ -122,36 +125,36 @@ jobs:
                 msg = m[5]
                 printf("| %s | %s | %s | %s |\n", file, line, column, msg)
               }
-            ' | head -n 1000 >> checkstyle-result.txt
-            echo "| ... | ... | ... | ... |" >> checkstyle-result.txt
-            echo "**⚠️ Output truncated. See local logs for full report.**" >> checkstyle-result.txt
-            echo "</details>" >> checkstyle-result.txt
+            ' | head -n 1000 >> checkstyle-summary.txt
+
+            echo "| ... | ... | ... | ... |" >> checkstyle-summary.txt
+            echo "" >> checkstyle-summary.txt
+            echo "</details>" >> checkstyle-summary.txt
+
+            summary="$(cat checkstyle-summary.txt)"
+            echo "summary<<EOF" >> $GITHUB_OUTPUT
+            echo "$summary" >> $GITHUB_OUTPUT
+            echo "EOF" >> $GITHUB_OUTPUT
+          else
+            echo "No Checkstyle violations found – not exporting summary"
           fi
 
-      - name: Read Checkstyle summary
-        id: checkstyle-summary
-        run: |
-          summary="$(cat checkstyle-result.txt)"
-          echo "summary<<EOF" >> $GITHUB_OUTPUT
-          echo "$summary" >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
-
       - name: Post Checkstyle comment
-        if: always()
+        if: steps.checkstyle-summary.outputs.summary != ''
         uses: peter-evans/create-or-update-comment@v4
         with:
           issue-number: ${{ github.event.pull_request.number }}
           body: |
             ${{ steps.checkstyle-summary.outputs.summary }}
 
-      - name: Fail if Checkstyle errors found
-        if: always() && steps.checkstyle-summary.outputs.summary != ''
+      - name: Fail if Checkstyle violations found
+        if: always()
         run: |
           if grep -q "\[ERROR\]" checkstyle.log; then
             echo "❌ Checkstyle violations detected. Failing the job."
             exit 1
           fi
-
+          
   pmd-analysis:
     name: PMD Analysis
     runs-on: ubuntu-latest
