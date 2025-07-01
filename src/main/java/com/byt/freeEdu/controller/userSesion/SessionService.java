@@ -7,15 +7,15 @@ import reactor.core.publisher.Mono;
 import com.byt.freeEdu.security.UserUtils;
 
 @Service
-public class SessionService {
+public class SessionService{
 
-    private final UserUtils userUtils;
+  private final UserUtils userUtils;
 
     public SessionService(final UserUtils userUtils) {
         this.userUtils = userUtils;
     }
 
-    public Mono<Integer> getUserId() {
-        return userUtils.getCurrentUserId();
-    }
+  public Mono<Integer> getUserId() {
+    return userUtils.getCurrentUserId();
+  }
 }

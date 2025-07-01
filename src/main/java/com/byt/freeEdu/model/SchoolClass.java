@@ -14,20 +14,20 @@ import java.util.List;
 @RequiredArgsConstructor
 @NoArgsConstructor
 @Table(name = "class")
-public class SchoolClass {
+public class SchoolClass{
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", unique = true, updatable = false, nullable = false)
-    private int schoolClassId;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Column(name = "id", unique = true, updatable = false, nullable = false)
+  private int schoolClassId;
 
-    @NonNull
-    @Column(name = "name", nullable = false, unique = true)
-    private String name;
+  @NonNull
+  @Column(name = "name", nullable = false, unique = true)
+  private String name;
 
-    @Transient
-    private long studentCount;
+  @Transient
+  private long studentCount;
 
-    @Transient
-    private List<StudentDto> students;
+  @Transient
+  private List<StudentDto> students;
 }

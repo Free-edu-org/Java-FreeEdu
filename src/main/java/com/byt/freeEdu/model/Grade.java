@@ -16,33 +16,33 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "grade")
-public class Grade {
+public class Grade{
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", unique = true, updatable = false, nullable = false)
-    private int gradeId;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Column(name = "id", unique = true, updatable = false, nullable = false)
+  private int gradeId;
 
-    @NonNull
-    @Enumerated(EnumType.STRING)
-    @Column(name = "subject", nullable = false)
-    private SubjectEnum subject;
+  @NonNull
+  @Enumerated(EnumType.STRING)
+  @Column(name = "subject", nullable = false)
+  private SubjectEnum subject;
 
-    @NonNull
-    @Column(name = "value", nullable = false)
-    private double value;
+  @NonNull
+  @Column(name = "value", nullable = false)
+  private double value;
 
-    @NonNull
-    @ManyToOne
-    @JoinColumn(name = "student_id", nullable = false)
-    private Student student;
+  @NonNull
+  @ManyToOne
+  @JoinColumn(name = "student_id", nullable = false)
+  private Student student;
 
-    @NonNull
-    @ManyToOne
-    @JoinColumn(name = "teacher_id", nullable = false)
-    private Teacher teacher;
+  @NonNull
+  @ManyToOne
+  @JoinColumn(name = "teacher_id", nullable = false)
+  private Teacher teacher;
 
-    @NonNull
-    @Column(name = "add_date", nullable = false)
-    private LocalDate gradeDate;
+  @NonNull
+  @Column(name = "add_date", nullable = false)
+  private LocalDate gradeDate;
 }

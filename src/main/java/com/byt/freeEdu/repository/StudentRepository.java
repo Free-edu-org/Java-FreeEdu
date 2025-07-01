@@ -11,15 +11,14 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface StudentRepository extends JpaRepository<Student, Integer> {
-    List<Student> findByParentUserId(int parentId); // Poprawiona metoda
+public interface StudentRepository extends JpaRepository<Student, Integer>{
+  List<Student> findByParentUserId(int parentId); // Poprawiona metoda
 
+  @Query("SELECT s FROM Student s WHERE s.schoolClass.schoolClassId = :schoolClassId")
+  List<Student> getStudentsBySchoolClassId(@Param("schoolClassId") int schoolClassId);
 
-    @Query("SELECT s FROM Student s WHERE s.schoolClass.schoolClassId = :schoolClassId")
-    List<Student> getStudentsBySchoolClassId(@Param("schoolClassId") int schoolClassId);
-
-    @Modifying
-    @Transactional
-    @Query(value = "CALL addUserToStudents(:userId, :classId, :parentId)", nativeQuery = true)
-    void addUserToStudents(int userId, int classId, int parentId);
+  @Modifying
+  @Transactional
+  @Query(value = "CALL addUserToStudents(:userId, :classId, :parentId)", nativeQuery = true)
+  void addUserToStudents(int userId, int classId, int parentId);
 }

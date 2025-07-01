@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 @Repository
-public interface GradeRepository extends JpaRepository<Grade, Integer> {
-    List<Grade> findByStudent_UserId(int studentId);
-    List<Grade> getGradeByTeacher(Teacher teacher);
+public interface GradeRepository extends JpaRepository<Grade, Integer>{
+  List<Grade> findByStudent_UserId(int studentId);
+  List<Grade> getGradeByTeacher(Teacher teacher);
 }

@@ -6,9 +6,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
-public interface TeacherRepository extends JpaRepository<Teacher, Integer> {
-    @Modifying
-    @Transactional
-    @Query(value = "CALL addUserToTeachers(:id)", nativeQuery = true)
-    void addUserToTeachers(int id);
+public interface TeacherRepository extends JpaRepository<Teacher, Integer>{
+  @Modifying
+  @Transactional
+  @Query(value = "CALL addUserToTeachers(:id)", nativeQuery = true)
+  void addUserToTeachers(int id);
 }
