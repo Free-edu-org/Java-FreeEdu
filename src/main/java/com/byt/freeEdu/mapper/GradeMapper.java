@@ -5,7 +5,12 @@ import com.byt.freeEdu.model.Grade;
 import com.byt.freeEdu.model.enums.SubjectEnum;
 import com.byt.freeEdu.service.users.StudentService;
 import com.byt.freeEdu.service.users.TeacherService;
-import org.mapstruct.*;
+import org.mapstruct.Builder;
+import org.mapstruct.Context;
+import org.mapstruct.Mapping;
+import org.mapstruct.Named;
+import org.mapstruct.NullValuePropertyMappingStrategy;
+import org.mapstruct.ReportingPolicy;
 
 @org.mapstruct.Mapper(unmappedTargetPolicy = ReportingPolicy.ERROR, componentModel = "spring", builder = @Builder(disableBuilder = true), nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public interface GradeMapper{

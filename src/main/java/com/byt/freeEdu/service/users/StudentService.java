@@ -5,7 +5,6 @@ import com.byt.freeEdu.model.DTO.RemarkDto;
 import com.byt.freeEdu.model.DTO.StudentDto;
 import com.byt.freeEdu.model.DTO.UserDto;
 import com.byt.freeEdu.model.SchoolClass;
-import com.byt.freeEdu.model.users.Parent;
 import com.byt.freeEdu.model.users.Student;
 import com.byt.freeEdu.model.users.User;
 import com.byt.freeEdu.repository.RemarkRepository;
