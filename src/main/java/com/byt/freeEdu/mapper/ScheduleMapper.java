@@ -4,7 +4,11 @@ import com.byt.freeEdu.model.DTO.ScheduleAdminDto;
 import com.byt.freeEdu.model.DTO.ScheduleDto;
 import com.byt.freeEdu.model.Schedule;
 import com.byt.freeEdu.model.enums.SubjectEnum;
-import org.mapstruct.*;
+import org.mapstruct.Builder;
+import org.mapstruct.Mapping;
+import org.mapstruct.Named;
+import org.mapstruct.NullValuePropertyMappingStrategy;
+import org.mapstruct.ReportingPolicy;
 
 @org.mapstruct.Mapper(unmappedTargetPolicy = ReportingPolicy.ERROR, componentModel = "spring", builder = @Builder(disableBuilder = true), nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public interface ScheduleMapper{

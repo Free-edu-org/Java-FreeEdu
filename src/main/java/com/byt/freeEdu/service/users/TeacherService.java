@@ -1,6 +1,5 @@
 package com.byt.freeEdu.service.users;
 
-import com.byt.freeEdu.model.DTO.UserDto;
 import com.byt.freeEdu.model.users.Teacher;
 import com.byt.freeEdu.repository.TeacherRepository;
 import jakarta.persistence.EntityNotFoundException;
