@@ -108,12 +108,12 @@ jobs:
         run: |
           mvn checkstyle:check | tee checkstyle.log
           if grep -q "\[ERROR\]" checkstyle.log; then
-            echo "## ❌ Checkstyle Report - violations found" > checkstyle-report.txt
-            echo "" >> checkstyle-report.txt
-            echo "<details><summary>🔽 Click to expand full table</summary>" >> checkstyle-report.txt
-            echo "" >> checkstyle-report.txt
-            echo "| File | Line | Column | Error |" >> checkstyle-report.txt
-            echo "|------|------|--------|-------|" >> checkstyle-report.txt
+            echo "## ❌ Checkstyle Report - violations found" > checkstyle-result.txt
+            echo "" >> checkstyle-result.txt
+            echo "<details><summary>🔽 Click to expand full table</summary>" >> checkstyle-result.txt
+            echo "" >> checkstyle-result.txt
+            echo "| File | Line | Column | Error |" >> checkstyle-result.txt
+            echo "|------|------|--------|-------|" >> checkstyle-result.txt
             grep "\[ERROR\]" checkstyle.log | awk '
               match($0, /^\[ERROR\] ([^:]+):\[([0-9]+)(,([0-9]+))?\] \([^)]*\) (.+)$/, m) {
                 file = m[1]
@@ -122,16 +122,16 @@ jobs:
                 msg = m[5]
                 printf("| %s | %s | %s | %s |\n", file, line, column, msg)
               }
-            ' | head -n 1000 >> checkstyle-report.txt
-            echo "| ... | ... | ... | ... |" >> checkstyle-report.txt
-            echo "**⚠️ Output truncated. See local logs for full report.**" >> checkstyle-report.txt
-            echo "</details>" >> checkstyle-report.txt
+            ' | head -n 1000 >> checkstyle-result.txt
+            echo "| ... | ... | ... | ... |" >> checkstyle-result.txt
+            echo "**⚠️ Output truncated. See local logs for full report.**" >> checkstyle-result.txt
+            echo "</details>" >> checkstyle-result.txt
           fi
 
       - name: Read Checkstyle summary
         id: checkstyle-summary
         run: |
-          summary="$(cat checkstyle-report.txt)"
+          summary="$(cat checkstyle-result.txt)"
           echo "summary<<EOF" >> $GITHUB_OUTPUT
           echo "$summary" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
