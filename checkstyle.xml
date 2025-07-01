@@ -1,0 +1,70 @@
+<?xml version="1.0"?>
+<!DOCTYPE module PUBLIC
+        "-//Checkstyle//DTD Checkstyle Configuration 1.3//EN"
+        "https://checkstyle.org/dtds/configuration_1_3.dtd">
+
+<module name="Checker">
+
+    <!-- General basic rules -->
+    <module name="FileTabCharacter">
+        <property name="eachLine" value="true"/>
+    </module>
+
+    <module name="NewlineAtEndOfFile"/>
+    <module name="FileLength">
+        <property name="max" value="2000"/>
+    </module>
+
+    <!-- Use TreeWalker to define rules for class content -->
+    <module name="TreeWalker">
+
+        <!-- Naming conventions -->
+        <module name="TypeName"/>
+        <module name="MethodName"/>
+        <module name="ParameterName"/>
+        <module name="LocalVariableName"/>
+        <module name="MemberName"/>
+
+        <!-- Formatting -->
+        <module name="EmptyLineSeparator"/>
+        <module name="NeedBraces"/>
+        <module name="LeftCurly"/>
+        <module name="RightCurly"/>
+        <module name="WhitespaceAround"/>
+        <module name="WhitespaceAfter"/>
+        <module name="OperatorWrap"/>
+        <module name="SeparatorWrap"/>
+        <module name="ParenPad"/>
+
+        <!-- Imports -->
+        <module name="AvoidStarImport"/>
+        <module name="UnusedImports"/>
+        <module name="RedundantImport"/>
+        <module name="ImportOrder">
+            <property name="ordered" value="true"/>
+            <property name="separated" value="true"/>
+            <property name="groups" value="java,javax,org,com"/>
+        </module>
+
+        <!-- Code practices -->
+        <module name="FinalLocalVariable"/>
+        <module name="FinalParameters"/>
+        <module name="EqualsAvoidNull"/>
+        <module name="SimplifyBooleanExpression"/>
+        <module name="SimplifyBooleanReturn"/>
+
+        <!-- Javadoc only for classes and public methods -->
+        <module name="JavadocType"/>
+        <module name="JavadocMethod">
+            <property name="scope" value="public"/>
+            <property name="allowMissingParamTags" value="true"/>
+            <property name="allowMissingReturnTag" value="true"/>
+        </module>
+
+        <!-- Disable annoying rules -->
+        <!-- <module name="JavadocPackage"/> -->
+        <!-- <module name="DesignForExtension"/> -->
+        <!-- <module name="JavadocVariable"/> -->
+
+    </module>
+</module>
