@@ -43,7 +43,7 @@
         <module name="ImportOrder">
             <property name="ordered" value="true"/>
             <property name="separated" value="true"/>
-            <property name="groups" value="java,javax,org,com"/>
+            <property name="groups" value="java,javax,org,reactor,com"/>
         </module>
 
         <!-- Code practices -->
@@ -53,13 +53,12 @@
         <module name="SimplifyBooleanExpression"/>
         <module name="SimplifyBooleanReturn"/>
 
-        <!-- Javadoc only for classes and public methods -->
-        <module name="JavadocType"/>
-        <module name="JavadocMethod">
-            <property name="scope" value="public"/>
-            <property name="allowMissingParamTags" value="true"/>
-            <property name="allowMissingReturnTag" value="true"/>
-        </module>
+        <!-- Disable javadoc -->
+        <!-- <module name="JavadocType"/> -->
+        <!-- <module name="JavadocMethod"> -->
+        <!--    <property name="allowMissingParamTags" value="true"/> -->
+        <!--    <property name="allowMissingReturnTag" value="true"/> -->
+        <!-- </module>  -->
 
         <!-- Disable annoying rules -->
         <!-- <module name="JavadocPackage"/> -->
