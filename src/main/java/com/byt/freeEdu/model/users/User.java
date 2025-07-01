@@ -16,59 +16,59 @@ import java.util.List;
 @NoArgsConstructor
 @Inheritance(strategy = InheritanceType.JOINED)
 @Table(name = "user")
-public class User implements UserDetails {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", updatable = false, nullable = false)
-    private int userId;
+public class User implements UserDetails{
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Column(name = "id", updatable = false, nullable = false)
+  private int userId;
 
-    @NonNull
-    @Column(name = "username", nullable = false, unique = true)
-    private String username;
+  @NonNull
+  @Column(name = "username", nullable = false, unique = true)
+  private String username;
 
-    @NonNull
-    @Column(name = "firstname", nullable = false)
-    private String firstname;
+  @NonNull
+  @Column(name = "firstname", nullable = false)
+  private String firstname;
 
-    @NonNull
-    @Column(name = "lastname", nullable = false)
-    private String lastname;
+  @NonNull
+  @Column(name = "lastname", nullable = false)
+  private String lastname;
 
-    @NonNull
-    @Column(name = "email", nullable = false, unique = true)
-    private String email;
+  @NonNull
+  @Column(name = "email", nullable = false, unique = true)
+  private String email;
 
-    @NonNull
-    @Column(name = "password", nullable = false)
-    private String password;
+  @NonNull
+  @Column(name = "password", nullable = false)
+  private String password;
 
-    @NonNull
-    @Enumerated(EnumType.STRING)
-    @Column(name = "user_role", nullable = false)
-    private UserRole user_role;
+  @NonNull
+  @Enumerated(EnumType.STRING)
+  @Column(name = "user_role", nullable = false)
+  private UserRole user_role;
 
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of();
-    }
+  @Override
+  public Collection<? extends GrantedAuthority> getAuthorities() {
+    return List.of();
+  }
 
-    @Override
-    public boolean isAccountNonExpired() {
-        return UserDetails.super.isAccountNonExpired();
-    }
+  @Override
+  public boolean isAccountNonExpired() {
+    return UserDetails.super.isAccountNonExpired();
+  }
 
-    @Override
-    public boolean isAccountNonLocked() {
-        return UserDetails.super.isAccountNonLocked();
-    }
+  @Override
+  public boolean isAccountNonLocked() {
+    return UserDetails.super.isAccountNonLocked();
+  }
 
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return UserDetails.super.isCredentialsNonExpired();
-    }
+  @Override
+  public boolean isCredentialsNonExpired() {
+    return UserDetails.super.isCredentialsNonExpired();
+  }
 
-    @Override
-    public boolean isEnabled() {
-        return UserDetails.super.isEnabled();
-    }
+  @Override
+  public boolean isEnabled() {
+    return UserDetails.super.isEnabled();
+  }
 }

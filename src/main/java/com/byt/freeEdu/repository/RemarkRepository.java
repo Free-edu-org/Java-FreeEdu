@@ -9,14 +9,14 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface RemarkRepository extends JpaRepository<Remark, Integer> {
-    Remark findByContent(String content);
+public interface RemarkRepository extends JpaRepository<Remark, Integer>{
+  Remark findByContent(String content);
 
-    List<Remark> findByStudent(Student student);
+  List<Remark> findByStudent(Student student);
 
-    List<Remark> getRemarkByTeacher(Teacher teacher);
+  List<Remark> getRemarkByTeacher(Teacher teacher);
 
-    List<Remark> findByStudent_UserId(int studentId);
+  List<Remark> findByStudent_UserId(int studentId);
 
-    List<Remark> findByTeacher(Teacher teacher);
+  List<Remark> findByTeacher(Teacher teacher);
 }

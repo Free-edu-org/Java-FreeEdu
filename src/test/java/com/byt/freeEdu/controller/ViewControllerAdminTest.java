@@ -23,79 +23,73 @@ import reactor.core.publisher.Mono;
 import java.util.Arrays;
 
 @WebFluxTest(controllers = ViewControllerAdmin.class, includeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = AppConfig.class))
-public class ViewControllerAdminTest {
+public class ViewControllerAdminTest{
 
-    @Autowired
-    private WebTestClient webTestClient;
+  @Autowired
+  private WebTestClient webTestClient;
 
-    @MockBean
-    private SessionService sessionService;
+  @MockBean
+  private SessionService sessionService;
 
-    @MockBean
-    private UserService userService;
+  @MockBean
+  private UserService userService;
 
-    @MockBean
-    private UserMapper userMapper;
+  @MockBean
+  private UserMapper userMapper;
 
-    @MockBean
-    private ScheduleService scheduleService;
+  @MockBean
+  private ScheduleService scheduleService;
 
-    private UserDto userDto;
+  private UserDto userDto;
 
-    @BeforeEach
-    public void setUp() {
-        userDto = new UserDto();
-        userDto.setFirstname("Marek");
-        userDto.setLastname("Kowalski");
-        userDto.setEmail("Marekowalski@gmail.com");
-        userDto.setRole("Nauczyciel");
-    }
+  @BeforeEach
+  public void setUp() {
+    userDto = new UserDto();
+    userDto.setFirstname("Marek");
+    userDto.setLastname("Kowalski");
+    userDto.setEmail("Marekowalski@gmail.com");
+    userDto.setRole("Nauczyciel");
+  }
 
-    @Test
-    @WithMockUser(username = "admin", roles = {"ADMIN"})
-    public void testMainpageAdmin() {
-        Mockito.when(sessionService.getUserId()).thenReturn(Mono.just(1));
-        Mockito.when(userService.getUserById(1)).thenReturn(new User());
-        Mockito.when(userMapper.toDto(Mockito.any(User.class))).thenReturn(userDto);
+  @Test
+  @WithMockUser(username = "admin", roles = {"ADMIN"})
+  public void testMainpageAdmin() {
+    Mockito.when(sessionService.getUserId()).thenReturn(Mono.just(1));
+    Mockito.when(userService.getUserById(1)).thenReturn(new User());
+    Mockito.when(userMapper.toDto(Mockito.any(User.class))).thenReturn(userDto);
 
-        webTestClient.get().uri("/view/admin/mainpage")
-                .exchange()
-                .expectStatus().isOk()
-                .expectBody(String.class)
-                .consumeWith(response -> {
-                    String body = response.getResponseBody();
-                    assert body != null;
-                    assert body.contains("Marek");
-                    assert body.contains("Kowalski");
-                    assert body.contains("Marekowalski@gmail.com");
-                    assert body.contains("Nauczyciel");
-                });
-    }
+    webTestClient.get().uri("/view/admin/mainpage").exchange().expectStatus().isOk()
+        .expectBody(String.class).consumeWith(response -> {
+          String body = response.getResponseBody();
+          assert body != null;
+          assert body.contains("Marek");
+          assert body.contains("Kowalski");
+          assert body.contains("Marekowalski@gmail.com");
+          assert body.contains("Nauczyciel");
+        });
+  }
 
-    @Test
-    @WithMockUser(username = "admin", roles = {"ADMIN"})
-    public void testUserManagement() {
-        User user1 = new User();
-        User user2 = new User();
-        user2.setFirstname("Anna");
-        user2.setLastname("Nowak");
-        user2.setEmail("annanowak@gmail.com");
-        user2.setUser_role(UserRole.ADMIN);
+  @Test
+  @WithMockUser(username = "admin", roles = {"ADMIN"})
+  public void testUserManagement() {
+    User user1 = new User();
+    User user2 = new User();
+    user2.setFirstname("Anna");
+    user2.setLastname("Nowak");
+    user2.setEmail("annanowak@gmail.com");
+    user2.setUser_role(UserRole.ADMIN);
 
-        Mockito.when(userService.getAllUsers()).thenReturn(Arrays.asList(user1, user2));
+    Mockito.when(userService.getAllUsers()).thenReturn(Arrays.asList(user1,user2));
 
-        webTestClient.get().uri("/view/admin/user_management")
-                .exchange()
-                .expectStatus().isOk()
-                .expectBody(String.class)
-                .consumeWith(response -> {
-                    String body = response.getResponseBody();
-                    assert body != null;
-                    assert body.contains("Zarządzanie użytkownikami");
-                    assert body.contains("Anna");
-                    assert body.contains("Nowak");
-                    assert body.contains("annanowak@gmail.com");
-                    assert body.contains("ADMIN");
-                });
-    }
+    webTestClient.get().uri("/view/admin/user_management").exchange().expectStatus().isOk()
+        .expectBody(String.class).consumeWith(response -> {
+          String body = response.getResponseBody();
+          assert body != null;
+          assert body.contains("Zarządzanie użytkownikami");
+          assert body.contains("Anna");
+          assert body.contains("Nowak");
+          assert body.contains("annanowak@gmail.com");
+          assert body.contains("ADMIN");
+        });
+  }
 }

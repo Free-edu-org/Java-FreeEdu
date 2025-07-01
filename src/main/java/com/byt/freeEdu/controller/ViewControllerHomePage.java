@@ -10,57 +10,48 @@ import reactor.core.publisher.Mono;
 
 @Controller
 @RequestMapping("/view")
-public class ViewControllerHomePage {
+public class ViewControllerHomePage{
 
-    @Autowired
-    private UserService userService;
+  @Autowired
+  private UserService userService;
 
-    @GetMapping("/homepage")
-    public Mono<String> homepage() {
-        return Mono.just("homepage");
+  @GetMapping("/homepage")
+  public Mono<String> homepage() {
+    return Mono.just("homepage");
+  }
+
+  @GetMapping("/login")
+  public String loginPage(@RequestParam(value = "error", required = false) String error,
+      Model model) {
+    if (error != null) {
+      model.addAttribute("error",error);
+    } else {
+      model.addAttribute("error",null);
     }
+    return "login";
+  }
 
-    @GetMapping("/login")
-    public String loginPage(@RequestParam(value = "error", required = false) String error, Model model) {
-        if (error != null) {
-            model.addAttribute("error", error);
-        } else {
-            model.addAttribute("error", null);
-        }
-        return "login";
-    }
+  @GetMapping("/register")
+  public String showRegistrationForm(Model model) {
+    model.addAttribute("user",new User());
+    return "register";
+  }
 
-    @GetMapping("/register")
-    public String showRegistrationForm(Model model) {
-        model.addAttribute("user", new User());
+  @PostMapping("/register")
+  public String registerUser(@ModelAttribute User user, Model model) {
+    try {
+      boolean success = userService.addUser(user.getUsername(),user.getFirstname(),
+          user.getLastname(),user.getEmail(),user.getPassword());
+
+      if (!success) {
+        model.addAttribute("error","Nie udało się zarejestrować użytkownika. Spróbuj ponownie.");
         return "register";
+      }
+
+      return "redirect:/view/login";
+    } catch (IllegalArgumentException ex) {
+      model.addAttribute("errorMessage",ex.getMessage());
+      return "register";
     }
-
-    @PostMapping("/register")
-    public String registerUser(@ModelAttribute User user,
-                               Model model
-    ) {
-        try {
-            boolean success = userService.addUser(
-                    user.getUsername(),
-                    user.getFirstname(),
-                    user.getLastname(),
-                    user.getEmail(),
-                    user.getPassword()
-            );
-
-            if (!success) {
-                model.addAttribute("error", "Nie udało się zarejestrować użytkownika. Spróbuj ponownie.");
-                return "register";
-            }
-
-            return "redirect:/view/login";
-        } catch (IllegalArgumentException ex) {
-            model.addAttribute("errorMessage", ex.getMessage());
-            return "register";
-        }
-    }
+  }
 }
-
-
-

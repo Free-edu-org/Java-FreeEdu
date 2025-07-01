@@ -11,8 +11,8 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "parent")
-public class Parent extends User {
-    @NonNull
-    @Column(name = "contact_info", nullable = false)
-    private String contactInfo;
+public class Parent extends User{
+  @NonNull
+  @Column(name = "contact_info", nullable = false)
+  private String contactInfo;
 }
