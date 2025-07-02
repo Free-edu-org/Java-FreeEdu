@@ -281,13 +281,6 @@ jobs:
           echo "No SpotBugs issues found – not exporting summary"
         fi
 
-    - name: Post SpotBugs comment (only on failure)
-      if: github.event_name == 'pull_request' && failure()
-      uses: peter-evans/create-or-update-comment@v4
-      with:
-        issue-number: ${{ github.event.pull_request.number }}
-        body-path: spotbugs-summary.txt
-
     - name: Fail if SpotBugs found issues
       if: always()
       run: |
@@ -295,6 +288,13 @@ jobs:
           echo "❌ SpotBugs issues detected. Failing the job."
           exit 1
         fi
+
+    - name: Post SpotBugs comment (only on failure)
+      if: github.event_name == 'pull_request' && failure()
+      uses: peter-evans/create-or-update-comment@v4
+      with:
+        issue-number: ${{ github.event.pull_request.number }}
+        body-path: spotbugs-summary.txt
 
   semgrep-sast:
     name: Semgrep SAST
