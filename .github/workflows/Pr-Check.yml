@@ -302,7 +302,7 @@ jobs:
         continue-on-error: true
         run: |
           echo "🔍 Running Semgrep with verbose output..."
-          semgrep --config=.github/configs/semgrep.yml --json --metrics=off --verbose --debug > semgrep-report.json 2>&1 || echo "⚠️ Semgrep completed with findings or exited with error"
+          semgrep --config=.github/configs/semgrep.yml --json --metrics=off --verbose > semgrep-report.json 2>&1 || echo "⚠️ Semgrep completed with findings or exited with error"
           echo "✅ Semgrep finished. Report saved to semgrep-report.json"
           echo ""
           echo "📄 Showing first 50 lines of the report:"
