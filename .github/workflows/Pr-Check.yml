@@ -281,8 +281,12 @@ jobs:
           echo "No SpotBugs issues found – not exporting summary"
         fi
 
-    - name: Show target folder (after build)
-      run: ls -R target || echo "⚠️ target/ folder not found"
+    - name: Post SpotBugs comment (only on failure)
+      if: github.event_name == 'pull_request' && failure()
+      uses: peter-evans/create-or-update-comment@v4
+      with:
+        issue-number: ${{ github.event.pull_request.number }}
+        body-path: spotbugs-summary.txt
 
     - name: Fail if SpotBugs found issues
       if: always()
