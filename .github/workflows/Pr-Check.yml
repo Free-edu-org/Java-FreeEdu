@@ -305,7 +305,7 @@ jobs:
         continue-on-error: true
         run: |
           echo "🔍 Running Semgrep with p/ci..."
-          semgrep --config=p/ci \
+          semgrep --config=p/default \
             --exclude=node_modules/ \
             --exclude=target/ \
             --exclude=build/ \
