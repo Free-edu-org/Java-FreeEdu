@@ -301,7 +301,7 @@ jobs:
       - name: Run Semgrep with JSON output
         continue-on-error: true
         run: |
-          semgrep --config=auto --json > semgrep-report.json || echo "Semgrep completed with findings"
+          semgrep --config=.github/configs/semgrep.yml --json > semgrep-report.json || echo "Semgrep completed with findings"
 
       - name: Summarize Semgrep results
         id: semgrep-summary
