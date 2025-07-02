@@ -1,0 +1,23 @@
+configs:
+  - p/default
+
+# Opcje ogólne
+options:
+  exclude:
+    - node_modules/
+    - target/
+    - build/
+    - .git/
+    - out/
+    - dist/
+    - src/main/resources/db/
+
+  # Języki do skanowania
+  languages:
+    - java
+    - javascript
+    - html
+    - css
+    - yaml
+    - xml
+    - dockerfile
