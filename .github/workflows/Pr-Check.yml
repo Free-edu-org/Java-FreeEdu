@@ -292,21 +292,25 @@ jobs:
     needs: setup
     outputs:
       summary: ${{ steps.semgrep-summary.outputs.summary }}
+
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-      - name: Install Semgrep
-        run: pip install semgrep
-
-      - name: Run Semgrep with JSON output and logs
+      - name: Run Semgrep and save JSON report
         continue-on-error: true
         run: |
-          echo "🔍 Running Semgrep with verbose output..."
-          semgrep --config=.github/configs/semgrep.yml --json --metrics=off --verbose > semgrep-report.json 2>&1 || echo "⚠️ Semgrep completed with findings or exited with error"
-          echo "✅ Semgrep finished. Report saved to semgrep-report.json"
-          echo ""
-          echo "📄 Showing first 50 lines of the report:"
-          head -n 50 semgrep-report.json || echo "❌ Report file not found"
+          echo "🔍 Running Semgrep with p/ci..."
+          semgrep --config=p/ci \
+            --exclude=node_modules/ \
+            --exclude=target/ \
+            --exclude=build/ \
+            --exclude=.git/ \
+            --exclude=out/ \
+            --exclude=dist/ \
+            --exclude=src/main/resources/db/ \
+            --json --metrics=off --verbose > semgrep-report.json || echo "⚠️ Semgrep finished with findings or error"
+          echo "✅ Report generated"
 
       - name: Summarize Semgrep results
         id: semgrep-summary
@@ -326,7 +330,7 @@ jobs:
             echo "" >> semgrep-comment.txt
             echo "**⚠️ Output truncated. For full results, run Semgrep locally.**" >> semgrep-comment.txt
             echo "</details>" >> semgrep-comment.txt
-          
+
             summary="$(cat summary.txt)"
             echo "summary<<EOF" >> $GITHUB_OUTPUT
             echo "$summary" >> $GITHUB_OUTPUT
