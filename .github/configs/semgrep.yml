@@ -1,5 +1,7 @@
 configs:
-  - p/default
+  - p/ci
+  - p/java
+  - p/security-audit
 
 # Opcje ogólne
 options:
