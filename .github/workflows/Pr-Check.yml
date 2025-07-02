@@ -249,7 +249,7 @@ jobs:
     - name: Run SpotBugs
       continue-on-error: true
       run: |
-        mvn com.github.spotbugs:spotbugs-maven-plugin:4.7.3.0:check -Dspotbugs.failOnError=false
+        mvn com.github.spotbugs:spotbugs-maven-plugin:4.8.3.0:check -Dspotbugs.failOnError=false
 
     - name: Summarize SpotBugs Issues
       id: spotbugs-summary
