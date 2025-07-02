@@ -246,6 +246,9 @@ jobs:
         path: ~/.m2/repository
         key: ${{ needs.setup.outputs.cache-key }}
 
+    - name: Build project
+      run: mvn clean install -DskipTests
+
     - name: Run SpotBugs
       continue-on-error: true
       run: |
@@ -278,10 +281,8 @@ jobs:
           echo "No SpotBugs issues found – not exporting summary"
         fi
 
-    - name: Show target folder contents
-      run: |
-        echo "📁 Listing contents of target/:"
-        ls -R target || echo "⚠️ target/ folder not found"
+    - name: Show target folder (after build)
+      run: ls -R target || echo "⚠️ target/ folder not found"
 
     - name: Fail if SpotBugs found issues
       if: always()
