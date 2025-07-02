@@ -249,6 +249,9 @@ jobs:
     - name: Build project
       run: mvn clean install -DskipTests
 
+    - name: Install xmlstarlet
+      run: sudo apt-get update && sudo apt-get install -y xmlstarlet
+
     - name: Run SpotBugs
       continue-on-error: true
       run: |
