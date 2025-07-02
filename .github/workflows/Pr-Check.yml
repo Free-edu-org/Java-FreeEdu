@@ -297,6 +297,10 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Install Semgrep CLI
+        run: |
+          pip install semgrep
+
       - name: Run Semgrep and save JSON report
         continue-on-error: true
         run: |
