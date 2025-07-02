@@ -298,10 +298,15 @@ jobs:
       - name: Install Semgrep
         run: pip install semgrep
 
-      - name: Run Semgrep with JSON output
+      - name: Run Semgrep with JSON output and logs
         continue-on-error: true
         run: |
-          semgrep --config=.github/configs/semgrep.yml --json > semgrep-report.json || echo "Semgrep completed with findings"
+          echo "🔍 Running Semgrep with verbose output..."
+          semgrep --config=.github/configs/semgrep.yml --json --metrics=off --verbose --debug > semgrep-report.json 2>&1 || echo "⚠️ Semgrep completed with findings or exited with error"
+          echo "✅ Semgrep finished. Report saved to semgrep-report.json"
+          echo ""
+          echo "📄 Showing first 50 lines of the report:"
+          head -n 50 semgrep-report.json || echo "❌ Report file not found"
 
       - name: Summarize Semgrep results
         id: semgrep-summary
