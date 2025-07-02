@@ -278,6 +278,11 @@ jobs:
           echo "No SpotBugs issues found – not exporting summary"
         fi
 
+    - name: Show target folder contents
+      run: |
+        echo "📁 Listing contents of target/:"
+        ls -R target || echo "⚠️ target/ folder not found"
+
     - name: Fail if SpotBugs found issues
       if: always()
       run: |
