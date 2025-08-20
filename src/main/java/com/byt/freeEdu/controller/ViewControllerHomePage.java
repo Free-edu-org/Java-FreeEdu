@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import reactor.core.publisher.Mono;
 
 import com.byt.freeEdu.model.users.User;
 import com.byt.freeEdu.service.users.UserService;
@@ -22,8 +21,8 @@ public class ViewControllerHomePage{
   private UserService userService;
 
   @GetMapping("/homepage")
-  public Mono<String> homepage() {
-    return Mono.just("homepage");
+  public String homepage() {
+    return "homepage";
   }
 
   @GetMapping("/login")

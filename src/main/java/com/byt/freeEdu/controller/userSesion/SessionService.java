@@ -2,8 +2,6 @@ package com.byt.freeEdu.controller.userSesion;
 
 import org.springframework.stereotype.Service;
 
-import reactor.core.publisher.Mono;
-
 import com.byt.freeEdu.security.UserUtils;
 
 @Service
@@ -15,7 +13,7 @@ public class SessionService{
     this.userUtils = userUtils;
   }
 
-  public Mono<Integer> getUserId() {
+  public Integer getUserId() {
     return userUtils.getCurrentUserId();
   }
 }

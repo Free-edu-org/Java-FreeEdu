@@ -10,8 +10,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import reactor.core.publisher.Mono;
-
 import com.byt.freeEdu.controller.userSesion.SessionService;
 import com.byt.freeEdu.mapper.AttendanceMapper;
 import com.byt.freeEdu.mapper.GradeMapper;
@@ -34,37 +32,26 @@ import com.byt.freeEdu.service.users.UserService;
 
 @Controller
 @RequestMapping("/view/parent")
-public class ViewControllerParent{
+public class ViewControllerParent {
 
   private final ScheduleService scheduleService;
-
   private final UserService userService;
-
   private final UserMapper userMapper;
-
   private final SessionService sessionService;
-
   private final ParentService parentService;
-
   private final ScheduleMapper scheduleMapper;
-
   private final GradeService gradeService;
-
   private final GradeMapper gradeMapper;
-
   private final AttendanceService attendanceService;
-
   private final AttendanceMapper attendanceMapper;
-
   private final RemarkService remarkService;
-
   private final RemarkMapper remarkMapper;
 
   public ViewControllerParent(UserService userService, UserMapper userMapper,
-      SessionService sessionService, ParentService parentService, ScheduleService scheduleService,
-      ScheduleMapper scheduleMapper, GradeService gradeService, GradeMapper gradeMapper,
-      AttendanceService attendanceService, AttendanceMapper attendanceMapper,
-      RemarkService remarkService, RemarkMapper remarkMapper) {
+                              SessionService sessionService, ParentService parentService, ScheduleService scheduleService,
+                              ScheduleMapper scheduleMapper, GradeService gradeService, GradeMapper gradeMapper,
+                              AttendanceService attendanceService, AttendanceMapper attendanceMapper,
+                              RemarkService remarkService, RemarkMapper remarkMapper) {
     this.scheduleService = scheduleService;
     this.userService = userService;
     this.userMapper = userMapper;
@@ -80,76 +67,94 @@ public class ViewControllerParent{
   }
 
   @GetMapping("/mainpage")
-  public Mono<String> mainpageParent(Model model) {
-    return sessionService.getUserId().flatMap(userId -> {
-      User user = userService.getUserById(userId);
-      UserDto userDto = userMapper.toDto(user);
-      model.addAttribute("user",userDto);
-      List<Student> students = parentService.getStudentsByParentId(userId);
-      model.addAttribute("students",students);
+  public String mainpageParent(Model model) {
+    Integer userId = sessionService.getUserId();
+    User user = userService.getUserById(userId);
+    UserDto userDto = userMapper.toDto(user);
+    model.addAttribute("user", userDto);
 
-      return Mono.just("parent/parent_mainpage");
-    });
+    List<Student> students = parentService.getStudentsByParentId(userId);
+    model.addAttribute("students", students);
+
+    return "parent/parent_mainpage";
   }
 
   @GetMapping("/schedule")
-  public Mono<String> getStudentSchedule(@RequestParam int studentId, Model model) {
-    return sessionService.getUserId().flatMap(parentId -> {
-      List<Student> students = parentService.getStudentsByParentId(parentId);
-      Student student = students.stream().filter(s -> s.getUserId() == studentId).findFirst()
-          .orElseThrow(() -> new RuntimeException("Uczeń nie znaleziony"));
-      List<ScheduleDto> schedules = scheduleService
-          .getScheduleByClassId(student.getSchoolClass().getSchoolClassId()).stream()
-          .map(scheduleMapper::toDto).collect(Collectors.toList());
-      model.addAttribute("schedules",schedules);
-      model.addAttribute("studentName",student.getFirstname() + " " + student.getLastname());
+  public String getStudentSchedule(@RequestParam int studentId, Model model) {
+    Integer parentId = sessionService.getUserId();
 
-      return Mono.just("parent/parent_schedule");
-    });
+    List<Student> students = parentService.getStudentsByParentId(parentId);
+    Student student = students.stream()
+            .filter(s -> s.getUserId() == studentId)
+            .findFirst()
+            .orElseThrow(() -> new RuntimeException("Uczeń nie znaleziony"));
+
+    List<ScheduleDto> schedules = scheduleService
+            .getScheduleByClassId(student.getSchoolClass().getSchoolClassId()).stream()
+            .map(scheduleMapper::toDto)
+            .collect(Collectors.toList());
+
+    model.addAttribute("schedules", schedules);
+    model.addAttribute("studentName", student.getFirstname() + " " + student.getLastname());
+
+    return "parent/parent_schedule";
   }
 
   @GetMapping("/grade")
-  public Mono<String> getStudentGrades(@RequestParam int studentId, Model model) {
-    return sessionService.getUserId().flatMap(parentId -> {
-      List<Student> students = parentService.getStudentsByParentId(parentId);
-      Student student = students.stream().filter(s -> s.getUserId() == studentId).findFirst()
-          .orElseThrow(() -> new RuntimeException("Uczeń nie znaleziony"));
-      List<GradeDto> grades = gradeService.getGradesForStudent(studentId).stream()
-          .map(gradeMapper::toDto).collect(Collectors.toList());
-      model.addAttribute("grades",grades);
-      model.addAttribute("studentName",student.getFirstname() + " " + student.getLastname());
+  public String getStudentGrades(@RequestParam int studentId, Model model) {
+    Integer parentId = sessionService.getUserId();
 
-      return Mono.just("parent/parent_grade");
-    });
+    List<Student> students = parentService.getStudentsByParentId(parentId);
+    Student student = students.stream()
+            .filter(s -> s.getUserId() == studentId)
+            .findFirst()
+            .orElseThrow(() -> new RuntimeException("Uczeń nie znaleziony"));
+
+    List<GradeDto> grades = gradeService.getGradesForStudent(studentId).stream()
+            .map(gradeMapper::toDto)
+            .collect(Collectors.toList());
+
+    model.addAttribute("grades", grades);
+    model.addAttribute("studentName", student.getFirstname() + " " + student.getLastname());
+
+    return "parent/parent_grade";
   }
 
   @GetMapping("/attendance")
-  public Mono<String> getStudentAttendance(@RequestParam int studentId, Model model) {
-    return sessionService.getUserId().flatMap(parentId -> {
-      List<Student> students = parentService.getStudentsByParentId(parentId);
-      Student student = students.stream().filter(s -> s.getUserId() == studentId).findFirst()
-          .orElseThrow(() -> new RuntimeException("Uczeń nie znaleziony"));
-      List<Attendance> attendances = attendanceService.getAttendancesForStudent(studentId);
-      List<AttendanceDto> attendanceDtos = attendances.stream()
-          .map(attendanceMapper::toAttendanceDto).collect(Collectors.toList());
-      model.addAttribute("attendances",attendanceDtos);
-      model.addAttribute("studentName",student.getFirstname() + " " + student.getLastname());
+  public String getStudentAttendance(@RequestParam int studentId, Model model) {
+    Integer parentId = sessionService.getUserId();
 
-      return Mono.just("parent/parent_attendance");
-    });
+    List<Student> students = parentService.getStudentsByParentId(parentId);
+    Student student = students.stream()
+            .filter(s -> s.getUserId() == studentId)
+            .findFirst()
+            .orElseThrow(() -> new RuntimeException("Uczeń nie znaleziony"));
+
+    List<Attendance> attendances = attendanceService.getAttendancesForStudent(studentId);
+    List<AttendanceDto> attendanceDtos = attendances.stream()
+            .map(attendanceMapper::toAttendanceDto)
+            .collect(Collectors.toList());
+
+    model.addAttribute("attendances", attendanceDtos);
+    model.addAttribute("studentName", student.getFirstname() + " " + student.getLastname());
+
+    return "parent/parent_attendance";
   }
 
   @GetMapping("/remark/{id}")
-  public Mono<String> getStudentRemarks(@PathVariable int id, Model model) {
-    return sessionService.getUserId().flatMap(parentId -> {
-      List<Student> students = parentService.getStudentsByParentId(parentId);
-      Student student = students.stream().filter(s -> s.getUserId() == id).findFirst()
-          .orElseThrow(() -> new RuntimeException("Uczeń nie znaleziony"));
-      var remarks = remarkService.getRemarksByStudentId(id);
-      model.addAttribute("remarks",remarks);
-      model.addAttribute("studentName",student.getFirstname() + " " + student.getLastname());
+  public String getStudentRemarks(@PathVariable int id, Model model) {
+    Integer parentId = sessionService.getUserId();
 
-      return Mono.just("parent/parent_remark");
-    });
+    List<Student> students = parentService.getStudentsByParentId(parentId);
+    Student student = students.stream()
+            .filter(s -> s.getUserId() == id)
+            .findFirst()
+            .orElseThrow(() -> new RuntimeException("Uczeń nie znaleziony"));
+
+    var remarks = remarkService.getRemarksByStudentId(id);
+    model.addAttribute("remarks", remarks);
+    model.addAttribute("studentName", student.getFirstname() + " " + student.getLastname());
+
+    return "parent/parent_remark";
   }
 }

@@ -8,8 +8,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import reactor.core.publisher.Mono;
-
 import com.byt.freeEdu.controller.userSesion.SessionService;
 import com.byt.freeEdu.mapper.GradeMapper;
 import com.byt.freeEdu.mapper.ScheduleMapper;
@@ -31,30 +29,22 @@ import com.byt.freeEdu.service.users.UserService;
 
 @Controller
 @RequestMapping("/view/student")
-public class ViewControllerStudent{
+public class ViewControllerStudent {
 
   private final ScheduleService scheduleService;
-
   private final UserService userService;
-
   private final UserMapper userMapper;
-
   private final AttendanceService attendanceService;
-
   private final GradeService gradeService;
-
   private final SessionService sessionService;
-
   private final StudentService studentService;
-
   private final ScheduleMapper scheduleMapper;
-
   private final GradeMapper gradeMapper;
 
   public ViewControllerStudent(ScheduleMapper scheduleMapper, ScheduleService scheduleService,
-      UserService userService, UserMapper userMapper, AttendanceService attendanceService,
-      GradeService gradeService, GradeMapper gradeMapper, SessionService sessionService,
-      StudentService studentService) {
+                               UserService userService, UserMapper userMapper, AttendanceService attendanceService,
+                               GradeService gradeService, GradeMapper gradeMapper, SessionService sessionService,
+                               StudentService studentService) {
     this.scheduleService = scheduleService;
     this.userService = userService;
     this.userMapper = userMapper;
@@ -67,56 +57,51 @@ public class ViewControllerStudent{
   }
 
   @GetMapping("/mainpage")
-  public Mono<String> mainpage(Model model) {
-    return sessionService.getUserId().flatMap(userId -> {
-      User user = userService.getUserById(userId);
-      UserDto userDto = userMapper.toDto(user);
-      model.addAttribute("user",userDto);
-      return Mono.just("student/student_mainpage");
-    });
+  public String mainpage(Model model) {
+    Integer userId = sessionService.getUserId();
+    User user = userService.getUserById(userId);
+    UserDto userDto = userMapper.toDto(user);
+    model.addAttribute("user", userDto);
+    return "student/student_mainpage";
   }
 
   @GetMapping("/remark")
-  public Mono<String> getRemarks(Model model) {
-    return sessionService.getUserId().flatMap(userId -> {
-      List<RemarkDto> remarksDto = studentService.getRemarksForStudent(userId); // Użycie metody w
-      // StudentService
-      model.addAttribute("remarks",remarksDto);
-      return Mono.just("student/student_remark");
-    });
+  public String getRemarks(Model model) {
+    Integer userId = sessionService.getUserId();
+    List<RemarkDto> remarksDto = studentService.getRemarksForStudent(userId);
+    model.addAttribute("remarks", remarksDto);
+    return "student/student_remark";
   }
 
   @GetMapping("/schedule")
-  public Mono<String> getStudentSchedule(Model model) {
-    return sessionService.getUserId().flatMap(userId -> {
-      Student student = studentService.getStudentById(userId);
-      List<Schedule> schedules = scheduleService
-          .getScheduleByClassId(student.getSchoolClass().getSchoolClassId());
-      List<ScheduleDto> scheduleDtos = schedules.stream().map(scheduleMapper::toDto)
-          .collect(Collectors.toList());
-      model.addAttribute("schedules",scheduleDtos);
-      return Mono.just("student/student_schedule");
-    });
+  public String getStudentSchedule(Model model) {
+    Integer userId = sessionService.getUserId();
+    Student student = studentService.getStudentById(userId);
+    List<Schedule> schedules = scheduleService
+            .getScheduleByClassId(student.getSchoolClass().getSchoolClassId());
+    List<ScheduleDto> scheduleDtos = schedules.stream()
+            .map(scheduleMapper::toDto)
+            .collect(Collectors.toList());
+    model.addAttribute("schedules", scheduleDtos);
+    return "student/student_schedule";
   }
 
   @GetMapping("/grade")
-  public Mono<String> getStudentGrades(Model model) {
-    return sessionService.getUserId().flatMap(userId -> {
-      List<Grade> grades = gradeService.getGradesForStudent(userId);
-
-      List<GradeDto> gradeDtos = grades.stream().map(gradeMapper::toDto).toList();
-
-      model.addAttribute("grades",gradeDtos);
-      return Mono.just("student/student_grade");
-    });
+  public String getStudentGrades(Model model) {
+    Integer userId = sessionService.getUserId();
+    List<Grade> grades = gradeService.getGradesForStudent(userId);
+    List<GradeDto> gradeDtos = grades.stream()
+            .map(gradeMapper::toDto)
+            .toList();
+    model.addAttribute("grades", gradeDtos);
+    return "student/student_grade";
   }
 
   @GetMapping("/attendance")
-  public Mono<String> getAttendance(Model model) {
-    return sessionService.getUserId().flatMap(userId -> {
-      List<Attendance> attendances = attendanceService.getAttendancesForStudent(userId);
-      model.addAttribute("attendances",attendances);
-      return Mono.just("student/student_attendance");
-    });
+  public String getAttendance(Model model) {
+    Integer userId = sessionService.getUserId();
+    List<Attendance> attendances = attendanceService.getAttendancesForStudent(userId);
+    model.addAttribute("attendances", attendances);
+    return "student/student_attendance";
   }
 }
