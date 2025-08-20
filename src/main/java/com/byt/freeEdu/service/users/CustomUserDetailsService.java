@@ -12,7 +12,7 @@ import com.byt.freeEdu.model.users.User;
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
 
-    private static final Logger logger = LoggerFactory.getLogger(CustomUserDetailsService.class);
+    private static final Logger log = LoggerFactory.getLogger(CustomUserDetailsService.class);
 
     private final UserService userService;
 
@@ -22,18 +22,14 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String identifier) throws UsernameNotFoundException {
-        logger.info("Looking for user with username or email: {}", identifier);
+        log.info("Looking for user by identifier: {}", identifier);
 
         User user = userService.getUserByUsername(identifier);
+        if (user == null) user = userService.getUserByEmail(identifier);
         if (user == null) {
-            user = userService.getUserByEmail(identifier);
+            log.warn("User not found: {}", identifier);
+            throw new UsernameNotFoundException("User not found: " + identifier);
         }
-        if (user == null) {
-            logger.error("User not found with identifier: {}", identifier);
-            throw new UsernameNotFoundException("User not found with username or email: " + identifier);
-        }
-
-        logger.info("Finished processing user with identifier: {}", identifier);
 
         return org.springframework.security.core.userdetails.User
                 .withUsername(user.getUsername())

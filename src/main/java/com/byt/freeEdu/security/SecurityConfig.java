@@ -3,16 +3,15 @@ package com.byt.freeEdu.security;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 
 @Configuration
 @EnableWebSecurity
-@EnableMethodSecurity // opcjonalnie, jeśli używasz @PreAuthorize itp.
+@EnableMethodSecurity
 public class SecurityConfig {
 
   private final Security security;
@@ -32,9 +31,7 @@ public class SecurityConfig {
   }
 
   @Bean
-  public SecurityFilterChain securityFilterChain(HttpSecurity http,
-                                                       AuthenticationManager authManager)
-          throws Exception {
-    return security.enforcingAuthenticationWithoutCSRF(http, authManager);
+  public SecurityFilterChain securityFilterChain(org.springframework.security.config.annotation.web.builders.HttpSecurity http) throws Exception {
+    return security.enforcingAuthenticationWithoutCSRF(http);
   }
 }
