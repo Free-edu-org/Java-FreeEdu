@@ -33,10 +33,11 @@ public class Security {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/", "/index.html",
                                 "/css/**", "/js/**", "/images/**", "/assets/**", "/favicon.ico").permitAll()
-                        .requestMatchers("/api/auth/login", "/api/auth/register").permitAll()
+                        .requestMatchers("/api/auth/login", "/api/auth/register", "/api/auth/me").permitAll()
                         .requestMatchers("/api/auth/logout").authenticated()
 
-                        .requestMatchers("/view/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .requestMatchers("/view/teacher/**").hasRole("TEACHER")
                         .requestMatchers("/view/parent/**").hasRole("PARENT")
                         .requestMatchers("/view/student/**").hasRole("STUDENT")

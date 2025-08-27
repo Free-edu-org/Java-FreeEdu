@@ -67,6 +67,9 @@ public class GradeService{
 
   public Boolean updateGrade(int id, GradeDto updatedGrade) {
     Grade existingGrade = gradeRepository.findById(id).get();
+    existingGrade.setSubject(SubjectEnum.valueOf(updatedGrade.getSubject()));
+    existingGrade.setTeacher(teacherService.getTeacherById(updatedGrade.getTeacherId()));
+    existingGrade.setStudent(studentService.getStudentById(updatedGrade.getStudentId()));
     existingGrade.setValue(updatedGrade.getValue());
     existingGrade.setGradeDate(LocalDate.now());
 
