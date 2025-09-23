@@ -1,4 +1,5 @@
 CREATE TABLE parent (
     id int PRIMARY KEY REFERENCES user(id) ON DELETE CASCADE,
-    contact_info VARCHAR(255)
+    contact_info VARCHAR(255),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
