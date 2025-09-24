@@ -28,14 +28,6 @@ public interface AttendanceMapper{
     return attendanceFormDto;
   }
 
-  default List<AttendanceFormDto> toDtoList(List<Attendance> attendances) {
-    if (attendances == null || attendances.isEmpty()) {
-      return Collections.emptyList();
-    }
-
-    return attendances.stream().map(this::toDto).collect(Collectors.toList());
-  }
-
   default AttendanceDto toAttendanceDto(Attendance attendance) {
     if (attendance == null) {
       return null;
@@ -58,13 +50,5 @@ public interface AttendanceMapper{
     attendanceDto.setSubjectName(attendance.getSubject().getDisplayName());
 
     return attendanceDto;
-  }
-
-  default List<AttendanceDto> toAttendanceDtoList(List<Attendance> attendances) {
-    if (attendances == null || attendances.isEmpty()) {
-      return Collections.emptyList();
-    }
-
-    return attendances.stream().map(this::toAttendanceDto).collect(Collectors.toList());
   }
 }

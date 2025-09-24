@@ -28,7 +28,7 @@ public interface GradeMapper{
   GradeDto toDto(Grade grade);
 
   @Mapping(target = "value", source = "value")
-  @Mapping(target = "subject", source = "subject", qualifiedByName = "mapSubject")
+  @Mapping(target = "subject", source = "subject", qualifiedByName = "mapSubjectFromCode")
   @Mapping(target = "student", expression = "java(studentService.getStudentById(gradeDto.getStudentId()))")
   @Mapping(target = "teacher", expression = "java(teacherService.getTeacherById(gradeDto.getTeacherId()))")
   Grade toEntity(GradeDto gradeDto, @Context StudentService studentService,
@@ -40,39 +40,32 @@ public interface GradeMapper{
       return "Nieznany przedmiot";
     }
     switch (subject) {
-      case POLISH :
+      case POLISH:
         return "Język polski";
-      case MATH :
+      case MATH:
         return "Matematyka";
-      case GEOGRAPHY :
+      case GEOGRAPHY:
         return "Geografia";
-      case HISTORY :
+      case HISTORY:
         return "Historia";
-      case SCIENCE :
+      case SCIENCE:
         return "Nauka";
-      case ART :
+      case ART:
         return "Sztuka";
-      case SPORTS :
+      case SPORTS:
         return "Sport";
-      default :
+      default:
         return "Nieznany przedmiot";
     }
   }
 
-  @Named("mapSubject")
-  default SubjectEnum mapSubject(String subject) {
-    if (subject == null) {
-      return SubjectEnum.POLISH; // Domyślna wartość
-    }
-    switch (subject) {
-      case "Język polski" :
-        return SubjectEnum.POLISH;
-      case "Matematyka" :
-        return SubjectEnum.MATH;
-      case "Geografia" :
-        return SubjectEnum.GEOGRAPHY;
-      default :
-        return SubjectEnum.POLISH; // Domyślna wartość
+  @Named("mapSubjectFromCode")
+  default SubjectEnum mapSubjectFromCode(String subjectCode) {
+    if (subjectCode == null) return SubjectEnum.POLISH;
+    try {
+      return SubjectEnum.valueOf(subjectCode); // oczekuje np. POLISH
+    } catch (Exception e) {
+      return SubjectEnum.POLISH;
     }
   }
 }

@@ -4,6 +4,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.byt.freeEdu.model.DTO.Auth.ApiResponse;
+import com.byt.freeEdu.model.DTO.UserDto;
 import com.byt.freeEdu.model.users.User;
 import com.byt.freeEdu.service.users.UserService;
 
@@ -18,14 +19,8 @@ public class RegisterController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<ApiResponse> register(@RequestBody User newUser) {
-        userService.addUser(
-                newUser.getUsername(),
-                newUser.getFirstname(),
-                newUser.getLastname(),
-                newUser.getEmail(),
-                newUser.getPassword()
-        );
+    public ResponseEntity<ApiResponse> register(@RequestBody UserDto newUser) {
+        userService.addUser(newUser);
         return ResponseEntity.ok(new ApiResponse("OK", "Registered"));
     }
 }

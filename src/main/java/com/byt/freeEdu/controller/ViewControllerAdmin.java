@@ -162,7 +162,7 @@ public class ViewControllerAdmin {
                 schoolClassService.getSchoolClassById(Integer.parseInt(scheduleDto.getClassName())));
         schedule.setTeacher(teacherService.getTeacherById(scheduleDto.getTeacherId()));
 
-        scheduleService.updateSchedule(id, schedule);
+        //scheduleService.updateSchedule(id, schedule);
         return "redirect:/view/admin/schedule";
     }
 

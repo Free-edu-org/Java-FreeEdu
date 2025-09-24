@@ -44,7 +44,10 @@
     <div class="card-glass p-4">
         <div class="d-flex flex-wrap justify-content-between align-items-center mb-3">
             <h2 class="h4 mb-2 mb-sm-0">Uwagi</h2>
-            <input id="remarksFilter" class="form-control" style="max-width:280px" placeholder="Filtruj po uczniu/nauczycielu"/>
+            <div class="d-flex gap-2">
+                <button id="remarkAddBtn" class="btn btn-primary"><i class="bi bi-plus-circle me-1"></i>Dodaj uwagę</button>
+                <input id="remarksFilter" class="form-control" style="max-width:280px" placeholder="Filtruj po uczniu/nauczycielu"/>
+            </div>
         </div>
         <div class="table-responsive">
             <table class="table table-sm align-middle mb-0">
@@ -54,7 +57,7 @@
                     <th>Nauczyciel</th>
                     <th>Treść</th>
                     <th>Data</th>
-                    <th style="width:120px"></th>
+                    <th style="width:160px"></th>
                 </tr>
                 </thead>
                 <tbody id="remarksTbody"></tbody>
@@ -62,16 +65,30 @@
         </div>
     </div>
 
-    <!-- Edit modal -->
+    <!-- Add/Edit modal -->
     <div class="modal fade" id="modalRemark" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content card-glass p-2">
                 <div class="modal-header border-0">
-                    <h5 class="modal-title">Edytuj uwagę</h5>
+                    <h5 class="modal-title" id="remarkModalTitle">Uwaga</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Zamknij"></button>
                 </div>
                 <div class="modal-body">
-                    <textarea id="remarkContent" class="form-control" rows="5" placeholder="Treść uwagi..."></textarea>
+                    <form id="remarkForm" class="row g-3">
+                        <input type="hidden" id="remarkId"/>
+                        <div class="col-md-6">
+                            <label class="form-label">Uczeń</label>
+                            <select id="remarkStudent" class="form-select" required></select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Nauczyciel</label>
+                            <select id="remarkTeacher" class="form-select" required></select>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Treść</label>
+                            <textarea id="remarkContent" class="form-control" rows="5" required minlength="2" placeholder="Treść uwagi..."></textarea>
+                        </div>
+                    </form>
                 </div>
                 <div class="modal-footer border-0">
                     <button class="btn btn-ghost" data-bs-dismiss="modal">Anuluj</button>
@@ -97,7 +114,7 @@
                     <th>Ocena</th>
                     <th>Data</th>
                     <th>Nauczyciel</th>
-                    <th style="width:140px"></th>
+                    <th style="width:160px"></th>
                 </tr>
                 </thead>
                 <tbody id="gradesTbody"></tbody>
@@ -118,11 +135,13 @@
                         <input type="hidden" id="gradeId"/>
                         <div class="col-md-6">
                             <label class="form-label">Przedmiot</label>
-                            <select id="gradeSubject" class="form-select" required></select>
+                            <select id="gradeSubject" class="form-select" required>
+                                <option value="" selected disabled>— wybierz —</option>
+                            </select>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">Ocena</label>
-                            <input id="gradeValue" type="number" min="1" max="6" step="1" class="form-control" required/>
+                            <input id="gradeValue" type="number" min="1" max="6" step="0.5" class="form-control" required placeholder="np. 4.5"/>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">Nauczyciel</label>
@@ -142,6 +161,274 @@
         </div>
     </div>
 </template>
+
+<!-- Plan -->
+<template id="tpl-schedule">
+    <div class="card-glass p-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2 class="h4 mb-0">Plan</h2>
+            <button id="scheduleAddBtn" class="btn btn-primary"><i class="bi bi-plus-circle me-1"></i>Dodaj</button>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-sm align-middle mb-0">
+                <thead>
+                <tr>
+                    <th>Data</th>
+                    <th>Przedmiot</th>
+                    <th>Klasa</th>
+                    <th>Nauczyciel</th>
+                    <th style="width:140px"></th>
+                </tr>
+                </thead>
+                <tbody id="scheduleTbody"></tbody>
+            </table>
+        </div>
+    </div>
+    <div class="modal fade" id="modalSchedule" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog"><div class="modal-content card-glass p-2">
+            <div class="modal-header border-0">
+                <h5 id="scheduleModalTitle" class="modal-title">Plan</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form class="row g-3">
+                    <input type="hidden" id="scheduleId"/>
+                    <div class="col-md-6">
+                        <label class="form-label">Data</label>
+                        <input id="scheduleDate" type="date" class="form-control" required/>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Przedmiot</label>
+                        <select id="scheduleSubject" class="form-select" required>
+                            <option value="" selected disabled>— wybierz —</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Klasa</label>
+                        <select id="scheduleClass" class="form-select" required></select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Nauczyciel</label>
+                        <select id="scheduleTeacher" class="form-select" required></select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer border-0">
+                <button class="btn btn-ghost" data-bs-dismiss="modal">Anuluj</button>
+                <button id="scheduleSaveBtn" class="btn btn-primary">Zapisz</button>
+            </div>
+        </div></div>
+    </div>
+</template>
+
+<!-- Frekwencja -->
+<template id="tpl-attendance">
+    <div class="card-glass p-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2 class="h4 mb-0">Frekwencja</h2>
+            <button id="attendanceAddBtn" class="btn btn-primary"><i class="bi bi-plus-circle me-1"></i>Dodaj</button>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-sm align-middle mb-0">
+                <thead>
+                <tr>
+                    <th>Data</th>
+                    <th>Uczeń</th>
+                    <th>Przedmiot</th>
+                    <th>Status</th>
+                    <th>Nauczyciel</th>
+                    <th style="width:140px"></th>
+                </tr>
+                </thead>
+                <tbody id="attendanceTbody"></tbody>
+            </table>
+        </div>
+    </div>
+    <div class="modal fade" id="modalAttendance" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog"><div class="modal-content card-glass p-2">
+            <div class="modal-header border-0">
+                <h5 id="attendanceModalTitle" class="modal-title">Frekwencja</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form class="row g-3">
+                    <input type="hidden" id="attendanceId"/>
+                    <div class="col-md-6">
+                        <label class="form-label">Data</label>
+                        <input id="attendanceDate" type="date" class="form-control" required/>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Przedmiot</label>
+                        <select id="attendanceSubject" class="form-select" required>
+                            <option value="" selected disabled>— wybierz —</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Uczeń</label>
+                        <select id="attendanceStudent" class="form-select" required></select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Nauczyciel</label>
+                        <select id="attendanceTeacher" class="form-select" required></select>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label">Status</label>
+                        <select id="attendanceStatus" class="form-select" required>
+                            <option value="" selected disabled>— wybierz —</option>
+                            <option value="PRESENT">Obecny</option>
+                            <option value="ABSENT">Nieobecny</option>
+                            <option value="LATE">Spóźnienie</option>
+                            <option value="EXCUSED">Usprawiedliwione</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer border-0">
+                <button class="btn btn-ghost" data-bs-dismiss="modal">Anuluj</button>
+                <button id="attendanceSaveBtn" class="btn btn-primary">Zapisz</button>
+            </div>
+        </div></div>
+    </div>
+</template>
+
+<!-- Klasy -->
+<template id="tpl-classes">
+    <div class="card-glass p-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2 class="h4 mb-0">Klasy</h2>
+            <button id="classAddBtn" class="btn btn-primary"><i class="bi bi-plus-circle me-1"></i>Dodaj</button>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-sm align-middle mb-0">
+                <thead>
+                <tr>
+                    <th>Nazwa</th>
+                    <th>Liczba uczniów</th>
+                    <th style="width:140px"></th>
+                </tr>
+                </thead>
+                <tbody id="classesTbody"></tbody>
+            </table>
+        </div>
+    </div>
+    <div class="modal fade" id="modalClass" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog"><div class="modal-content card-glass p-2">
+            <div class="modal-header border-0">
+                <h5 id="classModalTitle" class="modal-title">Klasa</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form class="row g-3">
+                    <input type="hidden" id="classId"/>
+                    <div class="col-12">
+                        <label class="form-label">Nazwa</label>
+                        <input id="className" class="form-control" required minlength="1" maxlength="64"/>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer border-0">
+                <button class="btn btn-ghost" data-bs-dismiss="modal">Anuluj</button>
+                <button id="classSaveBtn" class="btn btn-primary">Zapisz</button>
+            </div>
+        </div></div>
+    </div>
+</template>
+
+<!-- Użytkownicy -->
+<template id="tpl-users">
+    <div class="card-glass p-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2 class="h4 mb-0">Użytkownicy</h2>
+            <button id="userAddBtn" class="btn btn-primary"><i class="bi bi-plus-circle me-1"></i>Dodaj</button>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-sm align-middle mb-0">
+                <thead>
+                <tr>
+                    <th>Imię</th>
+                    <th>Nazwisko</th>
+                    <th>Login</th>
+                    <th>Email</th>
+                    <th>Rola</th>
+                    <th style="width:140px"></th>
+                </tr>
+                </thead>
+                <tbody id="usersTbody"></tbody>
+            </table>
+        </div>
+    </div>
+    <div class="modal fade" id="modalUser" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog"><div class="modal-content card-glass p-2">
+            <div class="modal-header border-0">
+                <h5 id="userModalTitle" class="modal-title">Użytkownik</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form class="row g-3" id="userForm">
+                    <input type="hidden" id="userId"/>
+                    <div class="col-md-6">
+                        <label class="form-label">Imię</label>
+                        <input id="userFirst" class="form-control" required/>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Nazwisko</label>
+                        <input id="userLast" class="form-control" required/>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Login</label>
+                        <input id="userLogin" class="form-control" required/>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Email</label>
+                        <input id="userEmail" type="email" class="form-control" required/>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Rola</label>
+                        <select id="userRole" class="form-select" required>
+                            <option value="" disabled selected>— wybierz —</option>
+                            <option value="ADMIN">Administrator</option>
+                            <option value="TEACHER">Nauczyciel</option>
+                            <option value="STUDENT">Uczeń</option>
+                            <option value="PARENT">Rodzic</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Hasło</label>
+                        <input id="userPassword" type="password" class="form-control" minlength="6" placeholder="(pozostaw puste aby nie zmieniać)"/>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Potwierdź hasło</label>
+                        <input id="userPassword2" type="password" class="form-control" minlength="6" placeholder="Powtórz hasło"/>
+                    </div>
+                </form>
+                <div id="userPwdHint" class="form-text">
+                    Przy edycji pozostaw pola hasła puste, aby nie zmieniać.
+                </div>
+            </div>
+            <div class="modal-footer border-0">
+                <button class="btn btn-ghost" data-bs-dismiss="modal">Anuluj</button>
+                <button id="userSaveBtn" class="btn btn-primary">Zapisz</button>
+            </div>
+        </div></div>
+    </div>
+</template>
+
+<!-- Modal potwierdzenia -->
+<div class="modal fade" id="confirmModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content card-glass p-2">
+            <div class="modal-header border-0">
+                <h5 class="modal-title" id="confirmTitle">Potwierdzenie</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Zamknij"></button>
+            </div>
+            <div class="modal-body" id="confirmBody">Czy na pewno?</div>
+            <div class="modal-footer border-0">
+                <button type="button" class="btn btn-ghost" data-bs-dismiss="modal">Nie</button>
+                <button type="button" class="btn btn-danger" id="confirmYesBtn">Tak</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 <div id="toasts"></div>
 

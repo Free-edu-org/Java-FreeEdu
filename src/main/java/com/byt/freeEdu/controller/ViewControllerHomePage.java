@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 
+import com.byt.freeEdu.model.DTO.UserDto;
 import com.byt.freeEdu.model.users.User;
 import com.byt.freeEdu.service.users.UserService;
 
@@ -43,10 +44,9 @@ public class ViewControllerHomePage{
   }
 
   @PostMapping("/register")
-  public String registerUser(@ModelAttribute User user, Model model) {
+  public String registerUser(@ModelAttribute UserDto user, Model model) {
     try {
-      boolean success = userService.addUser(user.getUsername(),user.getFirstname(),
-          user.getLastname(),user.getEmail(),user.getPassword());
+      boolean success = userService.addUser(user);
 
       if (!success) {
         model.addAttribute("error","Nie udało się zarejestrować użytkownika. Spróbuj ponownie.");

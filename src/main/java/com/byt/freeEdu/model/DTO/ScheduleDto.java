@@ -7,7 +7,7 @@ import lombok.Data;
 @Data
 public class ScheduleDto{
 
-  private int id;
+  private Integer id;
 
   private LocalDate date;
 
@@ -15,7 +15,7 @@ public class ScheduleDto{
 
   private String className;
 
-  private int teacherId;
+  private Integer teacherId;
 
   private String teacherFirstName;
 

@@ -31,7 +31,7 @@ import lombok.RequiredArgsConstructor;
 @NoArgsConstructor
 @Inheritance(strategy = InheritanceType.JOINED)
 @Table(name = "user")
-public class User implements UserDetails{
+public class User{
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -62,29 +62,4 @@ public class User implements UserDetails{
   @Enumerated(EnumType.STRING)
   @Column(name = "user_role", nullable = false)
   private UserRole userRole;
-
-  @Override
-  public Collection<? extends GrantedAuthority> getAuthorities() {
-    return List.of();
-  }
-
-  @Override
-  public boolean isAccountNonExpired() {
-    return UserDetails.super.isAccountNonExpired();
-  }
-
-  @Override
-  public boolean isAccountNonLocked() {
-    return UserDetails.super.isAccountNonLocked();
-  }
-
-  @Override
-  public boolean isCredentialsNonExpired() {
-    return UserDetails.super.isCredentialsNonExpired();
-  }
-
-  @Override
-  public boolean isEnabled() {
-    return UserDetails.super.isEnabled();
-  }
 }

@@ -104,6 +104,8 @@ public class RemarkService{
 
     if (isNotEmpty(updatedRemark.getContent())) {
       existingRemark.setContent(updatedRemark.getContent());
+      existingRemark.setStudent(studentService.getStudentById(updatedRemark.getStudentId()));
+      existingRemark.setTeacher(teacherService.getTeacherById(updatedRemark.getTeacherId()));
     }
 
     return remarkRepository.save(existingRemark);
@@ -113,7 +115,7 @@ public class RemarkService{
   public void deleteRemark(int id) {
     Remark remark = remarkRepository.findById(id)
         .orElseThrow(() -> new EntityNotFoundException("Remark not found with ID: " + id));
-    remarkRepository.delete(remark);
+    remarkRepository.deleteById(id);
   }
 
   private boolean isNotEmpty(String content) {
