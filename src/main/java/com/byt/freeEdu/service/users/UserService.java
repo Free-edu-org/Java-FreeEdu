@@ -3,11 +3,11 @@ package com.byt.freeEdu.service.users;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.byt.freeEdu.mapper.UserMapper;
 import com.byt.freeEdu.model.DTO.UserDto;
 import com.byt.freeEdu.model.enums.UserRole;
 import com.byt.freeEdu.model.users.User;
@@ -20,18 +20,12 @@ public class UserService {
 
     private final UserRepository userRepository;
 
-    private final PasswordEncoder passwordEncoder;
-
-    private final UserMapper userMapper;
-
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, UserMapper userMapper) {
+    public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
-        this.userMapper = userMapper;
     }
 
-    public List<UserDto> getAllUsers() {
-        return new ArrayList<>(userRepository.findAll().stream().map(userMapper::toDto).toList());
+    public List<User> getAllUsers() {
+        return new ArrayList<>(userRepository.findAll());
     }
 
     public User getUserById(int id) {
@@ -65,6 +59,7 @@ public class UserService {
             throw new IllegalArgumentException("Istnieję użytkownik z takim emailem");
         }
 
+        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         String hashedPassword = passwordEncoder.encode(newUser.getPassword());
 
         User user = new User(newUser.getUsername(), newUser.getFirstname(), newUser.getLastname(), newUser.getEmail(), hashedPassword, UserRole.UNKNOWN);
@@ -78,33 +73,27 @@ public class UserService {
         User existingUser = userRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("User not found with ID: " + id));
 
-        if (hasText(updatedUser.getUsername())) {
-            existingUser.setUsername(updatedUser.getUsername().trim());
+        if (updatedUser.getUsername() != null && !updatedUser.getUsername().trim().isEmpty()) {
+            existingUser.setUsername(updatedUser.getUsername());
         }
-        if (hasText(updatedUser.getFirstname())) {
-            existingUser.setFirstname(updatedUser.getFirstname().trim());
+        if (updatedUser.getFirstname() != null && !updatedUser.getFirstname().trim().isEmpty()) {
+            existingUser.setFirstname(updatedUser.getFirstname());
         }
-        if (hasText(updatedUser.getLastname())) {
-            existingUser.setLastname(updatedUser.getLastname().trim());
+        if (updatedUser.getLastname() != null && !updatedUser.getLastname().trim().isEmpty()) {
+            existingUser.setLastname(updatedUser.getLastname());
         }
-        if (hasText(updatedUser.getEmail())) {
-            existingUser.setEmail(updatedUser.getEmail().trim());
+        if (updatedUser.getEmail() != null && !updatedUser.getEmail().trim().isEmpty()) {
+            existingUser.setEmail(updatedUser.getEmail());
         }
+        existingUser.setUserRole(UserRole.valueOf(updatedUser.getRole()));
 
-        if (hasText(updatedUser.getRole())) {
-            try {
-                existingUser.setUserRole(UserRole.valueOf(updatedUser.getRole().toUpperCase()));
-            } catch (IllegalArgumentException e) {
-                throw new IllegalArgumentException("Invalid role: " + updatedUser.getRole());
-            }
-        }
-
-        if (hasText(updatedUser.getPassword())) {
-            String hashedPassword = passwordEncoder.encode(updatedUser.getPassword().trim());
+        if (updatedUser.getPassword() != null && !updatedUser.getPassword().trim().isEmpty()) {
+            PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+            String hashedPassword = passwordEncoder.encode(updatedUser.getPassword());
             existingUser.setPassword(hashedPassword);
         }
 
-        return existingUser; // save() nie jest potrzebne przy @Transactional
+        return userRepository.save(existingUser);
     }
 
     @Transactional
@@ -121,7 +110,4 @@ public class UserService {
         userRepository.delete(user);
     }
 
-    private boolean hasText(String value) {
-        return value != null && !value.trim().isEmpty();
-    }
 }
