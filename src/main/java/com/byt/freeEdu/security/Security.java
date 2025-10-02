@@ -36,12 +36,15 @@ public class Security {
                         .requestMatchers("/api/auth/login", "/api/auth/register", "/api/auth/me").permitAll()
                         .requestMatchers("/api/auth/logout").authenticated()
 
-                        .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/view/teacher/**").hasRole("TEACHER")
-                        .requestMatchers("/parent/**").hasRole("PARENT")
+                        .requestMatchers("/api/teacher/**").hasRole("TEACHER")
                         .requestMatchers("/api/parent/**").hasRole("PARENT")
-                        .requestMatchers("/view/student/**").hasRole("STUDENT")
+                        .requestMatchers("/api/student/**").hasRole("STUDENT")
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/teacher/**").hasRole("TEACHER")
+                        .requestMatchers("/parent/**").hasRole("PARENT")
+                        .requestMatchers("/student/**").hasRole("STUDENT")
+
 
                         .anyRequest().authenticated()
                 )

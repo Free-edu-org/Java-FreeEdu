@@ -28,9 +28,9 @@ export async function renderUserBanner(opts = {}){
         document.getElementById('gotoPanel')?.addEventListener('click', ()=>{
             switch(me.role){
                 case 'ROLE_ADMIN':   location.href='/admin/index.html'; break;
-                case 'ROLE_TEACHER': location.href='/view/teacher/mainpage'; break;
+                case 'ROLE_TEACHER': location.href='/teacher/index.html'; break;
                 case 'ROLE_PARENT':  location.href='/parent/index.html'; break;
-                case 'ROLE_STUDENT': location.href='/view/student/mainpage'; break;
+                case 'ROLE_STUDENT': location.href='/student/index.html'; break;
                 default: location.href='/';
             }
         });
