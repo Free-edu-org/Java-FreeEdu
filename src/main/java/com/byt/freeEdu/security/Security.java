@@ -39,7 +39,8 @@ public class Security {
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .requestMatchers("/view/teacher/**").hasRole("TEACHER")
-                        .requestMatchers("/view/parent/**").hasRole("PARENT")
+                        .requestMatchers("/parent/**").hasRole("PARENT")
+                        .requestMatchers("/api/parent/**").hasRole("PARENT")
                         .requestMatchers("/view/student/**").hasRole("STUDENT")
 
                         .anyRequest().authenticated()

@@ -62,6 +62,14 @@ public class ScheduleService {
         return schedules.stream().map(scheduleMapper::toDto).collect(Collectors.toList());
     }
 
+    public List<ScheduleDto> getSchedulesByClassName(String className) {
+        SchoolClass schoolClass = schoolClassService.getSchoolClassByName(className);
+        List<Schedule> schedules = scheduleRepository
+                .getAllByScheduleId(schoolClass.getSchoolClassId());
+
+        return schedules.stream().map(scheduleMapper::toDto).collect(Collectors.toList());
+    }
+
     public List<ScheduleAdminDto> getAllSchedules() {
         return scheduleRepository.findAll().stream().map(scheduleMapper::toAdminDto)
                 .collect(Collectors.toList());

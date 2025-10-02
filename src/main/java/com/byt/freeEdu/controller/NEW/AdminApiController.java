@@ -300,7 +300,9 @@ public class AdminApiController {
     // ===== Użytkownicy =====
     @GetMapping("/users")
     public List<UserDto> usersList() {
-        return userService.getAllUsers();
+        return userService.getAllUsers().stream()
+            .map(userMapper::toDto)
+            .toList();
     }
 
     @PostMapping("/users")

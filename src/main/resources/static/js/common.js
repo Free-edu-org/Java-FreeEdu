@@ -29,7 +29,7 @@ export async function renderUserBanner(opts = {}){
             switch(me.role){
                 case 'ROLE_ADMIN':   location.href='/admin/index.html'; break;
                 case 'ROLE_TEACHER': location.href='/view/teacher/mainpage'; break;
-                case 'ROLE_PARENT':  location.href='/view/parent/mainpage'; break;
+                case 'ROLE_PARENT':  location.href='/parent/index.html'; break;
                 case 'ROLE_STUDENT': location.href='/view/student/mainpage'; break;
                 default: location.href='/';
             }
@@ -64,4 +64,12 @@ export function initThemeToggle(){
         apply(next); localStorage.setItem('theme', next);
         btn.textContent = next==='dark' ? '☀️ jasny' : '🌙 ciemny';
     });
+}
+export function escapeHtml(s){
+    return String(s ?? '')
+        .replace(/&/g,'&amp;')
+        .replace(/</g,'&lt;')
+        .replace(/>/g,'&gt;')
+        .replace(/"/g,'&quot;')
+        .replace(/'/g,'&#39;');
 }
