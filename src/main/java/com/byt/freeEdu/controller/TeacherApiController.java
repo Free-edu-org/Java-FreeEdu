@@ -1,4 +1,4 @@
-package com.byt.freeEdu.controller.NEW;
+package com.byt.freeEdu.controller;
 
 import java.time.LocalDate;
 import java.util.List;

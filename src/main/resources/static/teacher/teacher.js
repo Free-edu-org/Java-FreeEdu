@@ -1,7 +1,9 @@
 // /js/teacher.js
 import { toast, escapeHtml } from '/js/common.js';
 
-const $ = (sel) => document.querySelector(sel);
+const $  = (sel, root=document) => root.querySelector(sel);
+const $$ = (sel, root=document) => [...root.querySelectorAll(sel)];
+const teacherIdParam = () => `teacherId=${encodeURIComponent(state.teacherId)}`;
 
 // ====== STATE ======
 const state = {
@@ -18,12 +20,12 @@ async function getJson(url){
     if(!r.ok) throw new Error(await r.text().catch(()=>r.status));
     return r.json();
 }
-async function sendJson(url, method, data){
+async function sendJson(url, method='POST', data){
     const r = await fetch(url, {
         method,
         credentials: 'include',
         headers: { 'Content-Type':'application/json' },
-        body: data ? JSON.stringify(data) : undefined
+        body: data != null ? JSON.stringify(data) : undefined
     });
     if(!r.ok) throw new Error(await r.text().catch(()=>r.status));
     return r.headers.get('content-type')?.includes('application/json') ? r.json() : {};
@@ -36,19 +38,22 @@ function mountTemplate(id){
 }
 function fillSelect(sel, items, getVal, getLabel, withEmpty=false){
     const opts = (items||[]).map(it=>`<option value="${getVal(it)}">${getLabel(it)}</option>`).join('');
-    sel.innerHTML = withEmpty?`<option value="" selected disabled>— wybierz —</option>${opts}`:opts;
+    sel.innerHTML = withEmpty ? `<option value="" selected disabled>— wybierz —</option>${opts}` : opts;
 }
 function fullName(obj){
     const first = obj?.firstname ?? obj?.firstName ?? '';
     const last  = obj?.lastname  ?? obj?.lastName  ?? '';
     return `${first} ${last}`.trim();
 }
+const debounce = (fn, ms=300) => {
+    let t; return (...args)=>{ clearTimeout(t); t=setTimeout(()=>fn(...args), ms); };
+};
 
 // ====== ROUTER ======
 const routes = {
-    '#schedule': renderSchedule,
-    '#remarks' : renderRemarks,
-    '#grades'  : renderGrades,
+    '#schedule'  : renderSchedule,
+    '#remarks'   : renderRemarks,
+    '#grades'    : renderGrades,
     '#attendance': renderAttendance,
 };
 function handleHash(){
@@ -64,8 +69,9 @@ async function renderSchedule(){
 
     const tbody = $('#scheduleTbody');
     tbody.innerHTML = `<tr><td colspan="4" class="text-secondary">Ładowanie...</td></tr>`;
+
     try{
-        const data = await getJson(`/api/teacher/schedule?teacherId=${encodeURIComponent(state.teacherId)}`);
+        const data = await getJson(`/api/teacher/schedule?${teacherIdParam()}`);
         if(!Array.isArray(data) || !data.length){
             tbody.innerHTML = `<tr><td colspan="4" class="text-secondary text-center">Brak danych</td></tr>`;
             return;
@@ -92,13 +98,56 @@ async function renderRemarks(){
     const addBtn = $('#remarkAddBtn');
     const tbody  = $('#remarksTbody');
 
+    // Modal
+    const modalEl = document.getElementById('modalRemark');
+    const modal   = new bootstrap.Modal(modalEl);
+    const titleEl = document.getElementById('remarkModalTitle');
+    const idEl    = document.getElementById('remarkId');
+    const classEl = document.getElementById('remarkClass');
+    const studEl  = document.getElementById('remarkStudent');
+    const contEl  = document.getElementById('remarkContent');
+    const saveBtn = document.getElementById('remarkSaveBtn');
+
     let data = [];
+
+    async function ensureClasses(){
+        if(!state.classes){
+            state.classes = await getJson(`/api/teacher/classes?${teacherIdParam()}`);
+        }
+        fillSelect(
+            classEl,
+            state.classes,
+            c=> (c.schoolClassId ?? c.id ?? c.classId),
+            c=> (c.name ?? `Klasa ${c.schoolClassId ?? c.id ?? ''}`),
+            true
+        );
+    }
+
+    async function loadStudentsForSelectedClass(){
+        const cid = classEl.value ? Number(classEl.value) : null;
+        if(!cid){ studEl.innerHTML = ''; return; }
+        const studs = await getJson(`/api/teacher/students?${teacherIdParam()}&classId=${encodeURIComponent(cid)}`);
+        fillSelect(
+            studEl,
+            studs,
+            s=> (s.userId ?? s.id),
+            s=> `${s.firstname ?? s.firstName ?? ''} ${s.lastname ?? s.lastName ?? ''}`
+        );
+    }
+    classEl.addEventListener('change', loadStudentsForSelectedClass);
 
     async function load(){
         tbody.innerHTML = `<tr><td colspan="4" class="text-secondary">Ładowanie...</td></tr>`;
-        data = await getJson(`/api/teacher/remarks?teacherId=${encodeURIComponent(state.teacherId)}`);
+        try{
+            data = await getJson(`/api/teacher/remarks?${teacherIdParam()}`);
+        }catch(e){
+            console.error(e);
+            tbody.innerHTML = `<tr><td colspan="4" class="text-danger text-center">Błąd pobierania uwag</td></tr>`;
+            return;
+        }
         draw();
     }
+
     function draw(){
         const q = (filter.value||'').toLowerCase();
         const rows = (data||[])
@@ -109,38 +158,12 @@ async function renderRemarks(){
           <td class="text-truncate" style="max-width:420px">${escapeHtml(r.content ?? '')}</td>
           <td>${escapeHtml(r.addDate ?? '')}</td>
           <td class="text-nowrap">
-            <button class="btn btn-sm btn-outline-secondary me-1 btn-edit"><i class="bi bi-pencil"></i></button>
-            <button class="btn btn-sm btn-outline-danger btn-del"><i class="bi bi-trash"></i></button>
+            <button class="btn btn-sm btn-outline-secondary me-1" data-action="edit"><i class="bi bi-pencil"></i></button>
+            <button class="btn btn-sm btn-outline-danger" data-action="del"><i class="bi bi-trash"></i></button>
           </td>
         </tr>`).join('');
         tbody.innerHTML = rows || `<tr><td colspan="4" class="text-center text-secondary">Brak uwag</td></tr>`;
-        tbody.querySelectorAll('.btn-edit').forEach(b=>b.addEventListener('click',()=>openModal('edit', b.closest('tr').dataset.id)));
-        tbody.querySelectorAll('.btn-del').forEach(b=>b.addEventListener('click',()=>delRow(b.closest('tr').dataset.id)));
     }
-
-    // Modal + słowniki
-    const modalEl = document.getElementById('modalRemark');
-    const modal   = new bootstrap.Modal(modalEl);
-    const titleEl = document.getElementById('remarkModalTitle');
-    const idEl    = document.getElementById('remarkId');
-    const classEl = document.getElementById('remarkClass');
-    const studEl  = document.getElementById('remarkStudent');
-    const contEl  = document.getElementById('remarkContent');
-    const saveBtn = document.getElementById('remarkSaveBtn');
-
-    async function ensureClasses(){
-        if(!state.classes){
-            state.classes = await getJson(`/api/teacher/classes?teacherId=${encodeURIComponent(state.teacherId)}`);
-        }
-        fillSelect(classEl, state.classes, c=> (c.schoolClassId ?? c.id ?? c.classId), c=> (c.name ?? `Klasa ${c.schoolClassId ?? c.id ?? ''}`), true);
-    }
-    async function loadStudentsForSelectedClass(){
-        const cid = classEl.value ? Number(classEl.value) : null;
-        if(!cid){ studEl.innerHTML = ''; return; }
-        const studs = await getJson(`/api/teacher/students?teacherId=${encodeURIComponent(state.teacherId)}&classId=${encodeURIComponent(cid)}`);
-        fillSelect(studEl, studs, s=> (s.userId ?? s.id), s=> `${s.firstname ?? s.firstName ?? ''} ${s.lastname ?? s.lastName ?? ''}`);
-    }
-    classEl.addEventListener('change', loadStudentsForSelectedClass);
 
     async function openModal(mode, id=null){
         await ensureClasses();
@@ -155,7 +178,6 @@ async function renderRemarks(){
             const r = data.find(x=> String(x.id ?? x.remarkId) === String(id));
             idEl.value = r?.id ?? r?.remarkId ?? '';
             contEl.value = r?.content ?? '';
-            // Dodaj tymczasowo ucznia do selecta (jeśli nie wybrano klasy)
             const sid = r?.studentId;
             if(sid){
                 const label = `${r.studentFirstName ?? ''} ${r.studentLastName ?? ''}`.trim() || `Uczeń ${sid}`;
@@ -168,7 +190,7 @@ async function renderRemarks(){
 
     async function delRow(id){
         try{
-            await sendJson(`/api/teacher/remarks/${id}?teacherId=${encodeURIComponent(state.teacherId)}`, 'DELETE');
+            await sendJson(`/api/teacher/remarks/${id}?${teacherIdParam()}`, 'DELETE');
             toast('Usunięto uwagę');
             await load();
         }catch(e){
@@ -182,15 +204,16 @@ async function renderRemarks(){
             content: (contEl.value || '').trim(),
             studentId: studEl.value ? Number(studEl.value) : 0,
         };
-        if(!payload.content || !payload.studentId){ toast('Uzupełnij ucznia i treść','error'); return; }
-
+        if(!payload.content || !payload.studentId){
+            toast('Uzupełnij ucznia i treść','error'); return;
+        }
         try{
             const id = idEl.value;
             if(id){
-                await sendJson(`/api/teacher/remarks/${id}?teacherId=${encodeURIComponent(state.teacherId)}`, 'PUT', payload);
+                await sendJson(`/api/teacher/remarks/${id}?${teacherIdParam()}`, 'PUT', payload);
                 toast('Zapisano uwagę');
             }else{
-                await sendJson(`/api/teacher/remarks?teacherId=${encodeURIComponent(state.teacherId)}`, 'POST', payload);
+                await sendJson(`/api/teacher/remarks?${teacherIdParam()}`, 'POST', payload);
                 toast('Dodano uwagę');
             }
             modal.hide();
@@ -201,8 +224,17 @@ async function renderRemarks(){
         }
     });
 
+    tbody.addEventListener('click', (e)=>{
+        const btn = e.target.closest('button[data-action]');
+        if(!btn) return;
+        const tr = btn.closest('tr');
+        const id = tr?.dataset.id;
+        if(btn.dataset.action === 'edit') openModal('edit', id);
+        if(btn.dataset.action === 'del')  delRow(id);
+    });
+
     addBtn.addEventListener('click', ()=> openModal('add'));
-    filter.addEventListener('input', draw);
+    filter.addEventListener('input', debounce(draw, 200));
     await load();
 }
 
@@ -212,13 +244,62 @@ async function renderGrades(){
     const addBtn = $('#gradeAddBtn');
     const tbody  = $('#gradesTbody');
 
+    // Modal
+    const modalEl = document.getElementById('modalGrade');
+    const modal   = new bootstrap.Modal(modalEl);
+    const titleEl = document.getElementById('gradeModalTitle');
+    const idEl    = document.getElementById('gradeId');
+    const subjEl  = document.getElementById('gradeSubject');
+    const valEl   = document.getElementById('gradeValue');
+    const classEl = document.getElementById('gradeClass');
+    const studEl  = document.getElementById('gradeStudent');
+    const saveBtn = document.getElementById('gradeSaveBtn');
+
     let data = [];
+
+    async function ensureSubjects(){
+        if(!state.subjects){
+            state.subjects = await getJson(`/api/teacher/subjects?${teacherIdParam()}`);
+        }
+        fillSelect(subjEl, state.subjects, s=>s, s=>s, true);
+    }
+    async function ensureClasses(){
+        if(!state.classes){
+            state.classes = await getJson(`/api/teacher/classes?${teacherIdParam()}`);
+        }
+        fillSelect(
+            classEl,
+            state.classes,
+            c=> (c.schoolClassId ?? c.id ?? c.classId),
+            c=> (c.name ?? `Klasa ${c.schoolClassId ?? c.id ?? ''}`),
+            true
+        );
+    }
+    async function loadStudentsForClass(){
+        const cid = classEl.value ? Number(classEl.value) : null;
+        if(!cid){ studEl.innerHTML=''; return; }
+        const studs = await getJson(`/api/teacher/students?${teacherIdParam()}&classId=${encodeURIComponent(cid)}`);
+        fillSelect(
+            studEl,
+            studs,
+            s=> (s.userId ?? s.id),
+            s=> `${s.firstname ?? s.firstName ?? ''} ${s.lastname ?? s.lastName ?? ''}`
+        );
+    }
+    classEl.addEventListener('change', loadStudentsForClass);
 
     async function load(){
         tbody.innerHTML = `<tr><td colspan="5" class="text-secondary">Ładowanie...</td></tr>`;
-        data = await getJson(`/api/teacher/grades?teacherId=${encodeURIComponent(state.teacherId)}`);
+        try{
+            data = await getJson(`/api/teacher/grades?${teacherIdParam()}`);
+        }catch(e){
+            console.error(e);
+            tbody.innerHTML = `<tr><td colspan="5" class="text-danger text-center">Błąd pobierania ocen</td></tr>`;
+            return;
+        }
         draw();
     }
+
     function draw(){
         const rows = (data||[]).map(g=>{
             const id = g.gradeId ?? g.id;
@@ -236,50 +317,18 @@ async function renderGrades(){
         <td>${escapeHtml(val)}</td>
         <td>${escapeHtml(date)}</td>
         <td class="text-nowrap">
-          <button class="btn btn-sm btn-outline-secondary me-1 btn-edit"><i class="bi bi-pencil"></i></button>
-          <button class="btn btn-sm btn-outline-danger btn-del"><i class="bi bi-trash"></i></button>
+          <button class="btn btn-sm btn-outline-secondary me-1" data-action="edit"><i class="bi bi-pencil"></i></button>
+          <button class="btn btn-sm btn-outline-danger" data-action="del"><i class="bi bi-trash"></i></button>
         </td>
       </tr>`;
         }).join('');
         tbody.innerHTML = rows || `<tr><td colspan="5" class="text-center text-secondary">Brak ocen</td></tr>`;
-        tbody.querySelectorAll('.btn-edit').forEach(b=>b.addEventListener('click',()=>openModal('edit', b.closest('tr'))));
-        tbody.querySelectorAll('.btn-del').forEach(b=>b.addEventListener('click',()=>delRow(b.closest('tr').dataset.id)));
     }
-
-    // Modal + słowniki
-    const modalEl = document.getElementById('modalGrade');
-    const modal   = new bootstrap.Modal(modalEl);
-    const titleEl = document.getElementById('gradeModalTitle');
-    const idEl    = document.getElementById('gradeId');
-    const subjEl  = document.getElementById('gradeSubject');
-    const valEl   = document.getElementById('gradeValue');
-    const classEl = document.getElementById('gradeClass');
-    const studEl  = document.getElementById('gradeStudent');
-    const saveBtn = document.getElementById('gradeSaveBtn');
-
-    async function ensureSubjects(){
-        if(!state.subjects){
-            state.subjects = await getJson(`/api/teacher/subjects?teacherId=${encodeURIComponent(state.teacherId)}`);
-        }
-        fillSelect(subjEl, state.subjects, s=>s, s=>s, true);
-    }
-    async function ensureClasses(){
-        if(!state.classes){
-            state.classes = await getJson(`/api/teacher/classes?teacherId=${encodeURIComponent(state.teacherId)}`);
-        }
-        fillSelect(classEl, state.classes, c=> (c.schoolClassId ?? c.id ?? c.classId), c=> (c.name ?? `Klasa ${c.schoolClassId ?? c.id ?? ''}`), true);
-    }
-    async function loadStudentsForClass(){
-        const cid = classEl.value ? Number(classEl.value) : null;
-        if(!cid){ studEl.innerHTML=''; return; }
-        const studs = await getJson(`/api/teacher/students?teacherId=${encodeURIComponent(state.teacherId)}&classId=${encodeURIComponent(cid)}`);
-        fillSelect(studEl, studs, s=> (s.userId ?? s.id), s=> `${s.firstname ?? s.firstName ?? ''} ${s.lastname ?? s.lastName ?? ''}`);
-    }
-    classEl.addEventListener('change', loadStudentsForClass);
 
     async function openModal(mode, tr=null){
         await ensureSubjects();
         await ensureClasses();
+
         idEl.value = '';
         subjEl.value = '';
         valEl.value = '';
@@ -300,7 +349,6 @@ async function renderGrades(){
             subjEl.value = subject;
             valEl.value  = value;
 
-            // Dodaj tymczasowo wybranego ucznia do listy (gdy klasa nie ustawiona)
             if(sid){
                 studEl.innerHTML = `<option value="${sid}">${sname}</option>`;
                 studEl.value = sid;
@@ -311,7 +359,7 @@ async function renderGrades(){
 
     async function delRow(id){
         try{
-            await sendJson(`/api/teacher/grades/${id}?teacherId=${encodeURIComponent(state.teacherId)}`, 'DELETE');
+            await sendJson(`/api/teacher/grades/${id}?${teacherIdParam()}`, 'DELETE');
             toast('Usunięto ocenę');
             await load();
         }catch(e){
@@ -329,22 +377,34 @@ async function renderGrades(){
         if(!payload.subjectEnum || payload.value == null || !payload.studentId){
             toast('Uzupełnij przedmiot, ucznia i wartość','error'); return;
         }
-        if(payload.value < 1 || payload.value > 6){ toast('Ocena 1–6','error'); return; }
+        if(payload.value < 1 || payload.value > 6){
+            toast('Ocena 1–6','error'); return;
+        }
 
         try{
             const id = idEl.value;
             if(id){
-                await sendJson(`/api/teacher/grades/${id}?teacherId=${encodeURIComponent(state.teacherId)}`, 'PUT', payload);
+                await sendJson(`/api/teacher/grades/${id}?${teacherIdParam()}`, 'PUT', payload);
                 toast('Zapisano ocenę');
             }else{
-                await sendJson(`/api/teacher/grades?teacherId=${encodeURIComponent(state.teacherId)}`, 'POST', payload);
+                await sendJson(`/api/teacher/grades?${teacherIdParam()}`, 'POST', payload);
                 toast('Dodano ocenę');
             }
-            modal.hide(); await load();
+            modal.hide();
+            await load();
         }catch(e){
             console.error(e);
             toast('Błąd zapisu','error');
         }
+    });
+
+    // Delegacja zdarzeń
+    tbody.addEventListener('click', (e)=>{
+        const btn = e.target.closest('button[data-action]');
+        if(!btn) return;
+        const tr = btn.closest('tr');
+        if(btn.dataset.action === 'edit') openModal('edit', tr);
+        if(btn.dataset.action === 'del')  delRow(tr.dataset.id);
     });
 
     addBtn.addEventListener('click', ()=> openModal('add'));
@@ -362,18 +422,25 @@ async function renderAttendance(){
 
     async function ensureClasses(){
         if(!state.classes){
-            state.classes = await getJson(`/api/teacher/classes?teacherId=${encodeURIComponent(state.teacherId)}`);
+            state.classes = await getJson(`/api/teacher/classes?${teacherIdParam()}`);
         }
-        fillSelect(classEl, state.classes, c=> (c.schoolClassId ?? c.id ?? c.classId), c=> (c.name ?? `Klasa ${c.schoolClassId ?? c.id ?? ''}`), true);
+        fillSelect(
+            classEl,
+            state.classes,
+            c=> (c.schoolClassId ?? c.id ?? c.classId),
+            c=> (c.name ?? `Klasa ${c.schoolClassId ?? c.id ?? ''}`),
+            true
+        );
     }
     async function ensureSubjects(){
         if(!state.subjects){
-            state.subjects = await getJson(`/api/teacher/subjects?teacherId=${encodeURIComponent(state.teacherId)}`);
+            state.subjects = await getJson(`/api/teacher/subjects?${teacherIdParam()}`);
         }
         fillSelect(subjEl, state.subjects, s=>s, s=>s, true);
     }
 
     const STATUSES = ['PRESENT','ABSENT','LATE','EXCUSED'];
+
     function renderStudents(studs){
         if(!Array.isArray(studs) || !studs.length){
             tbody.innerHTML = `<tr><td colspan="2" class="text-secondary text-center">Brak uczniów w tej klasie</td></tr>`;
@@ -402,7 +469,7 @@ async function renderAttendance(){
         if(!cid || !sub){ toast('Wybierz klasę i przedmiot','error'); return; }
         tbody.innerHTML = `<tr><td colspan="2" class="text-secondary">Ładowanie...</td></tr>`;
         try{
-            const studs = await getJson(`/api/teacher/students?teacherId=${encodeURIComponent(state.teacherId)}&classId=${encodeURIComponent(cid)}`);
+            const studs = await getJson(`/api/teacher/students?${teacherIdParam()}&classId=${encodeURIComponent(cid)}`);
             renderStudents(studs);
         }catch(e){
             console.error(e);
@@ -413,21 +480,22 @@ async function renderAttendance(){
     saveBtn.addEventListener('click', async ()=>{
         const sub = subjEl.value || null;
         if(!sub){ toast('Wybierz przedmiot','error'); return; }
-        // attendanceMap: { studentId: status }
+
         const map = {};
-        tbody.querySelectorAll('tr[data-id]').forEach(tr=>{
+        $$('tr[data-id]', tbody).forEach(tr=>{
             const sid = Number(tr.dataset.id);
-            const st  = tr.querySelector('.att-status')?.value || 'PRESENT';
+            const st  = $('.att-status', tr)?.value || 'PRESENT';
             map[sid] = st;
         });
-        if(Object.keys(map).length === 0){ toast('Brak danych do zapisania','error'); return; }
+        if(Object.keys(map).length === 0){
+            toast('Brak danych do zapisania','error'); return;
+        }
 
-        const payload = {
-            attendanceMap: map,
-            globalSubject: sub
-        };
         try{
-            await sendJson(`/api/teacher/attendance/mark?teacherId=${encodeURIComponent(state.teacherId)}`, 'POST', payload);
+            await sendJson(`/api/teacher/attendance/mark?${teacherIdParam()}`, 'POST', {
+                attendanceMap: map,
+                globalSubject: sub
+            });
             toast('Zapisano frekwencję');
         }catch(e){
             console.error(e);
@@ -446,9 +514,11 @@ async function init(){
         state.me = me;
         state.teacherId = me.userId;
 
-        // profil tylko do badge'u (niewymagany)
-        try{ state.profile = await getJson(`/api/teacher/profile?teacherId=${encodeURIComponent(state.teacherId)}`); }
-        catch{ state.profile = null; }
+        try{
+            state.profile = await getJson(`/api/teacher/profile?${teacherIdParam()}`);
+        }catch{
+            state.profile = null;
+        }
 
         handleHash();
     }catch(e){
@@ -458,8 +528,8 @@ async function init(){
     }
 }
 
-if(document.readyState === 'loading'){
-    document.addEventListener('DOMContentLoaded', init);
-}else{
-    init();
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => { init().catch(console.error); });
+} else {
+    init().catch(console.error);
 }

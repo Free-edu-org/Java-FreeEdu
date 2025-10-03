@@ -1,49 +1,60 @@
 <!doctype html>
 <html lang="pl" data-bs-theme="dark">
 <head>
-    <meta charset="utf-8"/>
-    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>FreeEdu – Rodzic</title>
-    <link rel="stylesheet" href="/css/styles.css"/>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"/>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"/>
+
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
+          crossorigin="anonymous">
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
+          integrity="sha384-7h2pQy6ZyWQp8v0Cw2qYQ0d8f4Xn8c2vQxk4M3vF1zY3lP3kX2M6f2oK4qVtJ9y7"
+          crossorigin="anonymous">
+    <link rel="stylesheet" href="../css/styles.css">
+
+    <!-- Preload modułów -->
+    <link rel="modulepreload" href="../js/common.js">
+    <link rel="modulepreload" href="parent.js">
 </head>
 <body>
-<header class="container py-4 d-flex justify-content-between align-items-center">
+<header class="container py-4 d-flex justify-content-between align-items-center" role="banner">
     <a class="navbar-brand fw-bold fs-4" href="/">FreeEdu</a>
     <div class="d-flex align-items-center gap-2">
-        <button id="themeToggle" class="theme-toggle">🌙 ciemny</button>
-        <nav id="userBanner" class="small"></nav>
+        <button id="themeToggle" class="theme-toggle" type="button" aria-pressed="false">🌙 ciemny</button>
+        <nav id="userBanner" class="small" aria-label="Użytkownik"></nav>
     </div>
 </header>
 
-<main class="container pb-5">
+<main class="container pb-5" id="main" role="main">
     <div class="row g-4">
-        <aside class="col-lg-3">
+        <aside class="col-lg-3" aria-label="Nawigacja i wybór dziecka">
             <div class="card-glass p-3">
                 <h2 class="h6 text-uppercase text-secondary mb-3">Dzieci</h2>
-                <div id="childrenBox" class="list-group list-group-flush small">
+                <div id="childrenBox" class="list-group list-group-flush small" aria-live="polite">
                     <div class="text-secondary">Ładowanie...</div>
                 </div>
-                <hr/>
-                <div class="list-group">
+                <hr>
+                <nav class="list-group" aria-label="Sekcje">
                     <a class="list-group-item list-group-item-action" href="#schedule">
-                        <i class="bi bi-calendar3 me-2"></i>Plan lekcji
+                        <i class="bi bi-calendar3 me-2" aria-hidden="true"></i><span>Plan lekcji</span>
                     </a>
                     <a class="list-group-item list-group-item-action" href="#grades">
-                        <i class="bi bi-mortarboard me-2"></i>Oceny
+                        <i class="bi bi-mortarboard me-2" aria-hidden="true"></i><span>Oceny</span>
                     </a>
                     <a class="list-group-item list-group-item-action" href="#attendance">
-                        <i class="bi bi-clipboard-check me-2"></i>Frekwencja
+                        <i class="bi bi-clipboard-check me-2" aria-hidden="true"></i><span>Frekwencja</span>
                     </a>
                     <a class="list-group-item list-group-item-action" href="#remarks">
-                        <i class="bi bi-chat-text me-2"></i>Uwagi
+                        <i class="bi bi-chat-text me-2" aria-hidden="true"></i><span>Uwagi</span>
                     </a>
-                </div>
+                </nav>
             </div>
         </aside>
 
-        <section class="col-lg-9">
+        <section class="col-lg-9" aria-live="polite" aria-busy="false">
             <div id="view"></div>
         </section>
     </div>
@@ -60,10 +71,10 @@
             <table class="table table-sm align-middle mb-0">
                 <thead>
                 <tr>
-                    <th>Data</th>
-                    <th>Przedmiot</th>
-                    <th>Nauczyciel</th>
-                    <th>Klasa</th>
+                    <th scope="col">Data</th>
+                    <th scope="col">Przedmiot</th>
+                    <th scope="col">Nauczyciel</th>
+                    <th scope="col">Klasa</th>
                 </tr>
                 </thead>
                 <tbody id="scheduleTbody"></tbody>
@@ -82,10 +93,10 @@
             <table class="table table-sm align-middle mb-0">
                 <thead>
                 <tr>
-                    <th>Przedmiot</th>
-                    <th>Ocena</th>
-                    <th>Data</th>
-                    <th>Nauczyciel</th>
+                    <th scope="col">Przedmiot</th>
+                    <th scope="col">Ocena</th>
+                    <th scope="col">Data</th>
+                    <th scope="col">Nauczyciel</th>
                 </tr>
                 </thead>
                 <tbody id="gradesTbody"></tbody>
@@ -104,10 +115,10 @@
             <table class="table table-sm align-middle mb-0">
                 <thead>
                 <tr>
-                    <th>Data</th>
-                    <th>Przedmiot</th>
-                    <th>Status</th>
-                    <th>Nauczyciel</th>
+                    <th scope="col">Data</th>
+                    <th scope="col">Przedmiot</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Nauczyciel</th>
                 </tr>
                 </thead>
                 <tbody id="attendanceTbody"></tbody>
@@ -126,9 +137,9 @@
             <table class="table table-sm align-middle mb-0">
                 <thead>
                 <tr>
-                    <th>Data</th>
-                    <th>Treść</th>
-                    <th>Wystawił</th>
+                    <th scope="col">Data</th>
+                    <th scope="col">Treść</th>
+                    <th scope="col">Wystawił</th>
                 </tr>
                 </thead>
                 <tbody id="remarksTbody"></tbody>
@@ -137,14 +148,18 @@
     </div>
 </template>
 
-<div id="toasts"></div>
+<div id="toasts" aria-live="polite" aria-atomic="true"></div>
 
+<!-- Skrypty -->
 <script type="module">
-    import { initThemeToggle, renderUserBanner } from '/js/common.js';
+    import { initThemeToggle, renderUserBanner } from '../js/common.js';
     initThemeToggle();
     renderUserBanner({ hideAuthLinks: true });
-    import('/js/parent.js').catch(err => console.error('Błąd parent.js:', err));
+
+    import('./parent.js').catch(err => console.error('Błąd parent.js:', err));
 </script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous" defer></script>
 </body>
 </html>

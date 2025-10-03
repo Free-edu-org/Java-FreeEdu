@@ -1,140 +1,159 @@
 <!doctype html>
 <html lang="pl" data-bs-theme="dark">
 <head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>FreeEdu – Start</title>
-  <link rel="stylesheet" href="/css/styles.css"/>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"/>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"/>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <title>FreeEdu – Start</title>
+
+    <!-- Najpierw framework, potem ikony, na końcu własne style -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="/css/styles.css">
 </head>
 <body>
 <header class="container py-4 d-flex justify-content-between align-items-center">
-  <a class="navbar-brand fw-bold fs-4" href="/">FreeEdu</a>
-  <div class="d-flex align-items-center gap-2">
-    <button id="themeToggle" class="theme-toggle">🌙 ciemny</button>
-    <nav id="userBanner" class="small"></nav>
-  </div>
+    <a class="navbar-brand fw-bold fs-4" href="/">FreeEdu</a>
+    <div class="d-flex align-items-center gap-2">
+        <button id="themeToggle" class="theme-toggle" type="button">🌙 ciemny</button>
+        <nav id="userBanner" class="small"></nav>
+    </div>
 </header>
 
 <section class="container text-center py-5" id="start">
-  <h1 class="fw-bold display-4 mb-3">Witamy w FreeEdu</h1>
-  <p class="lead text-secondary mb-4">Szybko. Bezpiecznie. Nowocześnie.</p>
-  <div class="d-flex gap-3 justify-content-center mb-4">
-    <button class="btn btn-primary btn-lg" id="btnStart">Rozpocznij</button>
-    <a class="btn btn-outline-secondary btn-lg" href="#features">Dowiedz się więcej</a>
-  </div>
+    <h1 class="fw-bold display-4 mb-3">Witamy w FreeEdu</h1>
+    <p class="lead text-secondary mb-4">Szybko. Bezpiecznie. Nowocześnie.</p>
+    <div class="d-flex gap-3 justify-content-center mb-4">
+        <button class="btn btn-primary btn-lg" id="btnStart" type="button">Rozpocznij</button>
+        <a class="btn btn-outline-secondary btn-lg" href="#features">Dowiedz się więcej</a>
+    </div>
 
-  <div class="row g-4 mt-2" id="features">
-    <div class="col-md-4"><div class="feature p-4 h-100 text-center">
-      <i class="bi bi-speedometer2 display-5"></i>
-      <h3 class="mt-3">Szybkość</h3>
-      <p class="text-secondary mb-0">Interfejs nastawiony na wydajność.</p>
-    </div></div>
-    <div class="col-md-4"><div class="feature p-4 h-100 text-center">
-      <i class="bi bi-shield-check display-5"></i>
-      <h3 class="mt-3">Bezpieczeństwo</h3>
-      <p class="text-secondary mb-0">Hasła BCrypt, role i sesje.</p>
-    </div></div>
-    <div class="col-md-4"><div class="feature p-4 h-100 text-center">
-      <i class="bi bi-code-slash display-5"></i>
-      <h3 class="mt-3">Nowoczesność</h3>
-      <p class="text-secondary mb-0">Czysty JS + REST API.</p>
-    </div></div>
-  </div>
+    <div class="row g-4 mt-2" id="features">
+        <div class="col-md-4">
+            <div class="feature p-4 h-100 text-center">
+                <i class="bi bi-speedometer2 display-5" aria-hidden="true"></i>
+                <h3 class="mt-3">Szybkość</h3>
+                <p class="text-secondary mb-0">Interfejs nastawiony na wydajność.</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="feature p-4 h-100 text-center">
+                <i class="bi bi-shield-check display-5" aria-hidden="true"></i>
+                <h3 class="mt-3">Bezpieczeństwo</h3>
+                <p class="text-secondary mb-0">Hasła BCrypt, role i sesje.</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="feature p-4 h-100 text-center">
+                <i class="bi bi-code-slash display-5" aria-hidden="true"></i>
+                <h3 class="mt-3">Nowoczesność</h3>
+                <p class="text-secondary mb-0">Czysty JS + REST API.</p>
+            </div>
+        </div>
+    </div>
 </section>
 
 <section class="container d-flex justify-content-center align-items-center py-5 auth-collapsed" id="auth">
-  <div class="card-glass p-4 col-lg-7">
-    <div class="d-flex justify-content-center mb-3">
-      <div class="btn-group">
-        <button id="tabLogin"    class="btn btn-primary">Logowanie</button>
-        <button id="tabRegister" class="btn btn-ghost">Rejestracja</button>
-      </div>
+    <div class="card-glass p-4 col-lg-7">
+        <div class="d-flex justify-content-center mb-3">
+            <div class="btn-group" role="tablist" aria-label="Przełącz logowanie/rejestrację">
+                <button id="tabLogin" class="btn btn-primary" type="button">Logowanie</button>
+                <button id="tabRegister" class="btn btn-ghost" type="button">Rejestracja</button>
+            </div>
+        </div>
+
+        <!-- Login -->
+        <form id="loginForm" class="mt-2" novalidate>
+            <h2 class="h4 mb-3 text-center">Zaloguj się</h2>
+            <div id="loginError" class="alert alert-danger py-2 d-none" role="alert">Nieprawidłowe dane logowania.</div>
+            <div class="form-floating mb-3">
+                <input class="form-control" id="username" name="username" placeholder="login" autocomplete="username" required/>
+                <label for="username">E-mail lub nazwa użytkownika</label>
+            </div>
+            <div class="form-floating mb-4">
+                <input class="form-control" id="password" name="password" type="password" placeholder="hasło" autocomplete="current-password" required/>
+                <label for="password">Hasło</label>
+            </div>
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <button type="button" class="btn btn-sm btn-ghost" data-toggle="password" data-target="password">Pokaż</button>
+                <a class="text-secondary" href="#start">Powrót</a>
+            </div>
+            <div class="d-grid">
+                <button type="submit" class="btn btn-primary">Zaloguj się</button>
+            </div>
+        </form>
+
+        <!-- Register -->
+        <form id="registerForm" class="mt-2 d-none" novalidate>
+            <h2 class="h4 mb-3 text-center">Rejestracja</h2>
+            <div id="registerMsg" class="alert py-2 d-none" role="alert"></div>
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <div class="form-floating">
+                        <input class="form-control" id="r_username" name="username" placeholder="login" autocomplete="username" required/>
+                        <label for="r_username">Nazwa użytkownika</label>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-floating">
+                        <input class="form-control" id="r_email" name="email" type="email" placeholder="email" autocomplete="email" required/>
+                        <label for="r_email">E-mail</label>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-floating">
+                        <input class="form-control" id="r_firstname" name="firstname" placeholder="Imię" autocomplete="given-name" required/>
+                        <label for="r_firstname">Imię</label>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-floating">
+                        <input class="form-control" id="r_lastname" name="lastname" placeholder="Nazwisko" autocomplete="family-name" required/>
+                        <label for="r_lastname">Nazwisko</label>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-floating position-relative">
+                        <input class="form-control" id="r_password" name="password" type="password" placeholder="Hasło" autocomplete="new-password" required/>
+                        <label for="r_password">Hasło</label>
+                    </div>
+                    <div id="strengthBox" class="strength mt-2 rounded-xl"><div id="strengthBar"></div></div>
+                    <small class="text-secondary">Min. 8 znaków, duże/małe litery, cyfra, znak specjalny.</small>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-floating position-relative">
+                        <input class="form-control" id="r_confirm" name="confirmPassword" type="password" placeholder="Potwierdź" autocomplete="new-password" required/>
+                        <label for="r_confirm">Potwierdź hasło</label>
+                    </div>
+                    <div class="d-flex justify-content-between mt-2">
+                        <div id="passwordError" class="text-danger d-none">Hasła nie są takie same.</div>
+                        <button type="button" class="btn btn-sm btn-ghost" data-toggle="password" data-target="r_password">Pokaż hasło</button>
+                    </div>
+                </div>
+            </div>
+            <div class="d-grid mt-4">
+                <button type="submit" class="btn btn-primary">Zarejestruj się</button>
+            </div>
+            <div class="text-center mt-3">
+                <a class="text-secondary" href="#start">Powrót</a>
+            </div>
+        </form>
     </div>
-
-    <!-- Login -->
-    <form id="loginForm" class="mt-2">
-      <h2 class="h4 mb-3 text-center">Zaloguj się</h2>
-      <div id="loginError" class="alert alert-danger py-2 d-none">Nieprawidłowe dane logowania.</div>
-      <div class="form-floating mb-3">
-        <input class="form-control" id="username" name="username" placeholder="login" autocomplete="username" required/>
-        <label for="username">E-mail lub nazwa użytkownika</label>
-      </div>
-      <div class="form-floating mb-4">
-        <input class="form-control" id="password" name="password" type="password" placeholder="hasło" autocomplete="current-password" required/>
-        <label for="password">Hasło</label>
-      </div>
-      <div class="d-flex justify-content-between align-items-center mb-4">
-        <button type="button" class="btn btn-sm btn-ghost" data-toggle="password" data-target="password">Pokaż</button>
-        <a class="text-secondary" href="#start">Powrót</a>
-      </div>
-      <div class="d-grid">
-        <button type="submit" class="btn btn-primary">Zaloguj się</button>
-      </div>
-    </form>
-
-    <!-- Register -->
-    <form id="registerForm" class="mt-2 d-none">
-      <h2 class="h4 mb-3 text-center">Rejestracja</h2>
-      <div id="registerMsg" class="alert py-2 d-none"></div>
-      <div class="row g-3">
-        <div class="col-md-6"><div class="form-floating">
-          <input class="form-control" id="r_username" name="username" placeholder="login" autocomplete="username" required/>
-          <label for="r_username">Nazwa użytkownika</label>
-        </div></div>
-        <div class="col-md-6"><div class="form-floating">
-          <input class="form-control" id="r_email" name="email" type="email" placeholder="email" autocomplete="email" required/>
-          <label for="r_email">E-mail</label>
-        </div></div>
-        <div class="col-md-6"><div class="form-floating">
-          <input class="form-control" id="r_firstname" name="firstname" placeholder="Imię" autocomplete="given-name" required/>
-          <label for="r_firstname">Imię</label>
-        </div></div>
-        <div class="col-md-6"><div class="form-floating">
-          <input class="form-control" id="r_lastname" name="lastname" placeholder="Nazwisko" autocomplete="family-name" required/>
-          <label for="r_lastname">Nazwisko</label>
-        </div></div>
-        <div class="col-md-6">
-          <div class="form-floating position-relative">
-            <input class="form-control" id="r_password" name="password" type="password" placeholder="Hasło" autocomplete="new-password" required/>
-            <label for="r_password">Hasło</label>
-          </div>
-          <div id="strengthBox" class="strength mt-2 rounded-xl"><div id="strengthBar"></div></div>
-          <small class="text-secondary">Min. 8 znaków, duże/małe litery, cyfra, znak specjalny.</small>
-        </div>
-        <div class="col-md-6">
-          <div class="form-floating position-relative">
-            <input class="form-control" id="r_confirm" name="confirmPassword" type="password" placeholder="Potwierdź" autocomplete="new-password" required/>
-            <label for="r_confirm">Potwierdź hasło</label>
-          </div>
-          <div class="d-flex justify-content-between mt-2">
-            <div id="passwordError" class="text-danger d-none">Hasła nie są takie same.</div>
-            <button type="button" class="btn btn-sm btn-ghost" data-toggle="password" data-target="r_password">Pokaż hasło</button>
-          </div>
-        </div>
-      </div>
-      <div class="d-grid mt-4">
-        <button type="submit" class="btn btn-primary">Zarejestruj się</button>
-      </div>
-      <div class="text-center mt-3">
-        <a class="text-secondary" href="#start">Powrót</a>
-      </div>
-    </form>
-  </div>
 </section>
 
 <footer class="bg-primary text-white text-center py-3">
-  <p class="mb-0">&copy; 2025 FreeEdu. GNU GPL v3.</p>
+    <p class="mb-0">&copy; 2025 FreeEdu. GNU GPL v3.</p>
 </footer>
 
 <div id="toasts"></div>
+
+<!-- Moduły -->
 <script type="module">
-  import { renderUserBanner, initThemeToggle } from '/js/common.js';
-  import '/js/auth.js';
-  initThemeToggle();
-  renderUserBanner({ hideAuthLinks: true });
+    import { renderUserBanner, initThemeToggle } from '/js/common.js';
+    import '/js/auth.js';
+    initThemeToggle();
+    renderUserBanner({ hideAuthLinks: true });
 </script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Bootstrap bundle (defer = nie blokuje renderu) -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" defer></script>
 </body>
 </html>

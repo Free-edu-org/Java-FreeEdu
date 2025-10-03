@@ -1,4 +1,4 @@
-package com.byt.freeEdu.controller.NEW;
+package com.byt.freeEdu.controller;
 
 import java.time.LocalDate;
 import java.util.Arrays;
@@ -27,7 +27,6 @@ import com.byt.freeEdu.model.DTO.UserDto;
 import com.byt.freeEdu.model.Schedule;
 import com.byt.freeEdu.model.SchoolClass;
 import com.byt.freeEdu.model.enums.SubjectEnum;
-import com.byt.freeEdu.model.users.User;
 import com.byt.freeEdu.service.AttendanceService;
 import com.byt.freeEdu.service.GradeService;
 import com.byt.freeEdu.service.RemarkService;

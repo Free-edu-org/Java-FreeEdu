@@ -4,15 +4,18 @@
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <title>FreeEdu – Uczeń</title>
-    <link rel="stylesheet" href="/css/styles.css"/>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"/>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"/>
+
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="../css/styles.css">
 </head>
 <body>
 <header class="container py-4 d-flex justify-content-between align-items-center">
     <a class="navbar-brand fw-bold fs-4" href="/">FreeEdu</a>
     <div class="d-flex align-items-center gap-2">
-        <button id="themeToggle" class="theme-toggle">🌙 ciemny</button>
+        <button id="themeToggle" class="theme-toggle" type="button">🌙 ciemny</button>
         <nav id="userBanner" class="small"></nav>
     </div>
 </header>
@@ -117,11 +120,11 @@
 <div id="toasts"></div>
 
 <script type="module">
-    import { initThemeToggle, renderUserBanner } from '/js/common.js';
-    import '/js/student.js';
+    import { initThemeToggle, renderUserBanner } from '../js/common.js';
+    import './student.js';
     initThemeToggle();
     renderUserBanner({ hideAuthLinks: true });
 </script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" defer></script>
 </body>
 </html>

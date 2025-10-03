@@ -1,11 +1,10 @@
-package com.byt.freeEdu.controller.NEW;
+package com.byt.freeEdu.controller;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.byt.freeEdu.model.DTO.Auth.ApiResponse;
 import com.byt.freeEdu.model.DTO.UserDto;
-import com.byt.freeEdu.model.users.User;
 import com.byt.freeEdu.service.users.UserService;
 
 @RestController

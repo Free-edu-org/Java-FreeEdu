@@ -1,4 +1,4 @@
-package com.byt.freeEdu.controller;
+package com.byt.freeEdu.controller.OLD;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;

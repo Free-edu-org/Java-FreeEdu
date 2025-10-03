@@ -1,4 +1,4 @@
-package com.byt.freeEdu.controller;
+package com.byt.freeEdu.controller.OLD;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -8,7 +8,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.byt.freeEdu.controller.userSesion.SessionService;
+import com.byt.freeEdu.controller.OLD.userSesion.SessionService;
 import com.byt.freeEdu.mapper.GradeMapper;
 import com.byt.freeEdu.mapper.ScheduleMapper;
 import com.byt.freeEdu.mapper.UserMapper;
