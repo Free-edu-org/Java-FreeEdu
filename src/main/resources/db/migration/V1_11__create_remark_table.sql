@@ -3,5 +3,5 @@ CREATE TABLE remark (
     student_id int NOT NULL REFERENCES student(id) ON DELETE CASCADE,
     teacher_id int NOT NULL REFERENCES teacher(id) ON DELETE CASCADE,
     content TEXT NOT NULL,
-    add_date DATE NOT NULL
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
