@@ -1,0 +1,22 @@
+INSERT INTO attendance (status, student_id, schedule_id, subject_id, teacher_id)
+VALUES
+    ('PRESENT', 4, 1, 1, 2),
+    ('ABSENT', 4, 2, 2, 2),
+    ('LATE', 4, 3, 1, 2),
+    ('PRESENT', 4, 4, 2, 2),
+    ('PRESENT', 7, 7, 3, 6),
+    ('PRESENT', 7, 8, 4, 6),
+    ('ABSENT', 7, 9, 3, 6),
+    ('LATE', 7, 10, 4, 6),
+    ('PRESENT', 8, 13, 5, 10),
+    ('LATE', 8, 14, 6, 10),
+    ('PRESENT', 8, 15, 5, 10),
+    ('ABSENT', 8, 16, 6, 10),
+    ('PRESENT', 11, 19, 7, 2),
+    ('PRESENT', 11, 20, 1, 2),
+    ('LATE', 11, 21, 7, 2),
+    ('ABSENT', 11, 22, 1, 2),
+    ('PRESENT', 12, 25, 1, 6),
+    ('LATE', 12, 26, 1, 6),
+    ('PRESENT', 12, 27, 1, 6),
+    ('ABSENT', 12, 28, 1, 6);

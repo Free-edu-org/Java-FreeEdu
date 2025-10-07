@@ -3,6 +3,6 @@ CREATE TABLE grade (
     value DECIMAL(3, 2) NOT NULL CHECK (value >= 0 AND value <= 6),
     student_id int NOT NULL REFERENCES student(id) ON DELETE CASCADE,
     teacher_id int NOT NULL REFERENCES teacher(id) ON DELETE CASCADE,
-    subject_id int NOT NULL REFERENCES subject(id),
+    subject_id int NOT NULL REFERENCES subject(id) ON DELETE CASCADE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
