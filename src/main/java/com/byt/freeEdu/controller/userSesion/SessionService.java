@@ -1,4 +1,4 @@
-package com.byt.freeEdu.controller.OLD.userSesion;
+package com.byt.freeEdu.controller.userSesion;
 
 import org.springframework.stereotype.Service;
 

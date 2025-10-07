@@ -46,18 +46,12 @@ export async function renderUserBanner(opts = {}) {
         const uname = escapeHtml(me.username);
         el.innerHTML = `
       <span class="d-inline-flex align-items-center gap-1">👋 <strong>${uname}</strong></span>
-      <button id="gotoPanel" class="btn btn-sm btn-outline-secondary" type="button">Panel</button>
       <button id="logoutBtn" class="btn btn-sm btn-ghost" type="button">Wyloguj</button>
     `;
 
         document.getElementById('logoutBtn')?.addEventListener('click', async () => {
             try { await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' }); }
             finally { location.href = '/'; }
-        });
-
-        document.getElementById('gotoPanel')?.addEventListener('click', () => {
-            const dest = roleToHref[me.role] ?? '/';
-            location.href = dest;
         });
     } else {
         el.innerHTML = hideAuthLinks
