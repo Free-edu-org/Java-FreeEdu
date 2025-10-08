@@ -12,7 +12,7 @@ import org.springframework.security.web.SecurityFilterChain;
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
-public class SecurityConfig {
+public class SecurityConfig{
 
   private final Security security;
 
@@ -31,7 +31,9 @@ public class SecurityConfig {
   }
 
   @Bean
-  public SecurityFilterChain securityFilterChain(org.springframework.security.config.annotation.web.builders.HttpSecurity http) throws Exception {
+  public SecurityFilterChain securityFilterChain(
+      org.springframework.security.config.annotation.web.builders.HttpSecurity http)
+      throws Exception {
     return security.enforcingAuthenticationWithoutCSRF(http);
   }
 }

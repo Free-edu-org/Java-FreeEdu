@@ -26,86 +26,76 @@ import com.byt.freeEdu.service.users.ParentService;
 
 @RestController
 @RequestMapping("/api/parent")
-public class ParentApiController {
+public class ParentApiController{
 
+  private final ParentService parentService;
 
-    private final ParentService parentService;
+  private final GradeService gradeService;
 
-    private final GradeService gradeService;
+  private final GradeMapper gradeMapper;
 
-    private final GradeMapper gradeMapper;
+  private final ScheduleService scheduleService;
 
-    private final ScheduleService scheduleService;
+  private final ScheduleMapper scheduleMapper;
 
-    private final ScheduleMapper scheduleMapper;
+  private final AttendanceService attendanceService;
 
-    private final AttendanceService attendanceService;
+  private final AttendanceMapper attendanceMapper;
 
-    private final AttendanceMapper attendanceMapper;
+  private final RemarkService remarkService;
 
-    private final RemarkService remarkService;
+  public ParentApiController(ParentService parentService, GradeService gradeService,
+      GradeMapper gradeMapper, ScheduleService scheduleService, ScheduleMapper scheduleMapper,
+      AttendanceService attendanceService, AttendanceMapper attendanceMapper,
+      RemarkService remarkService) {
+    this.parentService = parentService;
+    this.gradeService = gradeService;
+    this.gradeMapper = gradeMapper;
+    this.scheduleService = scheduleService;
+    this.scheduleMapper = scheduleMapper;
+    this.attendanceService = attendanceService;
+    this.attendanceMapper = attendanceMapper;
+    this.remarkService = remarkService;
+  }
 
-    public ParentApiController(ParentService parentService, GradeService gradeService, GradeMapper gradeMapper, ScheduleService scheduleService, ScheduleMapper scheduleMapper, AttendanceService attendanceService, AttendanceMapper attendanceMapper, RemarkService remarkService) {
-        this.parentService = parentService;
-        this.gradeService = gradeService;
-        this.gradeMapper = gradeMapper;
-        this.scheduleService = scheduleService;
-        this.scheduleMapper = scheduleMapper;
-        this.attendanceService = attendanceService;
-        this.attendanceMapper = attendanceMapper;
-        this.remarkService = remarkService;
-    }
+  @GetMapping("/children")
+  public List<Student> getChildren(@RequestParam int parentId) {
+    return parentService.getStudentsByParentId(parentId);
+  }
 
-    @GetMapping("/children")
-    public List<Student> getChildren(@RequestParam int parentId) {
-        return parentService.getStudentsByParentId(parentId);
-    }
+  @GetMapping("/schedule")
+  public List<ScheduleDto> schedule(@RequestParam int studentId, @RequestParam int parentId) {
+    Student student = parentService.getStudentsByParentId(parentId).stream()
+        .filter(s -> s.getUserId() == studentId).findFirst()
+        .orElseThrow(() -> new RuntimeException("Uczeń nie znaleziony"));
 
-    @GetMapping("/schedule")
-    public List<ScheduleDto> schedule(@RequestParam int studentId, @RequestParam int parentId) {
-        Student student = parentService.getStudentsByParentId(parentId).stream()
-                .filter(s -> s.getUserId() == studentId)
-                .findFirst()
-                .orElseThrow(() -> new RuntimeException("Uczeń nie znaleziony"));
+    return scheduleService.getScheduleByClassId(student.getSchoolClass().getSchoolClassId())
+        .stream().map(scheduleMapper::toDto).collect(Collectors.toList());
+  }
 
-        return scheduleService
-                .getScheduleByClassId(student.getSchoolClass().getSchoolClassId()).stream()
-                .map(scheduleMapper::toDto)
-                .collect(Collectors.toList());
-    }
+  @GetMapping("/grades")
+  public List<GradeDto> grades(@RequestParam int studentId, @RequestParam int parentId) {
+    parentService.getStudentsByParentId(parentId).stream().filter(s -> s.getUserId() == studentId)
+        .findFirst().orElseThrow(() -> new RuntimeException("Uczeń nie znaleziony"));
 
-    @GetMapping("/grades")
-    public List<GradeDto> grades(@RequestParam int studentId, @RequestParam int parentId) {
-        parentService.getStudentsByParentId(parentId).stream()
-                .filter(s -> s.getUserId() == studentId)
-                .findFirst()
-                .orElseThrow(() -> new RuntimeException("Uczeń nie znaleziony"));
+    return gradeService.getGradesForStudent(studentId).stream().map(gradeMapper::toDto)
+        .collect(Collectors.toList());
+  }
 
-        return gradeService.getGradesForStudent(studentId).stream()
-                .map(gradeMapper::toDto)
-                .collect(Collectors.toList());
-    }
+  @GetMapping("/attendance")
+  public List<AttendanceDto> attendance(@RequestParam int studentId, @RequestParam int parentId) {
+    parentService.getStudentsByParentId(parentId).stream().filter(s -> s.getUserId() == studentId)
+        .findFirst().orElseThrow(() -> new RuntimeException("Uczeń nie znaleziony"));
 
-    @GetMapping("/attendance")
-    public List<AttendanceDto> attendance(@RequestParam int studentId, @RequestParam int parentId) {
-        parentService.getStudentsByParentId(parentId).stream()
-                .filter(s -> s.getUserId() == studentId)
-                .findFirst()
-                .orElseThrow(() -> new RuntimeException("Uczeń nie znaleziony"));
+    List<Attendance> attendances = attendanceService.getAttendancesForStudent(studentId);
+    return attendances.stream().map(attendanceMapper::toAttendanceDto).collect(Collectors.toList());
+  }
 
-        List<Attendance> attendances = attendanceService.getAttendancesForStudent(studentId);
-        return attendances.stream()
-                .map(attendanceMapper::toAttendanceDto)
-                .collect(Collectors.toList());
-    }
+  @GetMapping("/remarks/{studentId}")
+  public List<RemarkDto> remarks(@PathVariable int studentId, @RequestParam int parentId) {
+    parentService.getStudentsByParentId(parentId).stream().filter(s -> s.getUserId() == studentId)
+        .findFirst().orElseThrow(() -> new RuntimeException("Uczeń nie znaleziony"));
 
-    @GetMapping("/remarks/{studentId}")
-    public List<RemarkDto> remarks(@PathVariable int studentId, @RequestParam int parentId) {
-        parentService.getStudentsByParentId(parentId).stream()
-                .filter(s -> s.getUserId() == studentId)
-                .findFirst()
-                .orElseThrow(() -> new RuntimeException("Uczeń nie znaleziony"));
-
-        return remarkService.getRemarksByStudentId(studentId);
-    }
+    return remarkService.getRemarksByStudentId(studentId);
+  }
 }

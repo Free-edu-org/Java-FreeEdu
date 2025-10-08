@@ -39,21 +39,21 @@ public class GradeService{
     this.teacherService = teacherService;
   }
 
-    public Boolean saveGrade(GradeDto grade) {
-        Grade entity = gradeMapper.toEntity(grade, studentService, teacherService);
+  public Boolean saveGrade(GradeDto grade) {
+    Grade entity = gradeMapper.toEntity(grade,studentService,teacherService);
 
-        SubjectEnum subj = grade.getSubjectEnum() != null
-                ? grade.getSubjectEnum()
-                : (grade.getSubject() != null ? SubjectEnum.valueOf(grade.getSubject()) : null);
+    SubjectEnum subj = grade.getSubjectEnum() != null
+        ? grade.getSubjectEnum()
+        : (grade.getSubject() != null ? SubjectEnum.valueOf(grade.getSubject()) : null);
 
-        if (subj == null)
-            throw new IllegalArgumentException("Brak informacji o przedmiocie");
+    if (subj == null)
+      throw new IllegalArgumentException("Brak informacji o przedmiocie");
 
-        entity.setSubject(subj);
-        entity.setGradeDate(LocalDate.now());
-        gradeRepository.save(entity);
-        return true;
-    }
+    entity.setSubject(subj);
+    entity.setGradeDate(LocalDate.now());
+    gradeRepository.save(entity);
+    return true;
+  }
 
   public Grade getGradeById(int id) {
     return gradeRepository.findById(id)

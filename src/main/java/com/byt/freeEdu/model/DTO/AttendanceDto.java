@@ -55,14 +55,18 @@ public class AttendanceDto{
     return dto;
   }
 
-    public Attendance toEntity(Student student, Teacher teacher) {
-        Attendance attendance = new Attendance();
-        attendance.setAttendanceId(this.attendanceId);
-        attendance.setStudent(student);
-        attendance.setTeacher(teacher);
-        attendance.setAttendanceDate(LocalDate.parse(this.attendanceDate));
-        attendance.setStatus(this.status != null ? this.status : AttendanceEnum.valueOf(this.attendanceStatus.toUpperCase()));
-        attendance.setSubject(this.subjectEnum != null ? this.subjectEnum : SubjectEnum.valueOf(this.subjectName.toUpperCase()));
-        return attendance;
-    }
+  public Attendance toEntity(Student student, Teacher teacher) {
+    Attendance attendance = new Attendance();
+    attendance.setAttendanceId(this.attendanceId);
+    attendance.setStudent(student);
+    attendance.setTeacher(teacher);
+    attendance.setAttendanceDate(LocalDate.parse(this.attendanceDate));
+    attendance.setStatus(this.status != null
+        ? this.status
+        : AttendanceEnum.valueOf(this.attendanceStatus.toUpperCase()));
+    attendance.setSubject(this.subjectEnum != null
+        ? this.subjectEnum
+        : SubjectEnum.valueOf(this.subjectName.toUpperCase()));
+    return attendance;
+  }
 }

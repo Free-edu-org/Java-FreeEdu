@@ -1,11 +1,5 @@
 package com.byt.freeEdu.model.users;
 
-import java.util.Collection;
-import java.util.List;
-
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-
 import com.byt.freeEdu.model.enums.UserRole;
 
 import jakarta.persistence.Column;

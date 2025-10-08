@@ -66,10 +66,10 @@ public class SchoolClassService{
     schoolClassRepository.delete(schoolClass);
   }
 
-    public void updateSchoolClass(int id, String name) {
-      SchoolClass schoolClass = schoolClassRepository.findById(id)
-              .orElseThrow(() -> new EntityNotFoundException("School class not found with ID: " + id));
-      schoolClass.setName(name);
-      schoolClassRepository.save(schoolClass);
-    }
+  public void updateSchoolClass(int id, String name) {
+    SchoolClass schoolClass = schoolClassRepository.findById(id)
+        .orElseThrow(() -> new EntityNotFoundException("School class not found with ID: " + id));
+    schoolClass.setName(name);
+    schoolClassRepository.save(schoolClass);
+  }
 }

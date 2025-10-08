@@ -40,30 +40,32 @@ public interface GradeMapper{
       return "Nieznany przedmiot";
     }
     switch (subject) {
-      case POLISH:
+      case POLISH :
         return "Język polski";
-      case MATH:
+      case MATH :
         return "Matematyka";
-      case GEOGRAPHY:
+      case GEOGRAPHY :
         return "Geografia";
-      case HISTORY:
+      case HISTORY :
         return "Historia";
-      case SCIENCE:
+      case SCIENCE :
         return "Nauka";
-      case ART:
+      case ART :
         return "Sztuka";
-      case SPORTS:
+      case SPORTS :
         return "Sport";
-      default:
+      default :
         return "Nieznany przedmiot";
     }
   }
 
   @Named("mapSubjectFromCode")
   default SubjectEnum mapSubjectFromCode(String subjectCode) {
-    if (subjectCode == null) return SubjectEnum.POLISH;
+    if (subjectCode == null) {
+      return SubjectEnum.POLISH;
+    }
     try {
-      return SubjectEnum.valueOf(subjectCode); // oczekuje np. POLISH
+      return SubjectEnum.valueOf(subjectCode);
     } catch (Exception e) {
       return SubjectEnum.POLISH;
     }

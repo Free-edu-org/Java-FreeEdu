@@ -36,199 +36,216 @@ import com.byt.freeEdu.service.users.TeacherService;
 
 @RestController
 @RequestMapping("/api/teacher")
-public class TeacherApiController {
+public class TeacherApiController{
 
-    private final ScheduleService scheduleService;
+  private final ScheduleService scheduleService;
 
-    private final ScheduleMapper scheduleMapper;
+  private final ScheduleMapper scheduleMapper;
 
-    private final GradeService gradeService;
+  private final GradeService gradeService;
 
-    private final GradeMapper gradeMapper;
+  private final GradeMapper gradeMapper;
 
-    private final RemarkService remarkService;
+  private final RemarkService remarkService;
 
-    private final TeacherService teacherService;
+  private final TeacherService teacherService;
 
-    private final StudentService studentService;
+  private final StudentService studentService;
 
-    private final SchoolClassService schoolClassService;
+  private final SchoolClassService schoolClassService;
 
-    private final AttendanceService attendanceService;
+  private final AttendanceService attendanceService;
 
-    public TeacherApiController(ScheduleService scheduleService, ScheduleMapper scheduleMapper,
-                                GradeService gradeService, GradeMapper gradeMapper,
-                                RemarkService remarkService,
-                                TeacherService teacherService,
-                                StudentService studentService,
-                                SchoolClassService schoolClassService,
-                                AttendanceService attendanceService) {
-        this.scheduleService = scheduleService;
-        this.scheduleMapper = scheduleMapper;
-        this.gradeService = gradeService;
-        this.gradeMapper = gradeMapper;
-        this.remarkService = remarkService;
-        this.teacherService = teacherService;
-        this.studentService = studentService;
-        this.schoolClassService = schoolClassService;
-        this.attendanceService = attendanceService;
+  public TeacherApiController(ScheduleService scheduleService, ScheduleMapper scheduleMapper,
+      GradeService gradeService, GradeMapper gradeMapper, RemarkService remarkService,
+      TeacherService teacherService, StudentService studentService,
+      SchoolClassService schoolClassService, AttendanceService attendanceService) {
+    this.scheduleService = scheduleService;
+    this.scheduleMapper = scheduleMapper;
+    this.gradeService = gradeService;
+    this.gradeMapper = gradeMapper;
+    this.remarkService = remarkService;
+    this.teacherService = teacherService;
+    this.studentService = studentService;
+    this.schoolClassService = schoolClassService;
+    this.attendanceService = attendanceService;
+  }
+
+  /* ====== Profile ====== */
+  @GetMapping("/profile")
+  public Teacher profile(@RequestParam int teacherId) {
+    Teacher t = teacherService.getTeacherById(teacherId);
+    if (t == null) {
+      throw new RuntimeException("Nauczyciel nie znaleziony");
+    }
+    return t;
+  }
+
+  /* ====== Plan zajęć (Schedule) ====== */
+  @GetMapping("/schedule")
+  public List<ScheduleDto> schedule(@RequestParam int teacherId) {
+    if (teacherService.getTeacherById(teacherId) == null) {
+      throw new RuntimeException("Nauczyciel nie znaleziony");
     }
 
-    /* ====== Profile ====== */
-    @GetMapping("/profile")
-    public Teacher profile(@RequestParam int teacherId) {
-        Teacher t = teacherService.getTeacherById(teacherId);
-        if (t == null) throw new RuntimeException("Nauczyciel nie znaleziony");
-        return t;
+    return scheduleService.getSchedulesByTeacherId(teacherId);
+  }
+
+  /* ====== Uwagi (Remarks) ====== */
+  @GetMapping("/remarks")
+  public List<RemarkDto> remarks(@RequestParam int teacherId) {
+    if (teacherService.getTeacherById(teacherId) == null) {
+      throw new RuntimeException("Nauczyciel nie znaleziony");
     }
 
-    /* ====== Plan zajęć (Schedule) ====== */
-    @GetMapping("/schedule")
-    public List<ScheduleDto> schedule(@RequestParam int teacherId) {
-        if (teacherService.getTeacherById(teacherId) == null)
-            throw new RuntimeException("Nauczyciel nie znaleziony");
+    return remarkService.getTeacherRemarksById(teacherId);
+  }
 
-        return scheduleService.getSchedulesByTeacherId(teacherId);
+  @PostMapping("/remarks")
+  public ResponseEntity<?> addRemark(@RequestParam int teacherId,
+      @RequestBody RemarkDto remarkDto) {
+    if (teacherService.getTeacherById(teacherId) == null) {
+      throw new RuntimeException("Nauczyciel nie znaleziony");
+    }
+    if (remarkDto == null || remarkDto.getStudentId() == 0
+        || (remarkDto.getContent() == null || remarkDto.getContent().isBlank())) {
+      return ResponseEntity.badRequest()
+          .body(Map.of("status","ERROR","message","Wymagane: studentId, content"));
     }
 
-    /* ====== Uwagi (Remarks) ====== */
-    @GetMapping("/remarks")
-    public List<RemarkDto> remarks(@RequestParam int teacherId) {
-        if (teacherService.getTeacherById(teacherId) == null)
-            throw new RuntimeException("Nauczyciel nie znaleziony");
+    remarkService.addRemark(remarkDto.getContent(),remarkDto.getStudentId(),teacherId);
+    return ResponseEntity.ok(Map.of("status","OK"));
+  }
 
-        return remarkService.getTeacherRemarksById(teacherId);
+  @PutMapping("/remarks/{remarkId}")
+  public ResponseEntity<?> updateRemark(@RequestParam int teacherId, @PathVariable int remarkId,
+      @RequestBody RemarkDto remarkDto) {
+    if (teacherService.getTeacherById(teacherId) == null) {
+      throw new RuntimeException("Nauczyciel nie znaleziony");
     }
 
-    @PostMapping("/remarks")
-    public ResponseEntity<?> addRemark(@RequestParam int teacherId,
-                                       @RequestBody RemarkDto remarkDto) {
-        if (teacherService.getTeacherById(teacherId) == null)
-            throw new RuntimeException("Nauczyciel nie znaleziony");
-        if (remarkDto == null || remarkDto.getStudentId() == 0 || (remarkDto.getContent() == null || remarkDto.getContent().isBlank()))
-            return ResponseEntity.badRequest().body(Map.of("status", "ERROR", "message", "Wymagane: studentId, content"));
-
-        remarkService.addRemark(remarkDto.getContent(), remarkDto.getStudentId(), teacherId);
-        return ResponseEntity.ok(Map.of("status", "OK"));
+    if (remarkDto != null) {
+      remarkDto.setTeacherId(teacherId);
     }
 
-    @PutMapping("/remarks/{remarkId}")
-    public ResponseEntity<?> updateRemark(@RequestParam int teacherId,
-                                          @PathVariable int remarkId,
-                                          @RequestBody RemarkDto remarkDto) {
-        if (teacherService.getTeacherById(teacherId) == null)
-            throw new RuntimeException("Nauczyciel nie znaleziony");
+    remarkService.updateRemark(remarkId,remarkDto);
+    return ResponseEntity.ok(Map.of("status","OK"));
+  }
 
-        if (remarkDto != null) remarkDto.setTeacherId(teacherId);
-
-        remarkService.updateRemark(remarkId, remarkDto);
-        return ResponseEntity.ok(Map.of("status", "OK"));
+  @DeleteMapping("/remarks/{remarkId}")
+  public ResponseEntity<?> deleteRemark(@RequestParam int teacherId, @PathVariable int remarkId) {
+    if (teacherService.getTeacherById(teacherId) == null) {
+      throw new RuntimeException("Nauczyciel nie znaleziony");
     }
 
-    @DeleteMapping("/remarks/{remarkId}")
-    public ResponseEntity<?> deleteRemark(@RequestParam int teacherId, @PathVariable int remarkId) {
-        if (teacherService.getTeacherById(teacherId) == null)
-            throw new RuntimeException("Nauczyciel nie znaleziony");
+    remarkService.deleteRemark(remarkId);
+    return ResponseEntity.ok(Map.of("status","OK"));
+  }
 
-        remarkService.deleteRemark(remarkId);
-        return ResponseEntity.ok(Map.of("status", "OK"));
+  /* ====== Oceny (Grades) ====== */
+  @GetMapping("/grades")
+  public List<GradeDto> grades(@RequestParam int teacherId) {
+    if (teacherService.getTeacherById(teacherId) == null) {
+      throw new RuntimeException("Nauczyciel nie znaleziony");
     }
 
-    /* ====== Oceny (Grades) ====== */
-    @GetMapping("/grades")
-    public List<GradeDto> grades(@RequestParam int teacherId) {
-        if (teacherService.getTeacherById(teacherId) == null)
-            throw new RuntimeException("Nauczyciel nie znaleziony");
+    return gradeService.getGradesByTeacherId(teacherId);
+  }
 
-        return gradeService.getGradesByTeacherId(teacherId);
+  @PostMapping("/grades")
+  public ResponseEntity<?> addGrade(@RequestParam int teacherId, @RequestBody GradeDto gradeDto) {
+    if (teacherService.getTeacherById(teacherId) == null) {
+      throw new RuntimeException("Nauczyciel nie znaleziony");
     }
 
-    @PostMapping("/grades")
-    public ResponseEntity<?> addGrade(@RequestParam int teacherId,
-                                      @RequestBody GradeDto gradeDto) {
-        if (teacherService.getTeacherById(teacherId) == null)
-            throw new RuntimeException("Nauczyciel nie znaleziony");
-
-        if (gradeDto == null || gradeDto.getStudentId() == 0 || gradeDto.getSubjectEnum() == null) {
-            return ResponseEntity.badRequest().body(Map.of("status", "ERROR", "message", "Wymagane: studentId, subjectEnum, value"));
-        }
-        gradeDto.setTeacherId(teacherId);
-        if (gradeDto.getGradeDate() == null) gradeDto.setGradeDate(LocalDate.now());
-
-        boolean ok = gradeService.saveGrade(gradeDto);
-        if (!ok)
-            return ResponseEntity.badRequest().body(Map.of("status", "ERROR", "message", "Nie udało się dodać oceny"));
-        return ResponseEntity.ok(Map.of("status", "OK"));
+    if (gradeDto == null || gradeDto.getStudentId() == 0 || gradeDto.getSubjectEnum() == null) {
+      return ResponseEntity.badRequest()
+          .body(Map.of("status","ERROR","message","Wymagane: studentId, subjectEnum, value"));
+    }
+    gradeDto.setTeacherId(teacherId);
+    if (gradeDto.getGradeDate() == null) {
+      gradeDto.setGradeDate(LocalDate.now());
     }
 
-    @PutMapping("/grades/{gradeId}")
-    public ResponseEntity<?> updateGrade(@RequestParam int teacherId,
-                                         @PathVariable int gradeId,
-                                         @RequestBody GradeDto gradeDto) {
-        if (teacherService.getTeacherById(teacherId) == null)
-            throw new RuntimeException("Nauczyciel nie znaleziony");
+    boolean ok = gradeService.saveGrade(gradeDto);
+    if (!ok) {
+      return ResponseEntity.badRequest()
+          .body(Map.of("status","ERROR","message","Nie udało się dodać oceny"));
+    }
+    return ResponseEntity.ok(Map.of("status","OK"));
+  }
 
-        if (gradeDto != null) gradeDto.setTeacherId(teacherId);
-
-        boolean ok = gradeService.updateGrade(gradeId, gradeDto);
-        if (!ok)
-            return ResponseEntity.badRequest().body(Map.of("status", "ERROR", "message", "Nie udało się zaktualizować oceny"));
-        return ResponseEntity.ok(Map.of("status", "OK"));
+  @PutMapping("/grades/{gradeId}")
+  public ResponseEntity<?> updateGrade(@RequestParam int teacherId, @PathVariable int gradeId,
+      @RequestBody GradeDto gradeDto) {
+    if (teacherService.getTeacherById(teacherId) == null) {
+      throw new RuntimeException("Nauczyciel nie znaleziony");
     }
 
-    @DeleteMapping("/grades/{gradeId}")
-    public ResponseEntity<?> deleteGrade(@RequestParam int teacherId,
-                                         @PathVariable int gradeId) {
-        if (teacherService.getTeacherById(teacherId) == null)
-            throw new RuntimeException("Nauczyciel nie znaleziony");
-
-        gradeService.deleteGrade(gradeId);
-        return ResponseEntity.ok(Map.of("status", "OK"));
+    if (gradeDto != null) {
+      gradeDto.setTeacherId(teacherId);
     }
 
-    /* ====== Frekwencja (Attendance) ====== */
-    @GetMapping("/classes")
-    public List<SchoolClass> classes(@RequestParam int teacherId) {
-        if (teacherService.getTeacherById(teacherId) == null)
-            throw new RuntimeException("Nauczyciel nie znaleziony");
+    boolean ok = gradeService.updateGrade(gradeId,gradeDto);
+    if (!ok) {
+      return ResponseEntity.badRequest()
+          .body(Map.of("status","ERROR","message","Nie udało się zaktualizować oceny"));
+    }
+    return ResponseEntity.ok(Map.of("status","OK"));
+  }
 
-        return schoolClassService.getAllClassesWithStudentCount();
+  @DeleteMapping("/grades/{gradeId}")
+  public ResponseEntity<?> deleteGrade(@RequestParam int teacherId, @PathVariable int gradeId) {
+    if (teacherService.getTeacherById(teacherId) == null) {
+      throw new RuntimeException("Nauczyciel nie znaleziony");
     }
 
-    @GetMapping("/students")
-    public List<StudentDto> studentsByClass(@RequestParam int teacherId,
-                                            @RequestParam int classId) {
-        if (teacherService.getTeacherById(teacherId) == null)
-            throw new RuntimeException("Nauczyciel nie znaleziony");
+    gradeService.deleteGrade(gradeId);
+    return ResponseEntity.ok(Map.of("status","OK"));
+  }
 
-        return studentService.getStudentsBySchoolClassId(classId);
+  /* ====== Frekwencja (Attendance) ====== */
+  @GetMapping("/classes")
+  public List<SchoolClass> classes(@RequestParam int teacherId) {
+    if (teacherService.getTeacherById(teacherId) == null) {
+      throw new RuntimeException("Nauczyciel nie znaleziony");
     }
 
-    @PostMapping("/attendance/mark")
-    public ResponseEntity<?> markAttendance(@RequestParam int teacherId,
-                                            @RequestBody com.byt.freeEdu.model.DTO.AttendanceFormDto form) {
-        if (teacherService.getTeacherById(teacherId) == null)
-            throw new RuntimeException("Nauczyciel nie znaleziony");
+    return schoolClassService.getAllClassesWithStudentCount();
+  }
 
-        if (form == null || form.getAttendanceMap() == null || form.getAttendanceMap().isEmpty() || form.getGlobalSubject() == null) {
-            return ResponseEntity.badRequest().body(Map.of("status", "ERROR", "message", "Wymagane: attendanceMap oraz globalSubject"));
-        }
-
-        attendanceService.markAttendance(
-                form.getAttendanceMap(),
-                form.getGlobalSubject(),
-                teacherId
-        );
-        return ResponseEntity.ok(Map.of("status", "OK"));
+  @GetMapping("/students")
+  public List<StudentDto> studentsByClass(@RequestParam int teacherId, @RequestParam int classId) {
+    if (teacherService.getTeacherById(teacherId) == null) {
+      throw new RuntimeException("Nauczyciel nie znaleziony");
     }
 
-    /* ====== Słowniki ====== */
-    @GetMapping("/subjects")
-    public List<Map<String, String>> subjects() {
-        return Arrays.stream(SubjectEnum.values())
-                .map(s -> Map.of(
-                        "name", s.name(),
-                        "displayName", s.getDisplayName() != null ? s.getDisplayName() : s.name()))
-                .collect(Collectors.toList());
+    return studentService.getStudentsBySchoolClassId(classId);
+  }
+
+  @PostMapping("/attendance/mark")
+  public ResponseEntity<?> markAttendance(@RequestParam int teacherId,
+      @RequestBody com.byt.freeEdu.model.DTO.AttendanceFormDto form) {
+    if (teacherService.getTeacherById(teacherId) == null) {
+      throw new RuntimeException("Nauczyciel nie znaleziony");
     }
+
+    if (form == null || form.getAttendanceMap() == null || form.getAttendanceMap().isEmpty()
+        || form.getGlobalSubject() == null) {
+      return ResponseEntity.badRequest()
+          .body(Map.of("status","ERROR","message","Wymagane: attendanceMap oraz globalSubject"));
+    }
+
+    attendanceService.markAttendance(form.getAttendanceMap(),form.getGlobalSubject(),teacherId);
+    return ResponseEntity.ok(Map.of("status","OK"));
+  }
+
+  /* ====== Słowniki ====== */
+  @GetMapping("/subjects")
+  public List<Map<String, String>> subjects() {
+    return Arrays.stream(SubjectEnum.values())
+        .map(s -> Map.of("name",s.name(),"displayName",
+            s.getDisplayName() != null ? s.getDisplayName() : s.name()))
+        .collect(Collectors.toList());
+  }
 }
