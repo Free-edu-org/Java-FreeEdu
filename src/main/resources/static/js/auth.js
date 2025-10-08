@@ -1,9 +1,7 @@
-// /js/auth.js
 import { toast } from '/js/common.js';
 
 const $ = (sel, root = document) => root.querySelector(sel);
 
-// sekcja / elementy mogą nie istnieć zanim HTML się załaduje – korzystamy defensywnie
 const loginForm    = document.getElementById('loginForm');
 const registerForm = document.getElementById('registerForm');
 const tabLogin     = document.getElementById('tabLogin');
@@ -18,19 +16,15 @@ function show(view, { expand = false, setHash = false } = {}) {
     const isLogin = view === 'login';
     loginForm?.classList.toggle('d-none', !isLogin);
     registerForm?.classList.toggle('d-none', isLogin);
-
-    // zakładki
     tabLogin?.classList.toggle('btn-primary', isLogin);
     tabLogin?.classList.toggle('btn-ghost',  !isLogin);
     tabRegister?.classList.toggle('btn-primary', !isLogin);
     tabRegister?.classList.toggle('btn-ghost',  isLogin);
-
     if (setHash) location.hash = isLogin ? '#login' : '#register';
     localStorage.setItem('authTab', view);
     if (expand) expandAuth();
 }
 
-/* Hash routing */
 function handleHash() {
     const h = location.hash || '#start';
     if (h === '#login')      { show('login',    { expand: true }); }
@@ -43,22 +37,18 @@ function handleHash() {
 window.addEventListener('hashchange', handleHash);
 handleHash();
 
-/* Tabs */
 tabLogin?.addEventListener('click',   () => show('login',    { expand: true, setHash: true }));
 tabRegister?.addEventListener('click',() => show('register', { expand: true, setHash: true }));
 
-/* CTA */
 btnStart?.addEventListener('click', () => {
     show('login', { expand: true, setHash: true });
     authSection?.scrollIntoView({ behavior: 'smooth', block: 'start' });
 });
 
-/* Back links */
 document.querySelectorAll('a[href="#start"]').forEach(a =>
     a.addEventListener('click', () => collapseAuth())
 );
 
-/* Toggle password (przełączanie typu inputu) */
 document.querySelectorAll('[data-toggle="password"]').forEach(btn => {
     btn.addEventListener('click', () => {
         const id  = btn.getAttribute('data-target');
@@ -70,7 +60,6 @@ document.querySelectorAll('[data-toggle="password"]').forEach(btn => {
     });
 });
 
-/* ================= API helpers ================= */
 async function postJson(url, data) {
     const r = await fetch(url, {
         method: 'POST',
@@ -79,7 +68,6 @@ async function postJson(url, data) {
         body: JSON.stringify(data ?? {})
     });
     if (!r.ok) throw new Error(await r.text().catch(() => ''));
-    // bezpieczny parse – API czasem może nie zwrócić JSON-a
     const ct = r.headers.get('content-type') || '';
     if (!ct.includes('application/json')) return {};
     try { return await r.json(); } catch { return {}; }
@@ -97,7 +85,6 @@ async function me() {
     }
 }
 
-// obsłuż obie konwencje ról: ROLE_ADMIN i ADMIN
 const RoleMap = {
     ROLE_ADMIN:   '/admin/index.html',
     ROLE_TEACHER: '/teacher/index.html',
@@ -109,40 +96,52 @@ const RoleMap = {
     STUDENT: '/student/index.html',
 };
 
+function isKnownRole(role){
+    return role && Object.prototype.hasOwnProperty.call(RoleMap, role);
+}
+
+async function handleUnknownRole() {
+    try { await fetch('/api/auth/logout', { method:'POST', credentials:'include' }); } catch {}
+    const err = document.getElementById('loginError');
+    if (err) {
+        err.textContent = 'Twoje konto nie ma przypisanej roli. Skontaktuj się z administratorem, aby przypisać odpowiednią rolę.';
+        err.classList.remove('d-none');
+    }
+    toast('Brak przypisanej roli. Skontaktuj się z administratorem.', 'error');
+    show('login', { expand: true, setHash: true });
+}
+
 async function redirectByRole() {
     const u = await me();
     const role = u?.role;
-    if (!role) { location.href = '/#login'; return; }
-    const dest = RoleMap[role] ?? '/';
-    location.href = dest;
+    if (!isKnownRole(role)) {
+        await handleUnknownRole();
+        return;
+    }
+    location.href = RoleMap[role];
 }
 
-/* ================= Login ================= */
 if (loginForm) {
     const submitBtn = loginForm.querySelector('button[type="submit"]');
-
     let busy = false;
     loginForm.addEventListener('submit', async e => {
         e.preventDefault();
         if (busy) return;
         busy = true;
-
         const fd = new FormData(loginForm);
         const username = fd.get('username');
         const password = fd.get('password');
         const err = document.getElementById('loginError');
-
         if (submitBtn) {
             submitBtn.disabled = true;
             submitBtn.innerHTML = `<span class="spinner-border spinner-border-sm me-2"></span>Logowanie...`;
         }
-
         try {
             await postJson('/api/auth/login', { username, password });
-            toast('Zalogowano ✅');
             await redirectByRole();
         } catch {
             err?.classList.remove('d-none');
+            err && (err.textContent = 'Błędny login lub hasło.');
             toast('Błędny login lub hasło', 'error');
         } finally {
             if (submitBtn) {
@@ -154,7 +153,6 @@ if (loginForm) {
     });
 }
 
-/* ================= Register ================= */
 if (registerForm) {
     const pass  = document.getElementById('r_password');
     const pass2 = document.getElementById('r_confirm');
@@ -162,7 +160,6 @@ if (registerForm) {
     const bar   = document.getElementById('strengthBar');
     const msg   = document.getElementById('registerMsg');
 
-    // 0..4: długość, wielka, mała, cyfra, znak spec.
     const strength = (pwd) => {
         if (!pwd) return 0;
         let score = 0;
@@ -192,16 +189,13 @@ if (registerForm) {
         e.preventDefault();
         const pwd  = pass?.value ?? '';
         const pwd2 = pass2?.value ?? '';
-
         if (pwd !== pwd2) {
             document.getElementById('passwordError')?.classList.remove('d-none');
             toast('Hasła muszą być identyczne', 'error');
             return;
         }
-
         const fd = new FormData(registerForm);
         const payload = Object.fromEntries(fd.entries());
-
         try {
             await postJson('/api/auth/register', payload);
             if (msg) {
@@ -209,7 +203,6 @@ if (registerForm) {
                 msg.textContent = 'Konto utworzone. Zaloguj się.';
                 msg.classList.remove('d-none');
             }
-            toast('Rejestracja OK ✅');
             show('login', { expand: true, setHash: true });
         } catch {
             if (msg) {

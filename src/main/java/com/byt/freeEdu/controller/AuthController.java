@@ -37,7 +37,6 @@ public class AuthController {
                     new UsernamePasswordAuthenticationToken(req.username(), req.password())
             );
 
-            // Zapis SecurityContext do sesji + zmiana ID sesji (session fixation protection)
             var context = org.springframework.security.core.context.SecurityContextHolder.createEmptyContext();
             context.setAuthentication(auth);
             org.springframework.security.core.context.SecurityContextHolder.setContext(context);

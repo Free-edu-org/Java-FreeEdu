@@ -1,5 +1,5 @@
 // /js/student.js
-import { toast, escapeHtml } from './common.js';
+import { toast, escapeHtml } from '../js/common.js';
 
 const $  = (sel, root=document) => root.querySelector(sel);
 const $$ = (sel, root=document) => [...root.querySelectorAll(sel)];

@@ -4,16 +4,10 @@ import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.byt.freeEdu.mapper.AttendanceMapper;
 import com.byt.freeEdu.mapper.GradeMapper;
@@ -27,72 +21,28 @@ import com.byt.freeEdu.model.DTO.UserDto;
 import com.byt.freeEdu.model.Schedule;
 import com.byt.freeEdu.model.SchoolClass;
 import com.byt.freeEdu.model.enums.SubjectEnum;
-import com.byt.freeEdu.service.AttendanceService;
-import com.byt.freeEdu.service.GradeService;
-import com.byt.freeEdu.service.RemarkService;
-import com.byt.freeEdu.service.ScheduleService;
-import com.byt.freeEdu.service.SchoolClassService;
+import com.byt.freeEdu.model.users.User;
+import com.byt.freeEdu.service.*;
+
 import com.byt.freeEdu.service.users.StudentService;
 import com.byt.freeEdu.service.users.TeacherService;
 import com.byt.freeEdu.service.users.UserService;
 
-/**
- * Admin SPA REST – dopasowany do istniejących serwisów/DTO.
- */
 @RestController
 @RequestMapping("/api/admin")
 public class AdminApiController {
 
-    // Proste rekordy tylko do słowników i wierszy tabel
-    public record SubjectItem(String name, String displayName) {
-
-    }
-
-    public record SimplePerson(Integer userId, String firstname, String lastname) {
-
-    }
-
-    public record RemarkRow(
-            Integer id,
-            String studentFirstName, String studentLastName, Integer studentId,
-            String teacherFirstName, String teacherLastName, Integer teacherId,
-            String content, String addDate
-    ) {
-
-    }
-
-    public record GradeRow(
-            Integer gradeId,
-            String studentFirstName, String studentLastName, Integer studentId,
-            String subject, String subjectCode, Double value,
-            String gradeDate, Integer teacherId,
-            String teacherFirstName, String teacherLastName
-    ) {
-
-    }
-
     private final RemarkService remarkService;
-
     private final GradeService gradeService;
-
     private final GradeMapper gradeMapper;
-
     private final ScheduleService scheduleService;
-
     private final ScheduleMapper scheduleMapper;
-
     private final AttendanceService attendanceService;
-
     private final AttendanceMapper attendanceMapper;
-
     private final SchoolClassService schoolClassService;
-
     private final UserService userService;
-
     private final UserMapper userMapper;
-
     private final TeacherService teacherService;
-
     private final StudentService studentService;
 
     public AdminApiController(RemarkService remarkService,
@@ -121,45 +71,56 @@ public class AdminApiController {
         this.studentService = studentService;
     }
 
-    // ===== Słowniki =====
+    /* ===== Słowniki ===== */
     @GetMapping("/subjects")
-    public List<SubjectItem> subjects() {
+    public List<Map<String, String>> subjects() {
         return Arrays.stream(SubjectEnum.values())
-                .map(s -> new SubjectItem(s.name(), s.getDisplayName() != null ? s.getDisplayName() : s.name()))
-                .toList();
+                .map(s -> Map.of(
+                        "name", s.name(),
+                        "displayName", s.getDisplayName() != null ? s.getDisplayName() : s.name()))
+                .collect(Collectors.toList());
     }
 
     @GetMapping("/teachers")
-    public List<SimplePerson> teachers() {
+    public List<Map<String, Object>> teachers() {
         return teacherService.getAllTeachers().stream()
-                .map(t -> new SimplePerson(t.getUserId(), t.getFirstname(), t.getLastname()))
-                .toList();
+                .map(t -> Map.<String,Object>of(
+                        "userId", t.getUserId(),
+                        "firstname", t.getFirstname(),
+                        "lastname", t.getLastname()))
+                .collect(Collectors.toList());
     }
 
     @GetMapping("/students")
-    public List<SimplePerson> students() {
+    public List<Map<String, Object>> students() {
         return studentService.getAllStudents().stream()
-                .map(s -> new SimplePerson(s.getUserId(), s.getFirstname(), s.getLastname()))
-                .toList();
+                .map(s -> Map.<String,Object>of(
+                        "userId", s.getUserId(),
+                        "firstname", s.getFirstname(),
+                        "lastname", s.getLastname()))
+                .collect(Collectors.toList());
     }
 
-    // ===== Uwagi (używa istniejącego RemarkService API) =====
+    /* ===== Uwagi ===== */
     @GetMapping("/remarks")
-    public List<RemarkRow> listRemarks() {
+    public List<Map<String, Object>> listRemarks() {
         return remarkService.getAllRemarks().stream()
-                .map(r -> new RemarkRow(
-                        r.getRemarkId(),
-                        r.getStudentFirstName(), r.getStudentLastName(), r.getStudentId(),
-                        r.getTeacherFirstName(), r.getTeacherLastName(), r.getTeacherId(),
-                        r.getContent(), r.getAddDate()
-                ))
-                .toList();
+                .map(r -> Map.<String,Object>of(
+                        "id", r.getRemarkId(),
+                        "studentFirstName", r.getStudentFirstName(),
+                        "studentLastName",  r.getStudentLastName(),
+                        "studentId",        r.getStudentId(),
+                        "teacherFirstName", r.getTeacherFirstName(),
+                        "teacherLastName",  r.getTeacherLastName(),
+                        "teacherId",        r.getTeacherId(),
+                        "content",          r.getContent(),
+                        "addDate",          r.getAddDate()))
+                .collect(Collectors.toList());
     }
 
     @PostMapping("/remarks")
     public ResponseEntity<Void> addRemark(@RequestBody Map<String, Object> req) {
-        // oczekujemy: content, studentId, teacherId
-        String content = (String) req.get("content");
+        String  content   = (String)  req.get("content");
         Integer studentId = req.get("studentId") != null ? ((Number) req.get("studentId")).intValue() : null;
         Integer teacherId = req.get("teacherId") != null ? ((Number) req.get("teacherId")).intValue() : null;
         remarkService.addRemark(content, studentId, teacherId);
@@ -168,7 +129,6 @@ public class AdminApiController {
 
     @PutMapping("/remarks/{id}")
     public ResponseEntity<Void> updateRemark(@PathVariable int id, @RequestBody RemarkDto dto) {
-        // dto: content, studentId, teacherId — zgodnie z Twoim serwisem updateRemark(id, dto)
         remarkService.updateRemark(id, dto);
         return ResponseEntity.noContent().build();
     }
@@ -179,27 +139,31 @@ public class AdminApiController {
         return ResponseEntity.noContent().build();
     }
 
-    // ===== Oceny (jak wcześniej) =====
+    /* ===== Oceny ===== */
     @GetMapping("/grades")
-    public List<GradeRow> grades() {
+    public List<Map<String, Object>> grades() {
         return gradeService.getAllGrades().stream()
-                .map(dto -> new GradeRow(
-                        dto.getGradeId(),
-                        dto.getStudentFirstName(), dto.getStudentLastName(), dto.getStudentId(),
-                        dto.getSubject(),
-                        dto.getSubjectEnum() != null ? dto.getSubjectEnum().name() : null,
-                        dto.getValue(),
-                        dto.getGradeDate() != null ? dto.getGradeDate().toString() : null,
-                        dto.getTeacherId(),
-                        dto.getTeacherFirstName(), dto.getTeacherLastName()
-                ))
-                .toList();
+                .map(dto -> {
+                    Map<String, Object> map = new java.util.HashMap<>();
+                    map.put("gradeId", dto.getGradeId());
+                    map.put("studentFirstName", dto.getStudentFirstName());
+                    map.put("studentLastName", dto.getStudentLastName());
+                    map.put("studentId", dto.getStudentId());
+                    map.put("subject", dto.getSubject());
+                    map.put("subjectCode", dto.getSubjectEnum() != null ? dto.getSubjectEnum().name() : null);
+                    map.put("value", dto.getValue());
+                    map.put("gradeDate", dto.getGradeDate() != null ? dto.getGradeDate().toString() : null);
+                    map.put("teacherId", dto.getTeacherId());
+                    map.put("teacherFirstName", dto.getTeacherFirstName());
+                    map.put("teacherLastName", dto.getTeacherLastName());
+                    return map;
+                })
+                .collect(Collectors.toList());
     }
 
     @PostMapping("/grades")
     public ResponseEntity<Void> addGrade(@RequestBody GradeDto dto) {
-        // oczekujemy kodu enuma w dto.subject (np. POLISH)
-        dto.setGradeDate(LocalDate.now());
+        if (dto.getGradeDate() == null) dto.setGradeDate(LocalDate.now());
         gradeService.saveGrade(dto);
         return ResponseEntity.noContent().build();
     }
@@ -216,7 +180,7 @@ public class AdminApiController {
         return ResponseEntity.noContent().build();
     }
 
-    // ===== Plan =====
+    /* ===== Plan ===== */
     @GetMapping("/schedule")
     public List<ScheduleAdminDto> scheduleList() {
         return scheduleService.getAllSchedules();
@@ -224,12 +188,10 @@ public class AdminApiController {
 
     @PostMapping("/schedule")
     public ResponseEntity<Void> scheduleAdd(@RequestBody com.byt.freeEdu.model.DTO.ScheduleDto dto) {
-        // tak jak w ViewControllerAdmin: budujemy Schedule z DTO i usług pomocniczych
         Schedule schedule = new Schedule();
         schedule.setDate(dto.getDate());
         schedule.setSubject(SubjectEnum.valueOf(dto.getSubjectName()));
-        schedule.setSchoolClass(
-                schoolClassService.getSchoolClassById(Integer.parseInt(dto.getClassName())));
+        schedule.setSchoolClass(schoolClassService.getSchoolClassById(Integer.parseInt(dto.getClassName())));
         schedule.setTeacher(teacherService.getTeacherById(dto.getTeacherId()));
         scheduleService.addSchedule(schedule);
         return ResponseEntity.noContent().build();
@@ -238,7 +200,6 @@ public class AdminApiController {
     @PutMapping("/schedule/{id}")
     public ResponseEntity<Void> scheduleUpdate(@PathVariable int id,
                                                @RequestBody com.byt.freeEdu.model.DTO.ScheduleDto dto) {
-
         scheduleService.updateSchedule(id, dto);
         return ResponseEntity.noContent().build();
     }
@@ -249,7 +210,7 @@ public class AdminApiController {
         return ResponseEntity.noContent().build();
     }
 
-    // ===== Frekwencja =====
+    /* ===== Frekwencja ===== */
     @GetMapping("/attendance")
     public List<AttendanceDto> attendanceList() {
         return attendanceService.getAllAttendancesAdmin();
@@ -262,7 +223,12 @@ public class AdminApiController {
 
     @PostMapping("/attendance")
     public ResponseEntity<Void> attendanceAdd(@RequestBody AttendanceDto dto) {
-        attendanceService.saveAttendance(dto.toEntity(studentService.getStudentById(dto.getStudentId()), teacherService.getTeacherById(dto.getTeacherId())));
+        attendanceService.saveAttendance(
+                dto.toEntity(
+                        studentService.getStudentById(dto.getStudentId()),
+                        teacherService.getTeacherById(dto.getTeacherId())
+                )
+        );
         return ResponseEntity.noContent().build();
     }
 
@@ -278,7 +244,7 @@ public class AdminApiController {
         return ResponseEntity.noContent().build();
     }
 
-    // ===== Klasy =====
+    /* ===== Klasy ===== */
     @GetMapping("/classes")
     public List<SchoolClass> classesList() {
         return schoolClassService.getAllClassesWithStudentCount();
@@ -290,18 +256,30 @@ public class AdminApiController {
         return ResponseEntity.noContent().build();
     }
 
+    @PutMapping("/classes/{id}")
+    public ResponseEntity<Void> classUpdate(@PathVariable int id, @RequestBody String name) {
+        schoolClassService.updateSchoolClass(id, name);
+        return ResponseEntity.noContent().build();
+    }
+
     @DeleteMapping("/classes/{id}")
     public ResponseEntity<Void> classDelete(@PathVariable int id) {
         schoolClassService.deleteSchoolClassById(id);
         return ResponseEntity.noContent().build();
     }
 
-    // ===== Użytkownicy =====
+    /* ===== Użytkownicy ===== */
     @GetMapping("/users")
     public List<UserDto> usersList() {
         return userService.getAllUsers().stream()
-            .map(userMapper::toDto)
-            .toList();
+                .map(userMapper::toDto)
+                .collect(Collectors.toList());
+    }
+
+    @GetMapping("/users/{id}")
+    public UserDto getUserById(@PathVariable int id) {
+        User userById = userService.getUserById(id);
+        return userMapper.toDto(userById);
     }
 
     @PostMapping("/users")

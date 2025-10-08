@@ -58,8 +58,9 @@ function renderChildren(){
     const box = $('#childrenBox');
     if(!box) return;
 
-    if(!state.students.length){
+    if(!Array.isArray(state.students) || state.students.length === 0){
         box.innerHTML = `<div class="text-secondary">Brak przypisanych dzieci</div>`;
+        box.onclick = null;
         return;
     }
 
@@ -73,14 +74,15 @@ function renderChildren(){
             </button>`;
     }).join('');
 
-    // delegacja klików
-    box.addEventListener('click', (e)=>{
+    box.onclick = (e)=>{
         const btn = e.target.closest('button[data-id]');
         if(!btn) return;
         state.currentStudentId = Number(btn.dataset.id);
         highlightCurrentChild();
-        handleHash(); // przeładuj bieżący widok
-    }, { once: true }); // pojedynczy listener — po re-renderze i tak nadpisujemy
+        handleHash();
+    };
+
+    highlightCurrentChild();
 }
 
 // ===== ROUTER =====

@@ -32,7 +32,7 @@ public class Security {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/", "/index.html",
-                                "/css/**", "/js/**", "/images/**", "/assets/**", "/favicon.ico").permitAll()
+                                "/css/**", "/js/**", "/images/**", "/assets/**").permitAll()
                         .requestMatchers("/api/auth/login", "/api/auth/register", "/api/auth/me").permitAll()
                         .requestMatchers("/api/auth/logout").authenticated()
 

@@ -70,7 +70,6 @@ public class StudentApiController {
 
     @GetMapping("/grades")
     public List<GradeDto> grades(@RequestParam int studentId) {
-        // upewnij się, że istnieje
         if (studentService.getStudentById(studentId) == null)
             throw new RuntimeException("Uczeń nie znaleziony");
 

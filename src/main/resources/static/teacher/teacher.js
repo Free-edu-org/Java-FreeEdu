@@ -1,20 +1,18 @@
-// /js/teacher.js
 import { toast, escapeHtml } from '/js/common.js';
 
 const $  = (sel, root=document) => root.querySelector(sel);
 const $$ = (sel, root=document) => [...root.querySelectorAll(sel)];
 const teacherIdParam = () => `teacherId=${encodeURIComponent(state.teacherId)}`;
 
-// ====== STATE ======
 const state = {
     me: null,
     teacherId: null,
     profile: null,
     classes: null,
     subjects: null,
+    subjectLabelMap: null,
 };
 
-// ====== UTILS ======
 async function getJson(url){
     const r = await fetch(url, { credentials: 'include' });
     if(!r.ok) throw new Error(await r.text().catch(()=>r.status));
@@ -45,31 +43,40 @@ function fullName(obj){
     const last  = obj?.lastname  ?? obj?.lastName  ?? '';
     return `${first} ${last}`.trim();
 }
-const debounce = (fn, ms=300) => {
-    let t; return (...args)=>{ clearTimeout(t); t=setTimeout(()=>fn(...args), ms); };
-};
+const debounce = (fn, ms=300) => { let t; return (...a)=>{ clearTimeout(t); t=setTimeout(()=>fn(...a), ms); }; };
 
-// ====== ROUTER ======
 const routes = {
     '#schedule'  : renderSchedule,
     '#remarks'   : renderRemarks,
     '#grades'    : renderGrades,
     '#attendance': renderAttendance,
 };
-function handleHash(){
-    const hash = location.hash || '#schedule';
-    (routes[hash] || routes['#schedule'])();
-}
+function handleHash(){ const hash = location.hash || '#schedule'; (routes[hash] || routes['#schedule'])(); }
 window.addEventListener('hashchange', handleHash);
 
-// ====== VIEWS ======
+async function ensureSubjectsCommon(){
+    if(!state.subjects){
+        state.subjects = await getJson(`/api/teacher/subjects?${teacherIdParam()}`);
+        state.subjectLabelMap = new Map((state.subjects || []).map(s => [s.name, s.displayName]));
+    }
+}
+const subjectLabel = (code) => state.subjectLabelMap?.get(code) ?? code ?? '';
+
+async function resolveStudentClassId(studentId){
+    if(!state.classes){ state.classes = await getJson(`/api/teacher/classes?${teacherIdParam()}`); }
+    for (const c of (state.classes || [])) {
+        const cid = c.schoolClassId ?? c.id ?? c.classId;
+        const studs = await getJson(`/api/teacher/students?${teacherIdParam()}&classId=${encodeURIComponent(cid)}`);
+        if (studs.some(s => Number(s.userId ?? s.id) === Number(studentId))) return cid;
+    }
+    return null;
+}
+
 async function renderSchedule(){
     mountTemplate('tpl-schedule');
     $('#teacherBadgeSchedule').textContent = fullName(state.profile ?? state.me) || 'Nauczyciel';
-
     const tbody = $('#scheduleTbody');
     tbody.innerHTML = `<tr><td colspan="4" class="text-secondary">Ładowanie...</td></tr>`;
-
     try{
         const data = await getJson(`/api/teacher/schedule?${teacherIdParam()}`);
         if(!Array.isArray(data) || !data.length){
@@ -85,20 +92,17 @@ async function renderSchedule(){
         <td>${escapeHtml(teacher)}</td>
       </tr>`;
         }).join('');
-    }catch(e){
-        console.error(e);
+    }catch{
         tbody.innerHTML = `<tr><td colspan="4" class="text-danger text-center">Błąd pobierania planu</td></tr>`;
     }
 }
 
 async function renderRemarks(){
     mountTemplate('tpl-remarks');
-
     const filter = $('#remarksFilter');
     const addBtn = $('#remarkAddBtn');
     const tbody  = $('#remarksTbody');
 
-    // Modal
     const modalEl = document.getElementById('modalRemark');
     const modal   = new bootstrap.Modal(modalEl);
     const titleEl = document.getElementById('remarkModalTitle');
@@ -114,46 +118,27 @@ async function renderRemarks(){
         if(!state.classes){
             state.classes = await getJson(`/api/teacher/classes?${teacherIdParam()}`);
         }
-        fillSelect(
-            classEl,
-            state.classes,
-            c=> (c.schoolClassId ?? c.id ?? c.classId),
-            c=> (c.name ?? `Klasa ${c.schoolClassId ?? c.id ?? ''}`),
-            true
-        );
+        fillSelect(classEl, state.classes, c=>(c.schoolClassId ?? c.id ?? c.classId), c=>(c.name ?? `Klasa ${c.schoolClassId ?? c.id ?? ''}`), true);
     }
-
     async function loadStudentsForSelectedClass(){
         const cid = classEl.value ? Number(classEl.value) : null;
         if(!cid){ studEl.innerHTML = ''; return; }
         const studs = await getJson(`/api/teacher/students?${teacherIdParam()}&classId=${encodeURIComponent(cid)}`);
-        fillSelect(
-            studEl,
-            studs,
-            s=> (s.userId ?? s.id),
-            s=> `${s.firstname ?? s.firstName ?? ''} ${s.lastname ?? s.lastName ?? ''}`
-        );
+        fillSelect(studEl, studs, s=>(s.userId ?? s.id), s=>`${s.firstname ?? s.firstName ?? ''} ${s.lastname ?? s.lastName ?? ''}`);
     }
     classEl.addEventListener('change', loadStudentsForSelectedClass);
 
     async function load(){
         tbody.innerHTML = `<tr><td colspan="4" class="text-secondary">Ładowanie...</td></tr>`;
-        try{
-            data = await getJson(`/api/teacher/remarks?${teacherIdParam()}`);
-        }catch(e){
-            console.error(e);
-            tbody.innerHTML = `<tr><td colspan="4" class="text-danger text-center">Błąd pobierania uwag</td></tr>`;
-            return;
-        }
+        try{ data = await getJson(`/api/teacher/remarks?${teacherIdParam()}`); }
+        catch{ tbody.innerHTML = `<tr><td colspan="4" class="text-danger text-center">Błąd pobierania uwag</td></tr>`; return; }
         draw();
     }
-
     function draw(){
         const q = (filter.value||'').toLowerCase();
-        const rows = (data||[])
-            .filter(r => `${r.studentFirstName} ${r.studentLastName} ${r.content}`.toLowerCase().includes(q))
+        const rows = (data||[]).filter(r=>`${r.studentFirstName} ${r.studentLastName} ${r.content}`.toLowerCase().includes(q))
             .map(r=>`
-        <tr data-id="${r.id ?? r.remarkId}">
+        <tr data-id="${r.id ?? r.remarkId}" data-student-id="${r.studentId ?? ''}" data-student-name="${escapeHtml(`${r.studentFirstName ?? ''} ${r.studentLastName ?? ''}`.trim())}">
           <td>${escapeHtml(`${r.studentFirstName ?? ''} ${r.studentLastName ?? ''}`.trim())}</td>
           <td class="text-truncate" style="max-width:420px">${escapeHtml(r.content ?? '')}</td>
           <td>${escapeHtml(r.addDate ?? '')}</td>
@@ -164,71 +149,55 @@ async function renderRemarks(){
         </tr>`).join('');
         tbody.innerHTML = rows || `<tr><td colspan="4" class="text-center text-secondary">Brak uwag</td></tr>`;
     }
-
     async function openModal(mode, id=null){
         await ensureClasses();
-        contEl.value = '';
-        idEl.value = '';
-        classEl.value = '';
-        studEl.innerHTML = '';
-        if(mode === 'add'){
-            titleEl.textContent = 'Dodaj uwagę';
-        }else{
+        contEl.value = ''; idEl.value = ''; classEl.value = ''; studEl.innerHTML = '';
+        if(mode === 'add'){ titleEl.textContent = 'Dodaj uwagę'; }
+        else{
             titleEl.textContent = 'Edytuj uwagę';
             const r = data.find(x=> String(x.id ?? x.remarkId) === String(id));
             idEl.value = r?.id ?? r?.remarkId ?? '';
             contEl.value = r?.content ?? '';
             const sid = r?.studentId;
             if(sid){
-                const label = `${r.studentFirstName ?? ''} ${r.studentLastName ?? ''}`.trim() || `Uczeń ${sid}`;
-                studEl.innerHTML = `<option value="${sid}">${escapeHtml(label)}</option>`;
-                studEl.value = String(sid);
+                const cid = await resolveStudentClassId(Number(sid));
+                if (cid) {
+                    classEl.value = String(cid);
+                    await loadStudentsForSelectedClass();
+                    if (!Array.from(studEl.options).some(o => String(o.value) === String(sid))) {
+                        const label = `${r.studentFirstName ?? ''} ${r.studentLastName ?? ''}`.trim() || `Uczeń ${sid}`;
+                        studEl.innerHTML = `<option value="${sid}">${escapeHtml(label)}</option>` + studEl.innerHTML;
+                    }
+                    studEl.value = String(sid);
+                } else {
+                    const label = `${r.studentFirstName ?? ''} ${r.studentLastName ?? ''}`.trim() || `Uczeń ${sid}`;
+                    studEl.innerHTML = `<option value="${sid}">${escapeHtml(label)}</option>`;
+                    studEl.value = String(sid);
+                }
             }
         }
         modal.show();
     }
-
     async function delRow(id){
-        try{
-            await sendJson(`/api/teacher/remarks/${id}?${teacherIdParam()}`, 'DELETE');
-            toast('Usunięto uwagę');
-            await load();
-        }catch(e){
-            console.error(e);
-            toast('Błąd usuwania','error');
-        }
+        try{ await sendJson(`/api/teacher/remarks/${id}?${teacherIdParam()}`, 'DELETE'); toast('Usunięto uwagę'); await load(); }
+        catch{ toast('Błąd usuwania','error'); }
     }
 
     saveBtn.addEventListener('click', async ()=>{
-        const payload = {
-            content: (contEl.value || '').trim(),
-            studentId: studEl.value ? Number(studEl.value) : 0,
-        };
-        if(!payload.content || !payload.studentId){
-            toast('Uzupełnij ucznia i treść','error'); return;
-        }
+        const payload = { content:(contEl.value||'').trim(), studentId: studEl.value ? Number(studEl.value) : 0 };
+        if(!payload.content || !payload.studentId){ toast('Uzupełnij ucznia i treść','error'); return; }
         try{
             const id = idEl.value;
-            if(id){
-                await sendJson(`/api/teacher/remarks/${id}?${teacherIdParam()}`, 'PUT', payload);
-                toast('Zapisano uwagę');
-            }else{
-                await sendJson(`/api/teacher/remarks?${teacherIdParam()}`, 'POST', payload);
-                toast('Dodano uwagę');
-            }
-            modal.hide();
+            if(id){ await sendJson(`/api/teacher/remarks/${id}?${teacherIdParam()}`, 'PUT', payload); toast('Zapisano uwagę'); }
+            else   { await sendJson(`/api/teacher/remarks?${teacherIdParam()}`, 'POST', payload); toast('Dodano uwagę'); }
+            const m = bootstrap.Modal.getInstance(modalEl); m?.hide();
             await load();
-        }catch(e){
-            console.error(e);
-            toast('Błąd zapisu','error');
-        }
+        }catch{ toast('Błąd zapisu','error'); }
     });
 
     tbody.addEventListener('click', (e)=>{
-        const btn = e.target.closest('button[data-action]');
-        if(!btn) return;
-        const tr = btn.closest('tr');
-        const id = tr?.dataset.id;
+        const btn = e.target.closest('button[data-action]'); if(!btn) return;
+        const tr = btn.closest('tr'); const id = tr?.dataset.id;
         if(btn.dataset.action === 'edit') openModal('edit', id);
         if(btn.dataset.action === 'del')  delRow(id);
     });
@@ -240,11 +209,10 @@ async function renderRemarks(){
 
 async function renderGrades(){
     mountTemplate('tpl-grades');
-
+    await ensureSubjectsCommon();
     const addBtn = $('#gradeAddBtn');
     const tbody  = $('#gradesTbody');
 
-    // Modal
     const modalEl = document.getElementById('modalGrade');
     const modal   = new bootstrap.Modal(modalEl);
     const titleEl = document.getElementById('gradeModalTitle');
@@ -255,65 +223,59 @@ async function renderGrades(){
     const studEl  = document.getElementById('gradeStudent');
     const saveBtn = document.getElementById('gradeSaveBtn');
 
+    const studentClassCache = new Map();
     let data = [];
 
     async function ensureSubjects(){
-        if(!state.subjects){
-            state.subjects = await getJson(`/api/teacher/subjects?${teacherIdParam()}`);
-        }
-        fillSelect(subjEl, state.subjects, s=>s, s=>s, true);
+        await ensureSubjectsCommon();
+        const opts = state.subjects || [];
+        fillSelect(subjEl, opts, s => s.name, s => s.displayName, true);
     }
     async function ensureClasses(){
-        if(!state.classes){
-            state.classes = await getJson(`/api/teacher/classes?${teacherIdParam()}`);
-        }
-        fillSelect(
-            classEl,
-            state.classes,
-            c=> (c.schoolClassId ?? c.id ?? c.classId),
-            c=> (c.name ?? `Klasa ${c.schoolClassId ?? c.id ?? ''}`),
-            true
-        );
+        if(!state.classes){ state.classes = await getJson(`/api/teacher/classes?${teacherIdParam()}`); }
+        fillSelect(classEl, state.classes, c=>(c.schoolClassId ?? c.id ?? c.classId), c=>(c.name ?? `Klasa ${c.schoolClassId ?? c.id ?? ''}`), true);
     }
     async function loadStudentsForClass(){
         const cid = classEl.value ? Number(classEl.value) : null;
         if(!cid){ studEl.innerHTML=''; return; }
         const studs = await getJson(`/api/teacher/students?${teacherIdParam()}&classId=${encodeURIComponent(cid)}`);
-        fillSelect(
-            studEl,
-            studs,
-            s=> (s.userId ?? s.id),
-            s=> `${s.firstname ?? s.firstName ?? ''} ${s.lastname ?? s.lastName ?? ''}`
-        );
+        fillSelect(studEl, studs, s=>(s.userId ?? s.id), s=>`${s.firstname ?? s.firstName ?? ''} ${s.lastname ?? s.lastName ?? ''}`);
     }
     classEl.addEventListener('change', loadStudentsForClass);
+
+    async function resolveStudentClassIdCached(studentId){
+        if(studentClassCache.has(studentId)) return studentClassCache.get(studentId);
+        const cid = await resolveStudentClassId(studentId);
+        if (cid) studentClassCache.set(studentId, cid);
+        return cid;
+    }
 
     async function load(){
         tbody.innerHTML = `<tr><td colspan="5" class="text-secondary">Ładowanie...</td></tr>`;
         try{
+            await ensureSubjectsCommon();
             data = await getJson(`/api/teacher/grades?${teacherIdParam()}`);
-        }catch(e){
-            console.error(e);
+        }catch{
             tbody.innerHTML = `<tr><td colspan="5" class="text-danger text-center">Błąd pobierania ocen</td></tr>`;
             return;
         }
         draw();
     }
-
     function draw(){
         const rows = (data||[]).map(g=>{
             const id = g.gradeId ?? g.id;
             const name = `${g.studentFirstName ?? ''} ${g.studentLastName ?? ''}`.trim();
             const val = g.value != null ? Number(g.value).toFixed(g.value % 1 === 0 ? 0 : 1) : '';
-            const subject = g.subject ?? g.subjectEnum ?? '';
+            const code = g.subjectEnum ?? g.subject ?? '';
+            const label = subjectLabel(code);
             const date = g.gradeDate ?? '';
             return `<tr data-id="${id}"
                   data-student-id="${g.studentId ?? ''}"
                   data-student-name="${escapeHtml(name)}"
-                  data-subject="${subject}"
+                  data-subject="${code}"
                   data-value="${g.value ?? ''}">
         <td>${escapeHtml(name)}</td>
-        <td>${escapeHtml(subject)}</td>
+        <td>${escapeHtml(label)}</td>
         <td>${escapeHtml(val)}</td>
         <td>${escapeHtml(date)}</td>
         <td class="text-nowrap">
@@ -328,58 +290,51 @@ async function renderGrades(){
     async function openModal(mode, tr=null){
         await ensureSubjects();
         await ensureClasses();
-
-        idEl.value = '';
-        subjEl.value = '';
-        valEl.value = '';
-        classEl.value = '';
-        studEl.innerHTML = '';
-
-        if(mode === 'add'){
-            titleEl.textContent = 'Dodaj ocenę';
-        }else{
-            titleEl.textContent = 'Edytuj ocenę';
+        idEl.value=''; subjEl.value=''; valEl.value=''; classEl.value=''; studEl.innerHTML='';
+        if(mode === 'add'){ titleEl.textContent='Dodaj ocenę'; }
+        else{
+            titleEl.textContent='Edytuj ocenę';
             const id = tr?.dataset.id;
             idEl.value = id || '';
-            const subject = tr?.dataset.subject || '';
-            const value = tr?.dataset.value || '';
-            const sid   = tr?.dataset.studentId || '';
+            subjEl.value = tr?.dataset.subject || '';
+            valEl.value  = tr?.dataset.value || '';
+            const sid = tr?.dataset.studentId || '';
             const sname = tr?.dataset.studentName || '';
-
-            subjEl.value = subject;
-            valEl.value  = value;
-
             if(sid){
-                studEl.innerHTML = `<option value="${sid}">${sname}</option>`;
-                studEl.value = sid;
+                const cid = await resolveStudentClassIdCached(Number(sid));
+                if (cid) {
+                    classEl.value = String(cid);
+                    await loadStudentsForClass();
+                    if (!Array.from(studEl.options).some(o => String(o.value) === String(sid))) {
+                        studEl.innerHTML = `<option value="${sid}">${sname}</option>` + studEl.innerHTML;
+                    }
+                    studEl.value = String(sid);
+                } else {
+                    studEl.innerHTML = `<option value="${sid}">${sname}</option>`;
+                    studEl.value = sid;
+                }
             }
         }
         modal.show();
     }
-
     async function delRow(id){
-        try{
-            await sendJson(`/api/teacher/grades/${id}?${teacherIdParam()}`, 'DELETE');
-            toast('Usunięto ocenę');
-            await load();
-        }catch(e){
-            console.error(e);
-            toast('Błąd usuwania','error');
-        }
+        try{ await sendJson(`/api/teacher/grades/${id}?${teacherIdParam()}`, 'DELETE'); toast('Usunięto ocenę'); await load(); }
+        catch{ toast('Błąd usuwania','error'); }
     }
 
     saveBtn.addEventListener('click', async ()=>{
-        const payload = {
-            subjectEnum: subjEl.value || null,
-            value: (valEl.value ? Number(valEl.value) : null),
-            studentId: (studEl.value ? Number(studEl.value) : null),
-        };
-        if(!payload.subjectEnum || payload.value == null || !payload.studentId){
+        const subjectEnum = subjEl.value || '';
+        const value       = valEl.value !== '' ? Number(valEl.value) : NaN;
+        const studentId   = studEl.value ? Number(studEl.value) : 0;
+
+        if(!subjectEnum || !Number.isFinite(value) || !studentId){
             toast('Uzupełnij przedmiot, ucznia i wartość','error'); return;
         }
-        if(payload.value < 1 || payload.value > 6){
+        if(value < 1 || value > 6){
             toast('Ocena 1–6','error'); return;
         }
+
+        const payload = { subjectEnum, subject: subjectEnum, value, studentId };
 
         try{
             const id = idEl.value;
@@ -390,18 +345,15 @@ async function renderGrades(){
                 await sendJson(`/api/teacher/grades?${teacherIdParam()}`, 'POST', payload);
                 toast('Dodano ocenę');
             }
-            modal.hide();
+            const m = bootstrap.Modal.getInstance(modalEl); m?.hide();
             await load();
-        }catch(e){
-            console.error(e);
+        }catch{
             toast('Błąd zapisu','error');
         }
     });
 
-    // Delegacja zdarzeń
-    tbody.addEventListener('click', (e)=>{
-        const btn = e.target.closest('button[data-action]');
-        if(!btn) return;
+    $('#gradesTbody').addEventListener('click', (e)=>{
+        const btn = e.target.closest('button[data-action]'); if(!btn) return;
         const tr = btn.closest('tr');
         if(btn.dataset.action === 'edit') openModal('edit', tr);
         if(btn.dataset.action === 'del')  delRow(tr.dataset.id);
@@ -413,7 +365,6 @@ async function renderGrades(){
 
 async function renderAttendance(){
     mountTemplate('tpl-attendance');
-
     const classEl = $('#attClass');
     const subjEl  = $('#attSubject');
     const loadBtn = $('#attLoadBtn');
@@ -421,22 +372,18 @@ async function renderAttendance(){
     const tbody   = $('#attendanceTbody');
 
     async function ensureClasses(){
-        if(!state.classes){
-            state.classes = await getJson(`/api/teacher/classes?${teacherIdParam()}`);
-        }
-        fillSelect(
-            classEl,
-            state.classes,
-            c=> (c.schoolClassId ?? c.id ?? c.classId),
-            c=> (c.name ?? `Klasa ${c.schoolClassId ?? c.id ?? ''}`),
-            true
-        );
+        if(!state.classes){ state.classes = await getJson(`/api/teacher/classes?${teacherIdParam()}`); }
+        fillSelect(classEl, state.classes, c=>(c.schoolClassId ?? c.id ?? c.classId), c=>(c.name ?? `Klasa ${c.schoolClassId ?? c.id ?? ''}`), true);
     }
     async function ensureSubjects(){
-        if(!state.subjects){
-            state.subjects = await getJson(`/api/teacher/subjects?${teacherIdParam()}`);
-        }
-        fillSelect(subjEl, state.subjects, s=>s, s=>s, true);
+        await ensureSubjectsCommon();
+        fillSelect(
+            subjEl,
+            state.subjects,
+            s => s.name,
+            s => s.displayName,
+            true
+        );
     }
 
     const STATUSES = ['PRESENT','ABSENT','LATE','EXCUSED'];
@@ -444,8 +391,7 @@ async function renderAttendance(){
     function renderStudents(studs){
         if(!Array.isArray(studs) || !studs.length){
             tbody.innerHTML = `<tr><td colspan="2" class="text-secondary text-center">Brak uczniów w tej klasie</td></tr>`;
-            saveBtn.disabled = true;
-            return;
+            saveBtn.disabled = true; return;
         }
         tbody.innerHTML = studs.map(s=>{
             const id = s.userId ?? s.id;
@@ -471,8 +417,7 @@ async function renderAttendance(){
         try{
             const studs = await getJson(`/api/teacher/students?${teacherIdParam()}&classId=${encodeURIComponent(cid)}`);
             renderStudents(studs);
-        }catch(e){
-            console.error(e);
+        }catch{
             tbody.innerHTML = `<tr><td colspan="2" class="text-danger text-center">Błąd pobierania listy uczniów</td></tr>`;
         }
     });
@@ -480,49 +425,32 @@ async function renderAttendance(){
     saveBtn.addEventListener('click', async ()=>{
         const sub = subjEl.value || null;
         if(!sub){ toast('Wybierz przedmiot','error'); return; }
-
         const map = {};
         $$('tr[data-id]', tbody).forEach(tr=>{
             const sid = Number(tr.dataset.id);
             const st  = $('.att-status', tr)?.value || 'PRESENT';
             map[sid] = st;
         });
-        if(Object.keys(map).length === 0){
-            toast('Brak danych do zapisania','error'); return;
-        }
-
+        if(Object.keys(map).length === 0){ toast('Brak danych do zapisania','error'); return; }
         try{
-            await sendJson(`/api/teacher/attendance/mark?${teacherIdParam()}`, 'POST', {
-                attendanceMap: map,
-                globalSubject: sub
-            });
+            await sendJson(`/api/teacher/attendance/mark?${teacherIdParam()}`, 'POST', { attendanceMap: map, globalSubject: sub });
             toast('Zapisano frekwencję');
-        }catch(e){
-            console.error(e);
-            toast('Błąd zapisu frekwencji','error');
-        }
+            renderAttendance();
+        }catch{ toast('Błąd zapisu frekwencji','error'); }
     });
 
     await Promise.all([ensureClasses(), ensureSubjects()]);
 }
 
-// ====== INIT ======
 async function init(){
     try{
         const me = await getJson('/api/auth/me');
         if(!me?.userId){ location.href='/#login'; return; }
         state.me = me;
         state.teacherId = me.userId;
-
-        try{
-            state.profile = await getJson(`/api/teacher/profile?${teacherIdParam()}`);
-        }catch{
-            state.profile = null;
-        }
-
+        try{ state.profile = await getJson(`/api/teacher/profile?${teacherIdParam()}`); }catch{ state.profile = null; }
         handleHash();
-    }catch(e){
-        console.error(e);
+    }catch{
         const view = document.getElementById('view');
         if(view) view.innerHTML = `<div class="card-glass p-4 text-danger">Błąd inicjalizacji panelu nauczyciela.</div>`;
     }

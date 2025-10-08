@@ -1,8 +1,10 @@
 package com.byt.freeEdu.controller;
 
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -83,7 +85,6 @@ public class TeacherApiController {
     /* ====== Plan zajęć (Schedule) ====== */
     @GetMapping("/schedule")
     public List<ScheduleDto> schedule(@RequestParam int teacherId) {
-        // walidacja istnienia nauczyciela (opcjonalnie)
         if (teacherService.getTeacherById(teacherId) == null)
             throw new RuntimeException("Nauczyciel nie znaleziony");
 
@@ -118,7 +119,6 @@ public class TeacherApiController {
         if (teacherService.getTeacherById(teacherId) == null)
             throw new RuntimeException("Nauczyciel nie znaleziony");
 
-        // Możesz wymusić zgodność teacherId, jeśli RemarkDto ma pole teacherId
         if (remarkDto != null) remarkDto.setTeacherId(teacherId);
 
         remarkService.updateRemark(remarkId, remarkDto);
@@ -168,7 +168,6 @@ public class TeacherApiController {
         if (teacherService.getTeacherById(teacherId) == null)
             throw new RuntimeException("Nauczyciel nie znaleziony");
 
-        // W razie potrzeby wymuś powiązanie oceny z nauczycielem:
         if (gradeDto != null) gradeDto.setTeacherId(teacherId);
 
         boolean ok = gradeService.updateGrade(gradeId, gradeDto);
@@ -188,7 +187,6 @@ public class TeacherApiController {
     }
 
     /* ====== Frekwencja (Attendance) ====== */
-    // Lista klas (jak w widoku select)
     @GetMapping("/classes")
     public List<SchoolClass> classes(@RequestParam int teacherId) {
         if (teacherService.getTeacherById(teacherId) == null)
@@ -197,7 +195,6 @@ public class TeacherApiController {
         return schoolClassService.getAllClassesWithStudentCount();
     }
 
-    // Uczniowie danej klasy (do wypełniania listy na widoku zaznaczania obecności)
     @GetMapping("/students")
     public List<StudentDto> studentsByClass(@RequestParam int teacherId,
                                             @RequestParam int classId) {
@@ -207,7 +204,6 @@ public class TeacherApiController {
         return studentService.getStudentsBySchoolClassId(classId);
     }
 
-    // Oznacz obecność – wykorzystuje Twój AttendanceService i AttendanceFormDto
     @PostMapping("/attendance/mark")
     public ResponseEntity<?> markAttendance(@RequestParam int teacherId,
                                             @RequestBody com.byt.freeEdu.model.DTO.AttendanceFormDto form) {
@@ -228,9 +224,11 @@ public class TeacherApiController {
 
     /* ====== Słowniki ====== */
     @GetMapping("/subjects")
-    public SubjectEnum[] subjects(@RequestParam int teacherId) {
-        if (teacherService.getTeacherById(teacherId) == null)
-            throw new RuntimeException("Nauczyciel nie znaleziony");
-        return SubjectEnum.values();
+    public List<Map<String, String>> subjects() {
+        return Arrays.stream(SubjectEnum.values())
+                .map(s -> Map.of(
+                        "name", s.name(),
+                        "displayName", s.getDisplayName() != null ? s.getDisplayName() : s.name()))
+                .collect(Collectors.toList());
     }
 }

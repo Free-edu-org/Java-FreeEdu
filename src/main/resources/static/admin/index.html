@@ -14,8 +14,8 @@
 <header class="container py-4 d-flex justify-content-between align-items-center">
     <a class="navbar-brand fw-bold fs-4" href="/">FreeEdu</a>
     <div class="d-flex align-items-center gap-2">
-        <button id="themeToggle" class="theme-toggle" type="button">🌙 ciemny</button>
         <nav id="userBanner" class="small"></nav>
+        <button id="themeToggle" class="theme-toggle ms-auto">🌙 ciemny</button>
     </div>
 </header>
 
@@ -105,9 +105,12 @@
 <!-- Oceny -->
 <template id="tpl-grades">
     <div class="card-glass p-4">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <h2 class="h4 mb-0">Oceny</h2>
-            <button id="gradeAddBtn" class="btn btn-primary"><i class="bi bi-plus-circle me-1"></i>Dodaj ocenę</button>
+        <div class="d-flex flex-wrap justify-content-between align-items-center mb-3">
+            <h2 class="h4 mb-2 mb-sm-0">Oceny</h2>
+            <div class="d-flex gap-2">
+                <button id="gradeAddBtn" class="btn btn-primary"><i class="bi bi-plus-circle me-1"></i>Dodaj ocenę</button>
+                <input id="gradesFilter" class="form-control" style="max-width:280px" placeholder="Filtruj (uczeń/przedmiot/nauczyciel)"/>
+            </div>
         </div>
         <div class="table-responsive">
             <table class="table table-sm align-middle mb-0">
@@ -229,9 +232,12 @@
 <!-- Frekwencja -->
 <template id="tpl-attendance">
     <div class="card-glass p-4">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <h2 class="h4 mb-0">Frekwencja</h2>
-            <button id="attendanceAddBtn" class="btn btn-primary"><i class="bi bi-plus-circle me-1"></i>Dodaj</button>
+        <div class="d-flex flex-wrap justify-content-between align-items-center mb-3">
+            <h2 class="h4 mb-2 mb-sm-0">Frekwencja</h2>
+            <div class="d-flex gap-2">
+                <button id="attendanceAddBtn" class="btn btn-primary"><i class="bi bi-plus-circle me-1"></i>Dodaj</button>
+                <input id="attendanceFilter" class="form-control" style="max-width:300px" placeholder="Filtruj (data/uczeń/przedmiot/status/nauczyciel)"/>
+            </div>
         </div>
         <div class="table-responsive">
             <table class="table table-sm align-middle mb-0">
@@ -300,9 +306,12 @@
 <!-- Klasy -->
 <template id="tpl-classes">
     <div class="card-glass p-4">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <h2 class="h4 mb-0">Klasy</h2>
-            <button id="classAddBtn" class="btn btn-primary"><i class="bi bi-plus-circle me-1"></i>Dodaj</button>
+        <div class="d-flex flex-wrap justify-content-between align-items-center mb-3">
+            <h2 class="h4 mb-2 mb-sm-0">Klasy</h2>
+            <div class="d-flex gap-2">
+                <button id="classAddBtn" class="btn btn-primary"><i class="bi bi-plus-circle me-1"></i>Dodaj</button>
+                <input id="classesFilter" class="form-control" style="max-width:240px" placeholder="Filtruj po nazwie"/>
+            </div>
         </div>
         <div class="table-responsive">
             <table class="table table-sm align-middle mb-0">
@@ -344,9 +353,12 @@
 <!-- Użytkownicy -->
 <template id="tpl-users">
     <div class="card-glass p-4">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <h2 class="h4 mb-0">Użytkownicy</h2>
-            <button id="userAddBtn" class="btn btn-primary"><i class="bi bi-plus-circle me-1"></i>Dodaj</button>
+        <div class="d-flex flex-wrap justify-content-between align-items-center mb-3">
+            <h2 class="h4 mb-2 mb-sm-0">Użytkownicy</h2>
+            <div class="d-flex gap-2">
+                <button id="userAddBtn" class="btn btn-primary"><i class="bi bi-plus-circle me-1"></i>Dodaj</button>
+                <input id="usersFilter" class="form-control" style="max-width:320px" placeholder="Filtruj (imię/nazwisko/login/email/rola/klasa)"/>
+            </div>
         </div>
         <div class="table-responsive">
             <table class="table table-sm align-middle mb-0">
@@ -356,6 +368,7 @@
                     <th>Nazwisko</th>
                     <th>Login</th>
                     <th>Email</th>
+                    <th>Klasa</th>
                     <th>Rola</th>
                     <th style="width:140px"></th>
                 </tr>
@@ -399,6 +412,18 @@
                             <option value="STUDENT">Uczeń</option>
                             <option value="PARENT">Rodzic</option>
                         </select>
+                    </div>
+                    <div class="col-md-6" id="userClassWrap" style="display:none">
+                        <label class="form-label">Klasa</label>
+                        <select id="userClass" class="form-select"></select>
+                    </div>
+                    <div class="col-md-6" id="userParentWrap" style="display:none">
+                        <label class="form-label">Rodzic</label>
+                        <select id="userParent" class="form-select"></select>
+                    </div>
+                    <div class="col-md-6" id="userPhoneWrap" style="display:none">
+                        <label class="form-label">Telefon</label>
+                        <input id="userPhone" class="form-control" placeholder="+48 600 000 000"/>
                     </div>
                     <div class="col-md-6">
                         <label class="form-label">Hasło</label>
