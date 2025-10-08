@@ -46,8 +46,9 @@ public class GradeService{
         ? grade.getSubjectEnum()
         : (grade.getSubject() != null ? SubjectEnum.valueOf(grade.getSubject()) : null);
 
-    if (subj == null)
-      throw new IllegalArgumentException("Brak informacji o przedmiocie");
+    if (subj == null) {
+        throw new IllegalArgumentException("Brak informacji o przedmiocie");
+    }
 
     entity.setSubject(subj);
     entity.setGradeDate(LocalDate.now());

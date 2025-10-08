@@ -25,8 +25,9 @@ public class CustomUserDetailsService implements UserDetailsService{
     log.info("Looking for user by identifier: {}",identifier);
 
     User user = userService.getUserByUsername(identifier);
-    if (user == null)
-      user = userService.getUserByEmail(identifier);
+    if (user == null) {
+        user = userService.getUserByEmail(identifier);
+    }
     if (user == null) {
       log.warn("User not found: {}",identifier);
       throw new UsernameNotFoundException("User not found: " + identifier);

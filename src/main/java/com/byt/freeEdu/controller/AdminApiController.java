@@ -7,7 +7,14 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.byt.freeEdu.mapper.AttendanceMapper;
 import com.byt.freeEdu.mapper.GradeMapper;
@@ -22,8 +29,12 @@ import com.byt.freeEdu.model.Schedule;
 import com.byt.freeEdu.model.SchoolClass;
 import com.byt.freeEdu.model.enums.SubjectEnum;
 import com.byt.freeEdu.model.users.User;
-import com.byt.freeEdu.service.*;
 
+import com.byt.freeEdu.service.AttendanceService;
+import com.byt.freeEdu.service.GradeService;
+import com.byt.freeEdu.service.RemarkService;
+import com.byt.freeEdu.service.ScheduleService;
+import com.byt.freeEdu.service.SchoolClassService;
 import com.byt.freeEdu.service.users.StudentService;
 import com.byt.freeEdu.service.users.TeacherService;
 import com.byt.freeEdu.service.users.UserService;
@@ -33,16 +44,27 @@ import com.byt.freeEdu.service.users.UserService;
 public class AdminApiController{
 
   private final RemarkService remarkService;
+
   private final GradeService gradeService;
+
   private final GradeMapper gradeMapper;
+
   private final ScheduleService scheduleService;
+
   private final ScheduleMapper scheduleMapper;
+
   private final AttendanceService attendanceService;
+
   private final AttendanceMapper attendanceMapper;
+
   private final SchoolClassService schoolClassService;
+
   private final UserService userService;
+
   private final UserMapper userMapper;
+
   private final TeacherService teacherService;
+
   private final StudentService studentService;
 
   public AdminApiController(RemarkService remarkService, GradeService gradeService,
@@ -146,8 +168,9 @@ public class AdminApiController{
 
   @PostMapping("/grades")
   public ResponseEntity<Void> addGrade(@RequestBody GradeDto dto) {
-    if (dto.getGradeDate() == null)
-      dto.setGradeDate(LocalDate.now());
+    if (dto.getGradeDate() == null) {
+        dto.setGradeDate(LocalDate.now());
+    }
     gradeService.saveGrade(dto);
     return ResponseEntity.noContent().build();
   }
