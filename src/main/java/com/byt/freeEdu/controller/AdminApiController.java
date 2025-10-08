@@ -169,7 +169,7 @@ public class AdminApiController{
   @PostMapping("/grades")
   public ResponseEntity<Void> addGrade(@RequestBody GradeDto dto) {
     if (dto.getGradeDate() == null) {
-        dto.setGradeDate(LocalDate.now());
+      dto.setGradeDate(LocalDate.now());
     }
     gradeService.saveGrade(dto);
     return ResponseEntity.noContent().build();

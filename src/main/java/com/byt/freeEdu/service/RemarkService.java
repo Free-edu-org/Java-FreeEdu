@@ -113,7 +113,7 @@ public class RemarkService{
 
   @Transactional
   public void deleteRemark(int id) {
-    Remark remark = remarkRepository.findById(id)
+    remarkRepository.findById(id)
         .orElseThrow(() -> new EntityNotFoundException("Remark not found with ID: " + id));
     remarkRepository.deleteById(id);
   }

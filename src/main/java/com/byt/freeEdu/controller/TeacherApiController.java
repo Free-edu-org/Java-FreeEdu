@@ -107,8 +107,8 @@ public class TeacherApiController{
     if (teacherService.getTeacherById(teacherId) == null) {
       throw new RuntimeException("Nauczyciel nie znaleziony");
     }
-    if (remarkDto == null || remarkDto.getStudentId() == 0
-        || (remarkDto.getContent() == null || remarkDto.getContent().isBlank())) {
+    if (remarkDto == null || remarkDto.getStudentId() == 0 || remarkDto.getContent() == null
+        || remarkDto.getContent().isBlank()) {
       return ResponseEntity.badRequest()
           .body(Map.of("status","ERROR","message","Wymagane: studentId, content"));
     }

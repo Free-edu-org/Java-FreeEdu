@@ -56,7 +56,7 @@ public class StudentApiController{
   public Student profile(@RequestParam int studentId) {
     Student student = studentService.getStudentById(studentId);
     if (student == null) {
-        throw new RuntimeException("Uczeń nie znaleziony");
+      throw new RuntimeException("Uczeń nie znaleziony");
     }
     return student;
   }
@@ -65,7 +65,7 @@ public class StudentApiController{
   public List<ScheduleDto> schedule(@RequestParam int studentId) {
     Student student = studentService.getStudentById(studentId);
     if (student == null) {
-        throw new RuntimeException("Uczeń nie znaleziony");
+      throw new RuntimeException("Uczeń nie znaleziony");
     }
 
     return scheduleService.getScheduleByClassId(student.getSchoolClass().getSchoolClassId())
@@ -75,7 +75,7 @@ public class StudentApiController{
   @GetMapping("/grades")
   public List<GradeDto> grades(@RequestParam int studentId) {
     if (studentService.getStudentById(studentId) == null) {
-        throw new RuntimeException("Uczeń nie znaleziony");
+      throw new RuntimeException("Uczeń nie znaleziony");
     }
 
     return gradeService.getGradesForStudent(studentId).stream().map(gradeMapper::toDto)
@@ -85,7 +85,7 @@ public class StudentApiController{
   @GetMapping("/attendance")
   public List<AttendanceDto> attendance(@RequestParam int studentId) {
     if (studentService.getStudentById(studentId) == null) {
-        throw new RuntimeException("Uczeń nie znaleziony");
+      throw new RuntimeException("Uczeń nie znaleziony");
     }
 
     List<Attendance> attendances = attendanceService.getAttendancesForStudent(studentId);
@@ -95,7 +95,7 @@ public class StudentApiController{
   @GetMapping("/remarks")
   public List<RemarkDto> remarks(@RequestParam int studentId) {
     if (studentService.getStudentById(studentId) == null) {
-        throw new RuntimeException("Uczeń nie znaleziony");
+      throw new RuntimeException("Uczeń nie znaleziony");
     }
 
     return studentService.getRemarksForStudent(studentId);

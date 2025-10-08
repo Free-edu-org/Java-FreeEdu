@@ -44,10 +44,10 @@ public class GradeService{
 
     SubjectEnum subj = grade.getSubjectEnum() != null
         ? grade.getSubjectEnum()
-        : (grade.getSubject() != null ? SubjectEnum.valueOf(grade.getSubject()) : null);
+        : grade.getSubject() != null ? SubjectEnum.valueOf(grade.getSubject()) : null;
 
     if (subj == null) {
-        throw new IllegalArgumentException("Brak informacji o przedmiocie");
+      throw new IllegalArgumentException("Brak informacji o przedmiocie");
     }
 
     entity.setSubject(subj);
