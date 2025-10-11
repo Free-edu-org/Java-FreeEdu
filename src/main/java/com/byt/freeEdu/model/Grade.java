@@ -23,10 +23,12 @@ public class Grade{
   @Column(name = "id", unique = true, updatable = false, nullable = false)
   private int gradeId;
 
+  @NonNull
   @Enumerated(EnumType.STRING)
   @Column(name = "subject", nullable = false)
   private SubjectEnum subject;
 
+  @NonNull
   @Column(name = "value", nullable = false)
   private double value;
 
