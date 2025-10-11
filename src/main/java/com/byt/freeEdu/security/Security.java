@@ -1,50 +1,61 @@
 package com.byt.freeEdu.security;
 
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.ProviderManager;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.authentication.ReactiveAuthenticationManager;
+import org.springframework.security.authentication.UserDetailsRepositoryReactiveAuthenticationManager;
+import org.springframework.security.config.web.server.ServerHttpSecurity;
+import org.springframework.security.core.userdetails.ReactiveUserDetailsService;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.server.SecurityWebFilterChain;
+import org.springframework.security.web.server.context.WebSessionServerSecurityContextRepository;
 import org.springframework.stereotype.Component;
+import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 
 @Component
-public class Security{
+public class Security {
 
-  private final UserDetailsService userDetailsService;
+    private final UserDetailsService userDetailsService;
 
-  public Security(UserDetailsService userDetailsService) {
-    this.userDetailsService = userDetailsService;
-  }
+    public Security(UserDetailsService userDetailsService) {
+        this.userDetailsService = userDetailsService;
+    }
 
-  /** AuthenticationManager oparty o DAO + PasswordEncoder. */
-  public AuthenticationManager authenticationManager(PasswordEncoder passwordEncoder) {
-    DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-    provider.setUserDetailsService(userDetailsService);
-    provider.setPasswordEncoder(passwordEncoder);
-    return new ProviderManager(provider);
-  }
+    public ReactiveAuthenticationManager authenticationManager(PasswordEncoder passwordEncoder) {
+        ReactiveUserDetailsService reactiveUsers = username ->
+                Mono.fromCallable(() -> userDetailsService.loadUserByUsername(username))
+                        .subscribeOn(Schedulers.boundedElastic()); // adapter na blokujące I/O
 
-  /** Konfiguracja łańcucha filtrów (MVC/Servlet). */
-  public SecurityFilterChain enforcingAuthenticationWithoutCSRF(HttpSecurity http)
-      throws Exception {
-    http.csrf(csrf -> csrf.disable())
-        .authorizeHttpRequests(auth -> auth
-            .requestMatchers("/","/index.html","/css/**","/js/**","/images/**","/assets/**")
-            .permitAll().requestMatchers("/api/auth/login","/api/auth/register","/api/auth/me")
-            .permitAll().requestMatchers("/api/auth/logout").authenticated()
+        UserDetailsRepositoryReactiveAuthenticationManager mgr =
+                new UserDetailsRepositoryReactiveAuthenticationManager(reactiveUsers);
+        mgr.setPasswordEncoder(passwordEncoder);
+        return mgr;
+    }
 
-            .requestMatchers("/api/admin/**").hasRole("ADMIN").requestMatchers("/api/teacher/**")
-            .hasRole("TEACHER").requestMatchers("/api/parent/**").hasRole("PARENT")
-            .requestMatchers("/api/student/**").hasRole("STUDENT").requestMatchers("/admin/**")
-            .hasRole("ADMIN").requestMatchers("/teacher/**").hasRole("TEACHER")
-            .requestMatchers("/parent/**").hasRole("PARENT").requestMatchers("/student/**")
-            .hasRole("STUDENT")
+    public SecurityWebFilterChain enforcingAuthenticationWithoutCSRF(ServerHttpSecurity http) {
+        return http
+                .csrf(ServerHttpSecurity.CsrfSpec::disable)
+                .authorizeExchange(ex -> ex
+                        .pathMatchers("/", "/index.html",
+                                "/css/**", "/js/**", "/images/**", "/assets/**", "/favicon.ico").permitAll()
+                        .pathMatchers("/api/auth/login", "/api/auth/register", "/api/auth/me").permitAll()
+                        .pathMatchers("/api/auth/logout").authenticated()
 
-            .anyRequest().authenticated())
-        .formLogin(form -> form.disable()).logout(logout -> logout.disable());
+                        .pathMatchers("/api/admin/**").hasRole("ADMIN")
+                        .pathMatchers("/api/teacher/**").hasRole("TEACHER")
+                        .pathMatchers("/api/parent/**").hasRole("PARENT")
+                        .pathMatchers("/api/student/**").hasRole("STUDENT")
+                        .pathMatchers("/admin/**").hasRole("ADMIN")
+                        .pathMatchers("/teacher/**").hasRole("TEACHER")
+                        .pathMatchers("/parent/**").hasRole("PARENT")
+                        .pathMatchers("/student/**").hasRole("STUDENT")
 
-    return http.build();
-  }
+                        .anyExchange().authenticated()
+                )
+                .httpBasic(ServerHttpSecurity.HttpBasicSpec::disable)
+                .formLogin(ServerHttpSecurity.FormLoginSpec::disable)
+                .logout(ServerHttpSecurity.LogoutSpec::disable)
+                .securityContextRepository(new WebSessionServerSecurityContextRepository())
+                .build();
+    }
 }

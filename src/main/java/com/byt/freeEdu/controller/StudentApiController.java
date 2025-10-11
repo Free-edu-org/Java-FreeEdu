@@ -1,13 +1,5 @@
 package com.byt.freeEdu.controller;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
 import com.byt.freeEdu.mapper.AttendanceMapper;
 import com.byt.freeEdu.mapper.GradeMapper;
 import com.byt.freeEdu.mapper.ScheduleMapper;
@@ -21,84 +13,94 @@ import com.byt.freeEdu.service.AttendanceService;
 import com.byt.freeEdu.service.GradeService;
 import com.byt.freeEdu.service.ScheduleService;
 import com.byt.freeEdu.service.users.StudentService;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/student")
-public class StudentApiController{
+public class StudentApiController {
 
-  private final StudentService studentService;
+    private final StudentService studentService;
 
-  private final ScheduleService scheduleService;
+    private final ScheduleService scheduleService;
 
-  private final ScheduleMapper scheduleMapper;
+    private final ScheduleMapper scheduleMapper;
 
-  private final GradeService gradeService;
+    private final GradeService gradeService;
 
-  private final GradeMapper gradeMapper;
+    private final GradeMapper gradeMapper;
 
-  private final AttendanceService attendanceService;
+    private final AttendanceService attendanceService;
 
-  private final AttendanceMapper attendanceMapper;
+    private final AttendanceMapper attendanceMapper;
 
-  public StudentApiController(StudentService studentService, ScheduleService scheduleService,
-      ScheduleMapper scheduleMapper, GradeService gradeService, GradeMapper gradeMapper,
-      AttendanceService attendanceService, AttendanceMapper attendanceMapper) {
-    this.studentService = studentService;
-    this.scheduleService = scheduleService;
-    this.scheduleMapper = scheduleMapper;
-    this.gradeService = gradeService;
-    this.gradeMapper = gradeMapper;
-    this.attendanceService = attendanceService;
-    this.attendanceMapper = attendanceMapper;
-  }
-
-  @GetMapping("/profile")
-  public Student profile(@RequestParam int studentId) {
-    Student student = studentService.getStudentById(studentId);
-    if (student == null) {
-      throw new RuntimeException("Uczeń nie znaleziony");
-    }
-    return student;
-  }
-
-  @GetMapping("/schedule")
-  public List<ScheduleDto> schedule(@RequestParam int studentId) {
-    Student student = studentService.getStudentById(studentId);
-    if (student == null) {
-      throw new RuntimeException("Uczeń nie znaleziony");
+    public StudentApiController(StudentService studentService, ScheduleService scheduleService,
+                                ScheduleMapper scheduleMapper, GradeService gradeService, GradeMapper gradeMapper,
+                                AttendanceService attendanceService, AttendanceMapper attendanceMapper) {
+        this.studentService = studentService;
+        this.scheduleService = scheduleService;
+        this.scheduleMapper = scheduleMapper;
+        this.gradeService = gradeService;
+        this.gradeMapper = gradeMapper;
+        this.attendanceService = attendanceService;
+        this.attendanceMapper = attendanceMapper;
     }
 
-    return scheduleService.getScheduleByClassId(student.getSchoolClass().getSchoolClassId())
-        .stream().map(scheduleMapper::toDto).collect(Collectors.toList());
-  }
-
-  @GetMapping("/grades")
-  public List<GradeDto> grades(@RequestParam int studentId) {
-    if (studentService.getStudentById(studentId) == null) {
-      throw new RuntimeException("Uczeń nie znaleziony");
+    @GetMapping("/profile")
+    public Mono<Student> profile(@RequestParam int studentId) {
+        Student s = studentService.getStudentById(studentId);
+        if (s == null) throw new RuntimeException("Uczeń nie znaleziony");
+        return Mono.just(s);
     }
 
-    return gradeService.getGradesForStudent(studentId).stream().map(gradeMapper::toDto)
-        .collect(Collectors.toList());
-  }
+    @GetMapping("/schedule")
+    public Flux<ScheduleDto> schedule(@RequestParam int studentId) {
+        Student s = studentService.getStudentById(studentId);
+        if (s == null) throw new RuntimeException("Uczeń nie znaleziony");
 
-  @GetMapping("/attendance")
-  public List<AttendanceDto> attendance(@RequestParam int studentId) {
-    if (studentService.getStudentById(studentId) == null) {
-      throw new RuntimeException("Uczeń nie znaleziony");
+        List<ScheduleDto> list = scheduleService
+                .getScheduleByClassId(s.getSchoolClass().getSchoolClassId())
+                .stream().map(scheduleMapper::toDto).collect(Collectors.toList());
+
+        return Flux.fromIterable(list);
     }
 
-    List<Attendance> attendances = attendanceService.getAttendancesForStudent(studentId);
-    return attendances.stream().map(attendanceMapper::toAttendanceDto).collect(Collectors.toList());
-  }
+    @GetMapping("/grades")
+    public Flux<GradeDto> grades(@RequestParam int studentId) {
+        if (studentService.getStudentById(studentId) == null)
+            throw new RuntimeException("Uczeń nie znaleziony");
 
-  @GetMapping("/remarks")
-  public List<RemarkDto> remarks(@RequestParam int studentId) {
-    if (studentService.getStudentById(studentId) == null) {
-      throw new RuntimeException("Uczeń nie znaleziony");
+        List<GradeDto> list = gradeService.getGradesForStudent(studentId)
+                .stream().map(gradeMapper::toDto).collect(Collectors.toList());
+
+        return Flux.fromIterable(list);
     }
 
-    return studentService.getRemarksForStudent(studentId);
-  }
+    @GetMapping("/attendance")
+    public Flux<AttendanceDto> attendance(@RequestParam int studentId) {
+        if (studentService.getStudentById(studentId) == null)
+            throw new RuntimeException("Uczeń nie znaleziony");
 
+        List<Attendance> attendances = attendanceService.getAttendancesForStudent(studentId);
+        List<AttendanceDto> list = attendances.stream()
+                .map(attendanceMapper::toAttendanceDto).collect(Collectors.toList());
+
+        return Flux.fromIterable(list);
+    }
+
+    @GetMapping("/remarks")
+    public Flux<RemarkDto> remarks(@RequestParam int studentId) {
+        if (studentService.getStudentById(studentId) == null)
+            throw new RuntimeException("Uczeń nie znaleziony");
+
+        List<RemarkDto> list = studentService.getRemarksForStudent(studentId);
+        return Flux.fromIterable(list);
+    }
 }
