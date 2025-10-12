@@ -19,50 +19,48 @@ import reactor.core.publisher.Mono;
 
 @RestController
 @RequestMapping("/api/auth")
-public class AuthController {
+public class AuthController{
 
-    private final ReactiveAuthenticationManager authManager;
+  private final ReactiveAuthenticationManager authManager;
 
-    private final UserService userService;
+  private final UserService userService;
 
-    private final ServerSecurityContextRepository contextRepo = new WebSessionServerSecurityContextRepository();
+  private final ServerSecurityContextRepository contextRepo = new WebSessionServerSecurityContextRepository();
 
-    public AuthController(ReactiveAuthenticationManager authManager, UserService userService) {
-        this.authManager = authManager;
-        this.userService = userService;
-    }
+  public AuthController(ReactiveAuthenticationManager authManager, UserService userService) {
+    this.authManager = authManager;
+    this.userService = userService;
+  }
 
-    @PostMapping("/login")
-    public Mono<ApiResponse> login(@RequestBody LoginRequest req, org.springframework.web.server.ServerWebExchange exchange) {
-        return authManager
-                .authenticate(new UsernamePasswordAuthenticationToken(req.username(), req.password()))
-                .flatMap(auth -> {
-                    SecurityContext context = new SecurityContextImpl(auth);
-                    return contextRepo.save(exchange, context)
-                            .then(Mono.just(new ApiResponse("OK", "Logged in")));
-                })
-                .onErrorResume(BadCredentialsException.class,
-                        ex -> Mono.just(new ApiResponse("ERROR", "Bad credentials")));
-    }
+  @PostMapping("/login")
+  public Mono<ApiResponse> login(@RequestBody LoginRequest req,
+      org.springframework.web.server.ServerWebExchange exchange) {
+    return authManager
+        .authenticate(new UsernamePasswordAuthenticationToken(req.username(), req.password()))
+        .flatMap(auth -> {
+          SecurityContext context = new SecurityContextImpl(auth);
+          return contextRepo.save(exchange,context)
+              .then(Mono.just(new ApiResponse("OK", "Logged in")));
+        }).onErrorResume(BadCredentialsException.class,
+            ex -> Mono.just(new ApiResponse("ERROR", "Bad credentials")));
+  }
 
-    @GetMapping("/me")
-    public Mono<UserInfo> me(@AuthenticationPrincipal Mono<UserDetails> principalMono) {
-        return principalMono
-                .flatMap(principal -> {
-                    User u = userService.getUserByUsername(principal.getUsername());
-                    return u != null
-                            ? Mono.just(new UserInfo(u.getUserId(), u.getUsername(), "ROLE_" + u.getUserRole().name()))
-                            : Mono.empty();
-                })
-                .switchIfEmpty(Mono.empty());
-    }
+  @GetMapping("/me")
+  public Mono<UserInfo> me(@AuthenticationPrincipal Mono<UserDetails> principalMono) {
+    return principalMono.flatMap(principal -> {
+      User u = userService.getUserByUsername(principal.getUsername());
+      return u != null
+          ? Mono
+              .just(new UserInfo(u.getUserId(), u.getUsername(), "ROLE_" + u.getUserRole().name()))
+          : Mono.empty();
+    }).switchIfEmpty(Mono.empty());
+  }
 
-    @PostMapping("/logout")
-    public Mono<ApiResponse> logout(org.springframework.web.server.ServerWebExchange exchange) {
-        return exchange.getSession()
-                .flatMap(session -> {
-                    session.invalidate();
-                    return Mono.just(new ApiResponse("OK", "Logged out"));
-                });
-    }
+  @PostMapping("/logout")
+  public Mono<ApiResponse> logout(org.springframework.web.server.ServerWebExchange exchange) {
+    return exchange.getSession().flatMap(session -> {
+      session.invalidate();
+      return Mono.just(new ApiResponse("OK", "Logged out"));
+    });
+  }
 }

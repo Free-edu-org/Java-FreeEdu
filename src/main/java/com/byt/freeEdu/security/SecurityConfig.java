@@ -13,26 +13,26 @@ import org.springframework.security.web.server.SecurityWebFilterChain;
 @Configuration
 @EnableWebFluxSecurity
 @EnableMethodSecurity
-public class SecurityConfig {
+public class SecurityConfig{
 
-    private final Security security;
+  private final Security security;
 
-    public SecurityConfig(Security security) {
-        this.security = security;
-    }
+  public SecurityConfig(Security security) {
+    this.security = security;
+  }
 
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
+  @Bean
+  public PasswordEncoder passwordEncoder() {
+    return new BCryptPasswordEncoder();
+  }
 
-    @Bean
-    public ReactiveAuthenticationManager authenticationManager(PasswordEncoder encoder) {
-        return security.authenticationManager(encoder);
-    }
+  @Bean
+  public ReactiveAuthenticationManager authenticationManager(PasswordEncoder encoder) {
+    return security.authenticationManager(encoder);
+  }
 
-    @Bean
-    public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {
-        return security.enforcingAuthenticationWithoutCSRF(http);
-    }
+  @Bean
+  public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {
+    return security.enforcingAuthenticationWithoutCSRF(http);
+  }
 }
