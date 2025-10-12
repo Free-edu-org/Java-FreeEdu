@@ -1,25 +1,43 @@
 package com.byt.freeEdu.controller;
 
-import com.byt.freeEdu.mapper.AttendanceMapper;
-import com.byt.freeEdu.mapper.GradeMapper;
-import com.byt.freeEdu.mapper.ScheduleMapper;
-import com.byt.freeEdu.mapper.UserMapper;
-import com.byt.freeEdu.model.DTO.*;
-import com.byt.freeEdu.model.Schedule;
-import com.byt.freeEdu.model.SchoolClass;
-import com.byt.freeEdu.model.enums.SubjectEnum;
-import com.byt.freeEdu.service.*;
-import com.byt.freeEdu.service.users.StudentService;
-import com.byt.freeEdu.service.users.TeacherService;
-import com.byt.freeEdu.service.users.UserService;
-import org.springframework.web.bind.annotation.*;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+
+import com.byt.freeEdu.mapper.AttendanceMapper;
+import com.byt.freeEdu.mapper.GradeMapper;
+import com.byt.freeEdu.mapper.ScheduleMapper;
+import com.byt.freeEdu.mapper.UserMapper;
+import com.byt.freeEdu.model.DTO.AttendanceDto;
+import com.byt.freeEdu.model.DTO.GradeDto;
+import com.byt.freeEdu.model.DTO.RemarkDto;
+import com.byt.freeEdu.model.DTO.ScheduleAdminDto;
+import com.byt.freeEdu.model.DTO.ScheduleDto;
+import com.byt.freeEdu.model.DTO.UserDto;
+import com.byt.freeEdu.model.Schedule;
+import com.byt.freeEdu.model.SchoolClass;
+import com.byt.freeEdu.model.enums.SubjectEnum;
+import com.byt.freeEdu.service.AttendanceService;
+import com.byt.freeEdu.service.GradeService;
+import com.byt.freeEdu.service.RemarkService;
+import com.byt.freeEdu.service.ScheduleService;
+import com.byt.freeEdu.service.SchoolClassService;
+import com.byt.freeEdu.service.users.StudentService;
+import com.byt.freeEdu.service.users.TeacherService;
+import com.byt.freeEdu.service.users.UserService;
 
 @RestController
 @RequestMapping("/api/admin")

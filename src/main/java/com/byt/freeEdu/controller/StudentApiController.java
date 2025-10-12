@@ -1,5 +1,16 @@
 package com.byt.freeEdu.controller;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+
 import com.byt.freeEdu.mapper.AttendanceMapper;
 import com.byt.freeEdu.mapper.GradeMapper;
 import com.byt.freeEdu.mapper.ScheduleMapper;
@@ -13,15 +24,6 @@ import com.byt.freeEdu.service.AttendanceService;
 import com.byt.freeEdu.service.GradeService;
 import com.byt.freeEdu.service.ScheduleService;
 import com.byt.freeEdu.service.users.StudentService;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/student")
@@ -56,16 +58,18 @@ public class StudentApiController{
   @GetMapping("/profile")
   public Mono<Student> profile(@RequestParam int studentId) {
     Student s = studentService.getStudentById(studentId);
-    if (s == null)
-      throw new RuntimeException("Uczeń nie znaleziony");
+    if (s == null) {
+        throw new RuntimeException("Uczeń nie znaleziony");
+    }
     return Mono.just(s);
   }
 
   @GetMapping("/schedule")
   public Flux<ScheduleDto> schedule(@RequestParam int studentId) {
     Student s = studentService.getStudentById(studentId);
-    if (s == null)
-      throw new RuntimeException("Uczeń nie znaleziony");
+    if (s == null) {
+        throw new RuntimeException("Uczeń nie znaleziony");
+    }
 
     List<ScheduleDto> list = scheduleService
         .getScheduleByClassId(s.getSchoolClass().getSchoolClassId()).stream()
@@ -87,8 +91,9 @@ public class StudentApiController{
 
   @GetMapping("/attendance")
   public Flux<AttendanceDto> attendance(@RequestParam int studentId) {
-    if (studentService.getStudentById(studentId) == null)
-      throw new RuntimeException("Uczeń nie znaleziony");
+    if (studentService.getStudentById(studentId) == null) {
+        throw new RuntimeException("Uczeń nie znaleziony");
+    }
 
     List<Attendance> attendances = attendanceService.getAttendancesForStudent(studentId);
     List<AttendanceDto> list = attendances.stream().map(attendanceMapper::toAttendanceDto)
@@ -99,8 +104,9 @@ public class StudentApiController{
 
   @GetMapping("/remarks")
   public Flux<RemarkDto> remarks(@RequestParam int studentId) {
-    if (studentService.getStudentById(studentId) == null)
-      throw new RuntimeException("Uczeń nie znaleziony");
+    if (studentService.getStudentById(studentId) == null) {
+        throw new RuntimeException("Uczeń nie znaleziony");
+    }
 
     List<RemarkDto> list = studentService.getRemarksForStudent(studentId);
     return Flux.fromIterable(list);

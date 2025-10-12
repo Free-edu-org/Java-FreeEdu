@@ -1,5 +1,16 @@
 package com.byt.freeEdu.controller;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import reactor.core.publisher.Flux;
+
 import com.byt.freeEdu.mapper.AttendanceMapper;
 import com.byt.freeEdu.mapper.GradeMapper;
 import com.byt.freeEdu.mapper.ScheduleMapper;
@@ -14,11 +25,6 @@ import com.byt.freeEdu.service.GradeService;
 import com.byt.freeEdu.service.RemarkService;
 import com.byt.freeEdu.service.ScheduleService;
 import com.byt.freeEdu.service.users.ParentService;
-import org.springframework.web.bind.annotation.*;
-import reactor.core.publisher.Flux;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/parent")
