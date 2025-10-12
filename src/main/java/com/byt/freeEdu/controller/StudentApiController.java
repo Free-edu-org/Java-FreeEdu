@@ -59,7 +59,7 @@ public class StudentApiController{
   public Mono<Student> profile(@RequestParam int studentId) {
     Student s = studentService.getStudentById(studentId);
     if (s == null) {
-        throw new RuntimeException("Uczeń nie znaleziony");
+      throw new RuntimeException("Uczeń nie znaleziony");
     }
     return Mono.just(s);
   }
@@ -68,7 +68,7 @@ public class StudentApiController{
   public Flux<ScheduleDto> schedule(@RequestParam int studentId) {
     Student s = studentService.getStudentById(studentId);
     if (s == null) {
-        throw new RuntimeException("Uczeń nie znaleziony");
+      throw new RuntimeException("Uczeń nie znaleziony");
     }
 
     List<ScheduleDto> list = scheduleService
@@ -80,8 +80,9 @@ public class StudentApiController{
 
   @GetMapping("/grades")
   public Flux<GradeDto> grades(@RequestParam int studentId) {
-    if (studentService.getStudentById(studentId) == null)
+    if (studentService.getStudentById(studentId) == null) {
       throw new RuntimeException("Uczeń nie znaleziony");
+    }
 
     List<GradeDto> list = gradeService.getGradesForStudent(studentId).stream()
         .map(gradeMapper::toDto).collect(Collectors.toList());
@@ -92,7 +93,7 @@ public class StudentApiController{
   @GetMapping("/attendance")
   public Flux<AttendanceDto> attendance(@RequestParam int studentId) {
     if (studentService.getStudentById(studentId) == null) {
-        throw new RuntimeException("Uczeń nie znaleziony");
+      throw new RuntimeException("Uczeń nie znaleziony");
     }
 
     List<Attendance> attendances = attendanceService.getAttendancesForStudent(studentId);
@@ -105,7 +106,7 @@ public class StudentApiController{
   @GetMapping("/remarks")
   public Flux<RemarkDto> remarks(@RequestParam int studentId) {
     if (studentService.getStudentById(studentId) == null) {
-        throw new RuntimeException("Uczeń nie znaleziony");
+      throw new RuntimeException("Uczeń nie znaleziony");
     }
 
     List<RemarkDto> list = studentService.getRemarksForStudent(studentId);

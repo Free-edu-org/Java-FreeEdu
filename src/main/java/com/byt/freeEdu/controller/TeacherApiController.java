@@ -80,7 +80,7 @@ public class TeacherApiController{
   public Mono<Teacher> profile(@RequestParam int teacherId) {
     Teacher t = teacherService.getTeacherById(teacherId);
     if (t == null) {
-        throw new RuntimeException("Nauczyciel nie znaleziony");
+      throw new RuntimeException("Nauczyciel nie znaleziony");
     }
     return Mono.just(t);
   }
@@ -89,7 +89,7 @@ public class TeacherApiController{
   @GetMapping("/schedule")
   public Flux<ScheduleDto> schedule(@RequestParam int teacherId) {
     if (teacherService.getTeacherById(teacherId) == null) {
-        throw new RuntimeException("Nauczyciel nie znaleziony");
+      throw new RuntimeException("Nauczyciel nie znaleziony");
     }
 
     List<ScheduleDto> list = scheduleService.getSchedulesByTeacherId(teacherId);
@@ -100,7 +100,7 @@ public class TeacherApiController{
   @GetMapping("/remarks")
   public Flux<RemarkDto> remarks(@RequestParam int teacherId) {
     if (teacherService.getTeacherById(teacherId) == null) {
-        throw new RuntimeException("Nauczyciel nie znaleziony");
+      throw new RuntimeException("Nauczyciel nie znaleziony");
     }
 
     List<RemarkDto> list = remarkService.getTeacherRemarksById(teacherId);
@@ -111,7 +111,7 @@ public class TeacherApiController{
   public Mono<Map<String, String>> addRemark(@RequestParam int teacherId,
       @RequestBody RemarkDto remarkDto) {
     if (teacherService.getTeacherById(teacherId) == null) {
-        throw new RuntimeException("Nauczyciel nie znaleziony");
+      throw new RuntimeException("Nauczyciel nie znaleziony");
     }
 
     if (remarkDto == null || remarkDto.getStudentId() == 0 || remarkDto.getContent() == null
@@ -127,11 +127,11 @@ public class TeacherApiController{
   public Mono<Map<String, String>> updateRemark(@RequestParam int teacherId,
       @PathVariable int remarkId, @RequestBody RemarkDto remarkDto) {
     if (teacherService.getTeacherById(teacherId) == null) {
-        throw new RuntimeException("Nauczyciel nie znaleziony");
+      throw new RuntimeException("Nauczyciel nie znaleziony");
     }
 
     if (remarkDto != null) {
-        remarkDto.setTeacherId(teacherId);
+      remarkDto.setTeacherId(teacherId);
     }
 
     remarkService.updateRemark(remarkId,remarkDto);
@@ -142,7 +142,7 @@ public class TeacherApiController{
   public Mono<Map<String, String>> deleteRemark(@RequestParam int teacherId,
       @PathVariable int remarkId) {
     if (teacherService.getTeacherById(teacherId) == null) {
-        throw new RuntimeException("Nauczyciel nie znaleziony");
+      throw new RuntimeException("Nauczyciel nie znaleziony");
     }
 
     remarkService.deleteRemark(remarkId);
@@ -153,7 +153,7 @@ public class TeacherApiController{
   @GetMapping("/grades")
   public Flux<GradeDto> grades(@RequestParam int teacherId) {
     if (teacherService.getTeacherById(teacherId) == null) {
-        throw new RuntimeException("Nauczyciel nie znaleziony");
+      throw new RuntimeException("Nauczyciel nie znaleziony");
     }
 
     List<GradeDto> list = gradeService.getGradesByTeacherId(teacherId);
@@ -164,7 +164,7 @@ public class TeacherApiController{
   public Mono<Map<String, String>> addGrade(@RequestParam int teacherId,
       @RequestBody GradeDto gradeDto) {
     if (teacherService.getTeacherById(teacherId) == null) {
-        throw new RuntimeException("Nauczyciel nie znaleziony");
+      throw new RuntimeException("Nauczyciel nie znaleziony");
     }
 
     if (gradeDto == null || gradeDto.getStudentId() == 0 || gradeDto.getSubjectEnum() == null) {
@@ -174,7 +174,7 @@ public class TeacherApiController{
 
     gradeDto.setTeacherId(teacherId);
     if (gradeDto.getGradeDate() == null) {
-        gradeDto.setGradeDate(LocalDate.now());
+      gradeDto.setGradeDate(LocalDate.now());
     }
 
     boolean ok = gradeService.saveGrade(gradeDto);
@@ -188,11 +188,11 @@ public class TeacherApiController{
   public Mono<Map<String, String>> updateGrade(@RequestParam int teacherId,
       @PathVariable int gradeId, @RequestBody GradeDto gradeDto) {
     if (teacherService.getTeacherById(teacherId) == null) {
-        throw new RuntimeException("Nauczyciel nie znaleziony");
+      throw new RuntimeException("Nauczyciel nie znaleziony");
     }
 
     if (gradeDto != null) {
-        gradeDto.setTeacherId(teacherId);
+      gradeDto.setTeacherId(teacherId);
     }
 
     boolean ok = gradeService.updateGrade(gradeId,gradeDto);
@@ -207,7 +207,7 @@ public class TeacherApiController{
   public Mono<Map<String, String>> deleteGrade(@RequestParam int teacherId,
       @PathVariable int gradeId) {
     if (teacherService.getTeacherById(teacherId) == null) {
-        throw new RuntimeException("Nauczyciel nie znaleziony");
+      throw new RuntimeException("Nauczyciel nie znaleziony");
     }
 
     gradeService.deleteGrade(gradeId);
@@ -218,7 +218,7 @@ public class TeacherApiController{
   @GetMapping("/classes")
   public Flux<SchoolClass> classes(@RequestParam int teacherId) {
     if (teacherService.getTeacherById(teacherId) == null) {
-        throw new RuntimeException("Nauczyciel nie znaleziony");
+      throw new RuntimeException("Nauczyciel nie znaleziony");
     }
 
     List<SchoolClass> list = schoolClassService.getAllClassesWithStudentCount();
@@ -228,7 +228,7 @@ public class TeacherApiController{
   @GetMapping("/students")
   public Flux<StudentDto> studentsByClass(@RequestParam int teacherId, @RequestParam int classId) {
     if (teacherService.getTeacherById(teacherId) == null) {
-        throw new RuntimeException("Nauczyciel nie znaleziony");
+      throw new RuntimeException("Nauczyciel nie znaleziony");
     }
 
     List<StudentDto> list = studentService.getStudentsBySchoolClassId(classId);
@@ -238,8 +238,9 @@ public class TeacherApiController{
   @PostMapping("/attendance/mark")
   public Mono<Map<String, String>> markAttendance(@RequestParam int teacherId,
       @RequestBody com.byt.freeEdu.model.DTO.AttendanceFormDto form) {
-    if (teacherService.getTeacherById(teacherId) == null)
+    if (teacherService.getTeacherById(teacherId) == null) {
       throw new RuntimeException("Nauczyciel nie znaleziony");
+    }
 
     if (form == null || form.getAttendanceMap() == null || form.getAttendanceMap().isEmpty()
         || form.getGlobalSubject() == null) {
