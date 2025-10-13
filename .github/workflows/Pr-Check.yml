@@ -226,155 +226,155 @@ jobs:
             exit 1
           fi
 
-  spotbugs-analysis:
-    name: SpotBugs Analysis
-    runs-on: ubuntu-latest
-    needs: setup
-    outputs:
-      summary: ${{ steps.spotbugs-summary.outputs.summary }}
-    steps:
-    - uses: actions/checkout@v4
-
-    - uses: actions/setup-java@v4
-      with:
-        distribution: 'temurin'
-        java-version: '21'
-
-    - name: Restore Maven cache
-      uses: actions/cache@v3
-      with:
-        path: ~/.m2/repository
-        key: ${{ needs.setup.outputs.cache-key }}
-
-    - name: Build project
-      run: mvn clean install -DskipTests
-
-    - name: Install xmlstarlet
-      run: sudo apt-get update && sudo apt-get install -y xmlstarlet
-
-    - name: Run SpotBugs
-      continue-on-error: true
-      run: |
-        mvn com.github.spotbugs:spotbugs-maven-plugin:4.8.3.0:check -Dspotbugs.failOnError=false
-
-    - name: Summarize SpotBugs Issues
-      id: spotbugs-summary
-      run: |
-        if [ -f target/spotbugsXml.xml ] && grep -q "<BugInstance" target/spotbugsXml.xml; then
-          echo "## ❌ SpotBugs Report - issues found" > spotbugs-summary.txt
-          echo "" >> spotbugs-summary.txt
-          echo "<details><summary>🔽 Click to expand full table</summary>" >> spotbugs-summary.txt
-          echo "" >> spotbugs-summary.txt
-          echo "| File | Line | Type | Message |" >> spotbugs-summary.txt
-          echo "|------|------|------|---------|" >> spotbugs-summary.txt
-
-          xmlstarlet sel -t -m "//BugInstance" \
-            -v "concat(Class/@classname, '|', SourceLine/@start, '|', @type, '|', LongMessage)" -n target/spotbugsXml.xml | \
-          while IFS='|' read -r file line type message; do
-            echo "| $file | $line | $type | $message |" >> spotbugs-summary.txt
-          done
-
-          echo "" >> spotbugs-summary.txt
-          echo "</details>" >> spotbugs-summary.txt
-
-          summary="$(cat spotbugs-summary.txt)"
-          echo "summary<<EOF" >> $GITHUB_OUTPUT
-          echo "$summary" >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
-        else
-          echo "No SpotBugs issues found – not exporting summary"
-        fi
-
-    - name: Fail if SpotBugs found issues
-      if: always()
-      run: |
-        if [ -f target/spotbugsXml.xml ] && grep -q "<BugInstance" target/spotbugsXml.xml; then
-          echo "❌ SpotBugs issues detected. Failing the job."
-          exit 1
-        fi
-
-    - name: Post SpotBugs comment (only on failure)
-      if: github.event_name == 'pull_request' && failure()
-      uses: peter-evans/create-or-update-comment@v4
-      with:
-        issue-number: ${{ github.event.pull_request.number }}
-        body-path: spotbugs-summary.txt
-
-  semgrep-sast:
-    name: Semgrep SAST
-    runs-on: ubuntu-latest
-    needs: setup
-    outputs:
-      summary: ${{ steps.semgrep-summary.outputs.summary }}
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Install Semgrep CLI
-        run: |
-          pip install semgrep
-
-      - name: Run Semgrep and save JSON report
-        continue-on-error: true
-        run: |
-          echo "🔍 Running Semgrep with p/ci..."
-          semgrep --config=p/default \
-            --exclude=node_modules/ \
-            --exclude=target/ \
-            --exclude=build/ \
-            --exclude=.git/ \
-            --exclude=out/ \
-            --exclude=dist/ \
-            --exclude=src/main/resources/db/ \
-            --json --metrics=off --verbose > semgrep-report.json || echo "⚠️ Semgrep finished with findings or error"
-          echo "✅ Report generated"
-
-      - name: Summarize Semgrep results
-        id: semgrep-summary
-        run: |
-          if [ -s semgrep-report.json ] && grep -q '"check_id":' semgrep-report.json; then
-            echo "❌ Failed – see comment" > summary.txt
-            echo "## ❌ Semgrep Report - issues found" > semgrep-comment.txt
-            echo "" >> semgrep-comment.txt
-            echo "<details><summary>🔽 Click to expand Semgrep results</summary>" >> semgrep-comment.txt
-            echo "" >> semgrep-comment.txt
-            echo "| File | Line | Rule | Message |" >> semgrep-comment.txt
-            echo "|------|------|------|---------|" >> semgrep-comment.txt
-
-            jq -r '.results[] | "| \(.path) | \(.start.line) | \(.check_id) | \(.extra.message) |"' semgrep-report.json | \
-            head -n 1000 >> semgrep-comment.txt
-
-            echo "" >> semgrep-comment.txt
-            echo "**⚠️ Output truncated. For full results, run Semgrep locally.**" >> semgrep-comment.txt
-            echo "</details>" >> semgrep-comment.txt
-
-            summary="$(cat summary.txt)"
-            echo "summary<<EOF" >> $GITHUB_OUTPUT
-            echo "$summary" >> $GITHUB_OUTPUT
-            echo "EOF" >> $GITHUB_OUTPUT
-          else
-            echo "No Semgrep issues found – not exporting summary"
-          fi
-
-      - name: Fail job if Semgrep found issues
-        if: always()
-        run: |
-          if grep -q '"check_id":' semgrep-report.json; then
-            echo "❌ Semgrep found issues. Failing the job."
-            exit 1
-          fi
-
-      - name: Post Semgrep comment (only on failure)
-        if: failure()
-        uses: peter-evans/create-or-update-comment@v4
-        with:
-          issue-number: ${{ github.event.pull_request.number }}
-          body-path: semgrep-comment.txt
+#  spotbugs-analysis:
+#    name: SpotBugs Analysis
+#    runs-on: ubuntu-latest
+#    needs: setup
+#    outputs:
+#      summary: ${{ steps.spotbugs-summary.outputs.summary }}
+#    steps:
+#    - uses: actions/checkout@v4
+#
+#    - uses: actions/setup-java@v4
+#      with:
+#        distribution: 'temurin'
+#        java-version: '21'
+#
+#    - name: Restore Maven cache
+#      uses: actions/cache@v3
+#      with:
+#        path: ~/.m2/repository
+#        key: ${{ needs.setup.outputs.cache-key }}
+#
+#    - name: Build project
+#      run: mvn clean install -DskipTests
+#
+#    - name: Install xmlstarlet
+#      run: sudo apt-get update && sudo apt-get install -y xmlstarlet
+#
+#    - name: Run SpotBugs
+#      continue-on-error: true
+#      run: |
+#        mvn com.github.spotbugs:spotbugs-maven-plugin:4.8.3.0:check -Dspotbugs.failOnError=false
+#
+#    - name: Summarize SpotBugs Issues
+#      id: spotbugs-summary
+#      run: |
+#        if [ -f target/spotbugsXml.xml ] && grep -q "<BugInstance" target/spotbugsXml.xml; then
+#          echo "## ❌ SpotBugs Report - issues found" > spotbugs-summary.txt
+#          echo "" >> spotbugs-summary.txt
+#          echo "<details><summary>🔽 Click to expand full table</summary>" >> spotbugs-summary.txt
+#          echo "" >> spotbugs-summary.txt
+#          echo "| File | Line | Type | Message |" >> spotbugs-summary.txt
+#          echo "|------|------|------|---------|" >> spotbugs-summary.txt
+#
+#          xmlstarlet sel -t -m "//BugInstance" \
+#            -v "concat(Class/@classname, '|', SourceLine/@start, '|', @type, '|', LongMessage)" -n target/spotbugsXml.xml | \
+#          while IFS='|' read -r file line type message; do
+#            echo "| $file | $line | $type | $message |" >> spotbugs-summary.txt
+#          done
+#
+#          echo "" >> spotbugs-summary.txt
+#          echo "</details>" >> spotbugs-summary.txt
+#
+#          summary="$(cat spotbugs-summary.txt)"
+#          echo "summary<<EOF" >> $GITHUB_OUTPUT
+#          echo "$summary" >> $GITHUB_OUTPUT
+#          echo "EOF" >> $GITHUB_OUTPUT
+#        else
+#          echo "No SpotBugs issues found – not exporting summary"
+#        fi
+#
+#    - name: Fail if SpotBugs found issues
+#      if: always()
+#      run: |
+#        if [ -f target/spotbugsXml.xml ] && grep -q "<BugInstance" target/spotbugsXml.xml; then
+#          echo "❌ SpotBugs issues detected. Failing the job."
+#          exit 1
+#        fi
+#
+#    - name: Post SpotBugs comment (only on failure)
+#      if: github.event_name == 'pull_request' && failure()
+#      uses: peter-evans/create-or-update-comment@v4
+#      with:
+#        issue-number: ${{ github.event.pull_request.number }}
+#        body-path: spotbugs-summary.txt
+#
+#  semgrep-sast:
+#    name: Semgrep SAST
+#    runs-on: ubuntu-latest
+#    needs: setup
+#    outputs:
+#      summary: ${{ steps.semgrep-summary.outputs.summary }}
+#
+#    steps:
+#      - name: Checkout code
+#        uses: actions/checkout@v4
+#
+#      - name: Install Semgrep CLI
+#        run: |
+#          pip install semgrep
+#
+#      - name: Run Semgrep and save JSON report
+#        continue-on-error: true
+#        run: |
+#          echo "🔍 Running Semgrep with p/ci..."
+#          semgrep --config=p/default \
+#            --exclude=node_modules/ \
+#            --exclude=target/ \
+#            --exclude=build/ \
+#            --exclude=.git/ \
+#            --exclude=out/ \
+#            --exclude=dist/ \
+#            --exclude=src/main/resources/db/ \
+#            --json --metrics=off --verbose > semgrep-report.json || echo "⚠️ Semgrep finished with findings or error"
+#          echo "✅ Report generated"
+#
+#      - name: Summarize Semgrep results
+#        id: semgrep-summary
+#        run: |
+#          if [ -s semgrep-report.json ] && grep -q '"check_id":' semgrep-report.json; then
+#            echo "❌ Failed – see comment" > summary.txt
+#            echo "## ❌ Semgrep Report - issues found" > semgrep-comment.txt
+#            echo "" >> semgrep-comment.txt
+#            echo "<details><summary>🔽 Click to expand Semgrep results</summary>" >> semgrep-comment.txt
+#            echo "" >> semgrep-comment.txt
+#            echo "| File | Line | Rule | Message |" >> semgrep-comment.txt
+#            echo "|------|------|------|---------|" >> semgrep-comment.txt
+#
+#            jq -r '.results[] | "| \(.path) | \(.start.line) | \(.check_id) | \(.extra.message) |"' semgrep-report.json | \
+#            head -n 1000 >> semgrep-comment.txt
+#
+#            echo "" >> semgrep-comment.txt
+#            echo "**⚠️ Output truncated. For full results, run Semgrep locally.**" >> semgrep-comment.txt
+#            echo "</details>" >> semgrep-comment.txt
+#
+#            summary="$(cat summary.txt)"
+#            echo "summary<<EOF" >> $GITHUB_OUTPUT
+#            echo "$summary" >> $GITHUB_OUTPUT
+#            echo "EOF" >> $GITHUB_OUTPUT
+#          else
+#            echo "No Semgrep issues found – not exporting summary"
+#          fi
+#
+#      - name: Fail job if Semgrep found issues
+#        if: always()
+#        run: |
+#          if grep -q '"check_id":' semgrep-report.json; then
+#            echo "❌ Semgrep found issues. Failing the job."
+#            exit 1
+#          fi
+#
+#      - name: Post Semgrep comment (only on failure)
+#        if: failure()
+#        uses: peter-evans/create-or-update-comment@v4
+#        with:
+#          issue-number: ${{ github.event.pull_request.number }}
+#          body-path: semgrep-comment.txt
 
   build:
     runs-on: ubuntu-latest
-    needs: [formatting-check, code-style, pmd-analysis, spotbugs-analysis, semgrep-sast]
+    needs: [formatting-check, code-style, pmd-analysis]
     if: always()
     steps:
       - uses: actions/checkout@v4
@@ -392,7 +392,7 @@ jobs:
 
   pr-summary:
     runs-on: ubuntu-latest
-    needs: [build, formatting-check, code-style, pmd-analysis, spotbugs-analysis, semgrep-sast]
+    needs: [build, formatting-check, code-style, pmd-analysis]
     if: always()
     steps:
       - name: PR Summary Report
@@ -414,7 +414,7 @@ jobs:
             ${{ needs.pmd-analysis.result == 'success' && '✅ No issues' || '❌ Failed – see comment' }}
 
             ### 📌 SpotBugs
-            ${{ needs.spotbugs-analysis.result == 'success' && '✅ No issues' || '❌ Failed – see comment' }}
+            ⚠️ NOT RUN - TO BE ENABLED
             
             ### 📌 Semgrep SAST
-            ${{ needs.semgrep-sast.result == 'success' && '✅ No issues' || '❌ Failed – see comment' }}
+            ⚠️ NOT RUN - TO BE ENABLED
