@@ -3,6 +3,7 @@ package com.byt.freeEdu.service.users;
 import com.byt.freeEdu.model.users.Teacher;
 import com.byt.freeEdu.repository.TeacherRepository;
 import jakarta.persistence.EntityNotFoundException;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -25,103 +26,142 @@ class TeacherServiceTest{
   private TeacherRepository teacherRepository;
 
   @Test
-  public void addTeacher_savesTeacherSuccessfully() {
-    // given
-    Teacher teacher = new Teacher();
-    teacher.setFirstname("John");
-    teacher.setLastname("Doe");
-    teacher.setEmail("john.doe@example.com");
+  @DisplayName("addTeacher: zapisuje nauczyciela")
+  void addTeacher_savesTeacherSuccessfully() {
+    Teacher t = new Teacher();
+    t.setFirstname("John");
+    t.setLastname("Doe");
+    t.setEmail("john@ex.com");
+    when(teacherRepository.save(any(Teacher.class))).thenAnswer(inv -> inv.getArgument(0));
 
-    when(teacherRepository.save(teacher)).thenReturn(teacher);
+    Teacher out = teacherService.addTeacher(t);
 
-    // when
-    Teacher result = teacherService.addTeacher(teacher);
-
-    // then
-    assertNotNull(result);
-    verify(teacherRepository,times(1)).save(teacher);
+    assertNotNull(out);
+    assertEquals("John",out.getFirstname());
+    verify(teacherRepository).save(any(Teacher.class));
+    verifyNoMoreInteractions(teacherRepository);
   }
 
   @Test
-  public void getTeacherById_teacherNotFound_throwsException() {
-    // given
-    int teacherId = 999;
-    when(teacherRepository.findById(teacherId)).thenReturn(Optional.empty());
+  @DisplayName("getTeacherById: gdy brak, rzuca EntityNotFoundException")
+  void getTeacherById_teacherNotFound_throwsException() {
+    int id = 999;
+    when(teacherRepository.findById(id)).thenReturn(Optional.empty());
 
-    // when & then
-    assertThrows(EntityNotFoundException.class,() -> teacherService.getTeacherById(teacherId));
-    verify(teacherRepository,times(1)).findById(teacherId);
+    assertThrows(EntityNotFoundException.class,() -> teacherService.getTeacherById(id));
+    verify(teacherRepository).findById(id);
+    verifyNoMoreInteractions(teacherRepository);
   }
 
   @Test
-  public void getTeacherById_returnsTeacher() {
-    // given
-    int teacherId = 1;
-    Teacher teacher = new Teacher();
-    teacher.setFirstname("Alice");
+  @DisplayName("getTeacherById: zwraca nauczyciela")
+  void getTeacherById_returnsTeacher() {
+    int id = 1;
+    Teacher t = new Teacher();
+    t.setFirstname("Alice");
+    when(teacherRepository.findById(id)).thenReturn(Optional.of(t));
 
-    when(teacherRepository.findById(teacherId)).thenReturn(Optional.of(teacher));
+    Teacher out = teacherService.getTeacherById(id);
 
-    // when
-    Teacher result = teacherService.getTeacherById(teacherId);
-
-    // then
-    assertNotNull(result);
-    assertEquals("Alice",result.getFirstname());
-    verify(teacherRepository,times(1)).findById(teacherId);
+    assertNotNull(out);
+    assertEquals("Alice",out.getFirstname());
+    verify(teacherRepository).findById(id);
+    verifyNoMoreInteractions(teacherRepository);
   }
 
   @Test
-  public void getAllTeachers_returnsListOfTeachers() {
-    // given
-    Teacher teacher1 = new Teacher();
-    Teacher teacher2 = new Teacher();
-    when(teacherRepository.findAll()).thenReturn(List.of(teacher1,teacher2));
+  @DisplayName("getAllTeachers: zwraca listę nauczycieli")
+  void getAllTeachers_returnsListOfTeachers() {
+    when(teacherRepository.findAll()).thenReturn(List.of(new Teacher(),new Teacher()));
 
-    // when
-    List<Teacher> result = teacherService.getAllTeachers();
+    List<Teacher> out = teacherService.getAllTeachers();
 
-    // then
-    assertNotNull(result);
-    assertEquals(2,result.size());
-    verify(teacherRepository,times(1)).findAll();
+    assertNotNull(out);
+    assertEquals(2,out.size());
+    verify(teacherRepository).findAll();
+    verifyNoMoreInteractions(teacherRepository);
   }
 
   @Test
-  public void updateTeacher_teacherNotFound_throwsException() {
-    // given
-    int teacherId = 999;
-    Teacher updatedTeacher = new Teacher();
+  @DisplayName("updateTeacher: gdy brak, rzuca EntityNotFoundException")
+  void updateTeacher_teacherNotFound_throwsException() {
+    int id = 999;
+    when(teacherRepository.findById(id)).thenReturn(Optional.empty());
 
-    when(teacherRepository.findById(teacherId)).thenReturn(Optional.empty());
-
-    // when & then
     assertThrows(EntityNotFoundException.class,
-        () -> teacherService.updateTeacher(teacherId,updatedTeacher));
-    verify(teacherRepository,never()).save(any(Teacher.class));
+        () -> teacherService.updateTeacher(id,new Teacher()));
+    verify(teacherRepository).findById(id);
+    verify(teacherRepository,never()).save(any());
+    verifyNoMoreInteractions(teacherRepository);
   }
 
   @Test
-  public void deleteTeacher_deletesTeacherSuccessfully() {
-    // given
-    int teacherId = 1;
+  @DisplayName("updateTeacher: nadpisanie null-ami powoduje NPE (model non-null)")
+  void updateTeacher_overwritesWithNulls() {
+    int id = 2;
+    Teacher existing = new Teacher();
+    existing.setUserId(id);
+    existing.setFirstname("Old");
+    existing.setLastname("Name");
+    existing.setEmail("old@ex");
+    existing.setPassword("old");
 
-    // when
-    teacherService.deleteTeacher(teacherId);
+    Teacher patch = new Teacher();
 
-    // then
-    verify(teacherRepository,times(1)).deleteById(teacherId);
+    when(teacherRepository.findById(id)).thenReturn(Optional.of(existing));
+
+    assertThrows(NullPointerException.class,() -> teacherService.updateTeacher(id,patch));
+    verify(teacherRepository).findById(id);
+    verify(teacherRepository,never()).save(any());
+    verifyNoMoreInteractions(teacherRepository);
   }
 
   @Test
-  public void addUserToTeacher_addsUserSuccessfully() {
-    // given
+  @DisplayName("updateTeacher: aktualizuje i zapisuje pola")
+  void updateTeacher_updatesTeacherSuccessfully() {
+    int id = 3;
+    Teacher existing = new Teacher();
+    existing.setUserId(id);
+    existing.setFirstname("Old");
+    existing.setLastname("Name");
+    existing.setEmail("old@ex");
+    existing.setPassword("old");
+
+    Teacher patch = new Teacher();
+    patch.setFirstname("New");
+    patch.setLastname("Surname");
+    patch.setEmail("new@ex");
+    patch.setPassword("new");
+
+    when(teacherRepository.findById(id)).thenReturn(Optional.of(existing));
+    when(teacherRepository.save(any(Teacher.class))).thenAnswer(inv -> inv.getArgument(0));
+
+    Teacher out = teacherService.updateTeacher(id,patch);
+
+    assertEquals("New",out.getFirstname());
+    assertEquals("Surname",out.getLastname());
+    assertEquals("new@ex",out.getEmail());
+    assertEquals("new",out.getPassword());
+    verify(teacherRepository).findById(id);
+    verify(teacherRepository).save(any(Teacher.class));
+    verifyNoMoreInteractions(teacherRepository);
+  }
+
+  @Test
+  @DisplayName("deleteTeacher: deleguje do deleteById")
+  void deleteTeacher_deletesTeacherSuccessfully() {
+    int id = 1;
+    teacherService.deleteTeacher(id);
+    verify(teacherRepository).deleteById(id);
+    verifyNoMoreInteractions(teacherRepository);
+  }
+
+  @Test
+  @DisplayName("addUserToTeacher: deleguje do repozytorium")
+  void addUserToTeacher_addsUserSuccessfully() {
     int userId = 1;
-
-    // when
     teacherService.addUserToTeacher(userId);
-
-    // then
-    verify(teacherRepository,times(1)).addUserToTeachers(userId);
+    verify(teacherRepository).addUserToTeachers(userId);
+    verifyNoMoreInteractions(teacherRepository);
   }
 }

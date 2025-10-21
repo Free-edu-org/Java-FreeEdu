@@ -28,7 +28,7 @@ public interface GradeMapper{
   GradeDto toDto(Grade grade);
 
   @Mapping(target = "value", source = "value")
-  @Mapping(target = "subject", source = "subject", qualifiedByName = "mapSubject")
+  @Mapping(target = "subject", source = "subject", qualifiedByName = "mapSubjectFromCode")
   @Mapping(target = "student", expression = "java(studentService.getStudentById(gradeDto.getStudentId()))")
   @Mapping(target = "teacher", expression = "java(teacherService.getTeacherById(gradeDto.getTeacherId()))")
   Grade toEntity(GradeDto gradeDto, @Context StudentService studentService,
@@ -59,20 +59,15 @@ public interface GradeMapper{
     }
   }
 
-  @Named("mapSubject")
-  default SubjectEnum mapSubject(String subject) {
-    if (subject == null) {
-      return SubjectEnum.POLISH; // Domyślna wartość
+  @Named("mapSubjectFromCode")
+  default SubjectEnum mapSubjectFromCode(String subjectCode) {
+    if (subjectCode == null) {
+      return SubjectEnum.POLISH;
     }
-    switch (subject) {
-      case "Język polski" :
-        return SubjectEnum.POLISH;
-      case "Matematyka" :
-        return SubjectEnum.MATH;
-      case "Geografia" :
-        return SubjectEnum.GEOGRAPHY;
-      default :
-        return SubjectEnum.POLISH; // Domyślna wartość
+    try {
+      return SubjectEnum.valueOf(subjectCode);
+    } catch (Exception e) {
+      return SubjectEnum.POLISH;
     }
   }
 }

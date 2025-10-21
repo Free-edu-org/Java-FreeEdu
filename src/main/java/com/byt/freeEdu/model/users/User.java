@@ -1,11 +1,5 @@
 package com.byt.freeEdu.model.users;
 
-import java.util.Collection;
-import java.util.List;
-
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-
 import com.byt.freeEdu.model.enums.UserRole;
 
 import jakarta.persistence.Column;
@@ -31,7 +25,7 @@ import lombok.RequiredArgsConstructor;
 @NoArgsConstructor
 @Inheritance(strategy = InheritanceType.JOINED)
 @Table(name = "user")
-public class User implements UserDetails{
+public class User{
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -62,29 +56,4 @@ public class User implements UserDetails{
   @Enumerated(EnumType.STRING)
   @Column(name = "user_role", nullable = false)
   private UserRole userRole;
-
-  @Override
-  public Collection<? extends GrantedAuthority> getAuthorities() {
-    return List.of();
-  }
-
-  @Override
-  public boolean isAccountNonExpired() {
-    return UserDetails.super.isAccountNonExpired();
-  }
-
-  @Override
-  public boolean isAccountNonLocked() {
-    return UserDetails.super.isAccountNonLocked();
-  }
-
-  @Override
-  public boolean isCredentialsNonExpired() {
-    return UserDetails.super.isCredentialsNonExpired();
-  }
-
-  @Override
-  public boolean isEnabled() {
-    return UserDetails.super.isEnabled();
-  }
 }

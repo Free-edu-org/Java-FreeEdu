@@ -10,25 +10,40 @@ import com.byt.freeEdu.mapper.ScheduleMapper;
 import com.byt.freeEdu.model.DTO.ScheduleAdminDto;
 import com.byt.freeEdu.model.DTO.ScheduleDto;
 import com.byt.freeEdu.model.Schedule;
+import com.byt.freeEdu.model.SchoolClass;
+import com.byt.freeEdu.model.users.Teacher;
 import com.byt.freeEdu.repository.ScheduleRepository;
+import com.byt.freeEdu.repository.SchoolClassRepository;
+import com.byt.freeEdu.repository.TeacherRepository;
 import com.byt.freeEdu.service.users.TeacherService;
 
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 
 @Service
 public class ScheduleService{
 
   private final ScheduleRepository scheduleRepository;
 
+  private final TeacherRepository teacherRepository;
+
   private final ScheduleMapper scheduleMapper;
 
   private final TeacherService teacherService;
 
-  public ScheduleService(ScheduleRepository scheduleRepository, ScheduleMapper scheduleMapper,
-      TeacherService teacherService) {
+  private final SchoolClassService schoolClassService;
+
+  private final SchoolClassRepository schoolClassRepository;
+
+  public ScheduleService(ScheduleRepository scheduleRepository, TeacherRepository teacherRepository,
+      ScheduleMapper scheduleMapper, TeacherService teacherService,
+      SchoolClassService schoolClassService, SchoolClassRepository schoolClassRepository) {
     this.scheduleRepository = scheduleRepository;
+    this.teacherRepository = teacherRepository;
     this.scheduleMapper = scheduleMapper;
     this.teacherService = teacherService;
+    this.schoolClassService = schoolClassService;
+    this.schoolClassRepository = schoolClassRepository;
   }
 
   public Schedule addSchedule(Schedule schedule) {
@@ -48,19 +63,45 @@ public class ScheduleService{
     return schedules.stream().map(scheduleMapper::toDto).collect(Collectors.toList());
   }
 
+  public List<ScheduleDto> getSchedulesByClassName(String className) {
+    SchoolClass schoolClass = schoolClassService.getSchoolClassByName(className);
+    List<Schedule> schedules = scheduleRepository
+        .getAllByScheduleId(schoolClass.getSchoolClassId());
+
+    return schedules.stream().map(scheduleMapper::toDto).collect(Collectors.toList());
+  }
+
   public List<ScheduleAdminDto> getAllSchedules() {
     return scheduleRepository.findAll().stream().map(scheduleMapper::toAdminDto)
         .collect(Collectors.toList());
   }
 
-  public Schedule updateSchedule(int id, Schedule updatedSchedule) {
-    Schedule existingSchedule = scheduleRepository.findById(id)
+  @Transactional
+  public Schedule updateSchedule(int id, ScheduleDto updatedSchedule) {
+    Schedule existing = scheduleRepository.findById(id)
         .orElseThrow(() -> new EntityNotFoundException("Schedule not found with ID: " + id));
-    existingSchedule.setDate(updatedSchedule.getDate());
-    existingSchedule.setSubject(updatedSchedule.getSubject());
-    existingSchedule.setSchoolClass(updatedSchedule.getSchoolClass());
-    existingSchedule.setTeacher(updatedSchedule.getTeacher());
-    return scheduleRepository.save(existingSchedule);
+
+    scheduleMapper.updateEntityFromDto(updatedSchedule,existing);
+
+    // relacja: nauczyciel
+    if (updatedSchedule.getTeacherId() != null) {
+      Teacher teacher = teacherRepository.findById(updatedSchedule.getTeacherId())
+          .orElseThrow(() -> new EntityNotFoundException(
+              "Teacher not found with userId: " + updatedSchedule.getTeacherId()));
+      existing.setTeacher(teacher);
+    }
+
+    // relacja: klasa szkolna
+    if (updatedSchedule.getClassName() != null
+        && !updatedSchedule.getClassName().trim().isEmpty()) {
+      SchoolClass schoolClass = schoolClassRepository
+          .findByName(updatedSchedule.getClassName().trim())
+          .orElseThrow(() -> new EntityNotFoundException(
+              "School class not found: " + updatedSchedule.getClassName()));
+      existing.setSchoolClass(schoolClass);
+    }
+
+    return scheduleRepository.save(existing);
   }
 
   public void deleteSchedule(int id) {

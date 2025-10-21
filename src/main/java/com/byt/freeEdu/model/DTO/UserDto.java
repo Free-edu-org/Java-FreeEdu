@@ -22,4 +22,6 @@ public class UserDto{
   private int schoolClassId;
 
   private String contactInfo;
+
+  private String password;
 }

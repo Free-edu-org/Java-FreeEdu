@@ -42,28 +42,28 @@ public class UserService{
   }
 
   @Transactional
-  public Boolean addUser(String username, String firstname, String lastname, String email,
-      String password) {
-    if (username == null || username.trim().isEmpty()) {
+  public Boolean addUser(UserDto newUser) {
+    if (newUser.getUsername() == null || newUser.getUsername().trim().isEmpty()) {
       throw new IllegalArgumentException("Username cannot be empty");
     }
-    if (email == null || email.trim().isEmpty()) {
+    if (newUser.getEmail() == null || newUser.getEmail().trim().isEmpty()) {
       throw new IllegalArgumentException("Email cannot be empty");
     }
-    if (password == null || password.trim().isEmpty()) {
+    if (newUser.getPassword() == null || newUser.getPassword().trim().isEmpty()) {
       throw new IllegalArgumentException("Password cannot be empty");
     }
-
-    if (userRepository.existsByUsername(username)) {
+    if (userRepository.existsByUsername(newUser.getUsername())) {
       throw new IllegalArgumentException("Istnieje użytkownik o podanej nazwie użytkownika");
     }
-    if (userRepository.existsByEmail(email)) {
+    if (userRepository.existsByEmail(newUser.getEmail())) {
       throw new IllegalArgumentException("Istnieję użytkownik z takim emailem");
     }
-    PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-    String hashedPassword = passwordEncoder.encode(password);
 
-    User user = new User(username, firstname, lastname, email, hashedPassword, UserRole.UNKNOWN);
+    PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+    String hashedPassword = passwordEncoder.encode(newUser.getPassword());
+
+    User user = new User(newUser.getUsername(), newUser.getFirstname(), newUser.getLastname(),
+        newUser.getEmail(), hashedPassword, UserRole.UNKNOWN);
 
     userRepository.save(user);
     return true;
@@ -87,6 +87,12 @@ public class UserService{
       existingUser.setEmail(updatedUser.getEmail());
     }
     existingUser.setUserRole(UserRole.valueOf(updatedUser.getRole()));
+
+    if (updatedUser.getPassword() != null && !updatedUser.getPassword().trim().isEmpty()) {
+      PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+      String hashedPassword = passwordEncoder.encode(updatedUser.getPassword());
+      existingUser.setPassword(hashedPassword);
+    }
 
     return userRepository.save(existingUser);
   }

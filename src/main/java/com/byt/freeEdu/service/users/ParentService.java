@@ -19,7 +19,6 @@ public class ParentService{
 
   private final StudentRepository studentRepository;
 
-  // Konstruktor z wymaganymi zależnościami
   public ParentService(ParentRepository parentRepository, StudentRepository studentRepository) {
     this.parentRepository = parentRepository;
     this.studentRepository = studentRepository;
@@ -53,12 +52,10 @@ public class ParentService{
     return parentRepository.save(existingParent);
   }
 
-  // Usuń rodzica
   public void deleteParent(int id) {
     parentRepository.deleteById(id);
   }
 
-  // Pobierz uczniów powiązanych z rodzicem
   public List<Student> getStudentsByParentId(int parentId) {
     return studentRepository.findByParentUserId(parentId); // Użyj poprawnej metody
   }

@@ -93,6 +93,19 @@ public class AttendanceService{
 
     attendance.setStatus(AttendanceEnum.valueOf(attendanceDto.getAttendanceStatus()));
     attendance.setAttendanceDate(LocalDate.parse(attendanceDto.getAttendanceDate()));
+    // pozwól też zmienić ucznia/nauczyciela/przedmiot, jeśli przekazane:
+    if (attendanceDto.getStudentId() != 0) {
+      attendance.setStudent(studentService.getStudentById(attendanceDto.getStudentId()));
+    }
+    if (attendanceDto.getTeacherId() != 0) {
+      attendance.setTeacher(teacherService.getTeacherById(attendanceDto.getTeacherId()));
+    }
+    if (attendanceDto.getSubjectEnum() != null) {
+      attendance.setSubject(attendanceDto.getSubjectEnum());
+    } else if (attendanceDto.getSubjectName() != null) {
+      attendance.setSubject(SubjectEnum.valueOf(attendanceDto.getSubjectName()));
+    }
+
     attendanceRepository.save(attendance);
   }
 

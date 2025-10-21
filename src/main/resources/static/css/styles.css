@@ -1,0 +1,116 @@
+/* Auth collapse/expand */
+#auth.auth-collapsed{
+  max-height:0; opacity:0; overflow:hidden; transform:translateY(8px);
+  pointer-events:none; transition:max-height .35s, opacity .25s, transform .25s;
+}
+#auth.auth-expanded{
+  max-height:2000px; opacity:1; transform:translateY(0); pointer-events:auto;
+}
+
+/* Tokens */
+:root{
+  --bs-body-color:#e9ecef;
+  --radius:18px;
+  --glass-bg:rgba(255,255,255,.08);
+  --glass-brd:rgba(255,255,255,.14);
+  --feature-bg:rgba(255,255,255,.05);
+}
+[data-bs-theme="light"]{
+  --bs-body-color:#212529;
+  --glass-bg:rgba(255,255,255,.9);
+  --glass-brd:rgba(0,0,0,.06);
+  --feature-bg:rgba(255,255,255,.95);
+}
+
+/* Base */
+html,body{height:100%; scroll-behavior:smooth;}
+body{
+  color:var(--bs-body-color, #e9ecef);
+  background:
+          radial-gradient(1200px 800px at 10% -10%, #2b2f77 0, transparent 60%),
+          radial-gradient(1000px 700px at 110% 10%, #912f5a 0, transparent 55%),
+          linear-gradient(135deg, #0d0f14, #161922);
+  background-attachment:fixed;
+  animation:bgmove 18s ease-in-out infinite alternate;
+}
+[data-bs-theme="light"] body{
+  color:var(--bs-body-color, #212529);
+  background:linear-gradient(135deg, #f4f6fa, #eceff4);
+}
+@keyframes bgmove{
+  0%{background-position:0 0,0 0,0 0}
+  100%{background-position:20px -20px,-30px 10px,0 0}
+}
+a{text-decoration:none}
+
+/* Cards / features */
+.card-glass{
+  backdrop-filter:blur(10px);
+  background:var(--glass-bg);
+  border:1px solid var(--glass-brd);
+  border-radius:var(--radius);
+  box-shadow:0 8px 30px rgba(0,0,0,.08);
+}
+.feature{
+  border-radius:var(--radius);
+  background:var(--feature-bg);
+  border:1px solid var(--glass-brd);
+  transition:transform .2s, box-shadow .2s;
+}
+.feature:hover{transform:translateY(-3px); box-shadow:0 10px 25px rgba(0,0,0,.12);}
+
+/* Buttons / toggle */
+.btn{border-radius:12px}
+.btn-ghost{border:1px solid var(--glass-brd); background:transparent}
+.theme-toggle{border:1px solid var(--glass-brd); background:transparent; border-radius:999px; padding:.35rem .75rem}
+
+/* Toasts */
+#toasts{position:fixed; right:16px; bottom:16px; z-index:1055; display:flex; flex-direction:column; gap:10px}
+.toast-item{
+  padding:.75rem 1rem; border-radius:12px; color:#fff; font-weight:500;
+  box-shadow:0 8px 20px rgba(0,0,0,.25);
+  border:1px solid rgba(255,255,255,.2); backdrop-filter:blur(8px);
+  animation:toast-in .25s ease-out;
+}
+.toast-success{background:linear-gradient(135deg,#167c4d,#1ea567)}
+.toast-error{background:linear-gradient(135deg,#842029,#b02a37)}
+@keyframes toast-in{from{transform:translateY(8px);opacity:0} to{transform:translateY(0);opacity:1}}
+
+/* Password strength */
+.strength{height:8px; border-radius:8px; background:#e8eaef; overflow:hidden}
+.strength>div{height:100%; width:0; background:#dc3545; transition:width .25s, background .25s}
+.strength.good>div{background:#fd7e14}
+.strength.strong>div{background:#28a745}
+
+/* Autofill (neutral) */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus{
+  -webkit-text-fill-color:inherit;
+  transition:background-color 5000s;
+  box-shadow:0 0 0 1000px var(--glass-bg) inset, 0 0 0 1px var(--glass-brd) inset;
+  border-radius:12px;
+}
+
+/* Header banner */
+#userBanner{display:flex; align-items:center; gap:.5rem}
+#userBanner *::before, #userBanner *::after{content:none !important}
+
+#themeToggle {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    z-index: 1000; /* żeby był nad innymi elementami */
+    background: none;
+    border: 1px solid var(--bs-border-color, #444);
+    border-radius: 20px;
+    padding: 4px 10px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    opacity: 0.8;
+    transition: opacity 0.2s ease;
+}
+
+#themeToggle:hover {
+    opacity: 1;
+}

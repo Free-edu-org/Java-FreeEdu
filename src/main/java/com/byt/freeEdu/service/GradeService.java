@@ -41,7 +41,16 @@ public class GradeService{
 
   public Boolean saveGrade(GradeDto grade) {
     Grade entity = gradeMapper.toEntity(grade,studentService,teacherService);
-    entity.setSubject(SubjectEnum.valueOf(grade.getSubject()));
+
+    SubjectEnum subj = grade.getSubjectEnum() != null
+        ? grade.getSubjectEnum()
+        : grade.getSubject() != null ? SubjectEnum.valueOf(grade.getSubject()) : null;
+
+    if (subj == null) {
+      throw new IllegalArgumentException("Brak informacji o przedmiocie");
+    }
+
+    entity.setSubject(subj);
     entity.setGradeDate(LocalDate.now());
     gradeRepository.save(entity);
     return true;
@@ -67,6 +76,9 @@ public class GradeService{
 
   public Boolean updateGrade(int id, GradeDto updatedGrade) {
     Grade existingGrade = gradeRepository.findById(id).get();
+    existingGrade.setSubject(SubjectEnum.valueOf(updatedGrade.getSubject())); // kod enuma
+    existingGrade.setTeacher(teacherService.getTeacherById(updatedGrade.getTeacherId()));
+    existingGrade.setStudent(studentService.getStudentById(updatedGrade.getStudentId()));
     existingGrade.setValue(updatedGrade.getValue());
     existingGrade.setGradeDate(LocalDate.now());
 

@@ -2,6 +2,7 @@ package com.byt.freeEdu.mapper;
 
 import org.mapstruct.Builder;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 import org.mapstruct.Named;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 import org.mapstruct.ReportingPolicy;
@@ -29,6 +30,43 @@ public interface ScheduleMapper{
   @Mapping(target = "teacherFirstName", expression = "java(schedule.getTeacher().getFirstname())")
   @Mapping(target = "teacherLastName", expression = "java(schedule.getTeacher().getLastname())")
   ScheduleAdminDto toAdminDto(Schedule schedule);
+
+  @Mapping(target = "scheduleId", source = "id")
+  @Mapping(target = "subject", source = "subjectName", qualifiedByName = "mapSubject")
+  @Mapping(target = "teacher", ignore = true)
+  @Mapping(target = "schoolClass", ignore = true)
+  Schedule toEntity(ScheduleDto dto);
+
+  @Mapping(target = "scheduleId", ignore = true)
+  @Mapping(target = "subject", source = "subjectName", qualifiedByName = "mapSubject")
+  @Mapping(target = "teacher", ignore = true)
+  @Mapping(target = "schoolClass", ignore = true)
+  void updateEntityFromDto(ScheduleDto dto, @MappingTarget Schedule entity);
+
+  @Named("mapSubject")
+  default SubjectEnum mapSubject(String subjectName) {
+    if (subjectName == null) {
+      return null;
+    }
+    switch (subjectName) {
+      case "Język polski" :
+        return SubjectEnum.POLISH;
+      case "Matematyka" :
+        return SubjectEnum.MATH;
+      case "Geografia" :
+        return SubjectEnum.GEOGRAPHY;
+      case "Historia" :
+        return SubjectEnum.HISTORY;
+      case "Nauki ścisłe" :
+        return SubjectEnum.SCIENCE;
+      case "Sztuka" :
+        return SubjectEnum.ART;
+      case "Wychowanie fizyczne" :
+        return SubjectEnum.SPORTS;
+      default :
+        return null;
+    }
+  }
 
   @Named("translateSubject")
   default String translateSubject(SubjectEnum subject) {

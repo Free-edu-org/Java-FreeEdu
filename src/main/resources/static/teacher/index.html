@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="pl" data-bs-theme="dark">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <title>FreeEdu – Nauczyciel</title>
+
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+<header class="container py-4 d-flex justify-content-between align-items-center">
+    <a class="navbar-brand fw-bold fs-4" href="/">FreeEdu</a>
+    <div class="d-flex align-items-center gap-2">
+        <nav id="userBanner" class="small"></nav>
+        <button id="themeToggle" class="theme-toggle ms-auto">🌙 ciemny</button>
+    </div>
+</header>
+
+<main class="container pb-5">
+    <div class="row g-4">
+        <aside class="col-lg-3">
+            <div class="card-glass p-3">
+                <div class="list-group">
+                    <a class="list-group-item list-group-item-action" href="#schedule"><i class="bi bi-calendar3 me-2"></i>Plan</a>
+                    <a class="list-group-item list-group-item-action" href="#remarks"><i class="bi bi-chat-text me-2"></i>Uwagi</a>
+                    <a class="list-group-item list-group-item-action" href="#grades"><i class="bi bi-mortarboard me-2"></i>Oceny</a>
+                    <a class="list-group-item list-group-item-action" href="#attendance"><i class="bi bi-clipboard-check me-2"></i>Frekwencja</a>
+                </div>
+            </div>
+        </aside>
+
+        <section class="col-lg-9">
+            <div id="view"></div>
+        </section>
+    </div>
+</main>
+
+<!-- ===== Templates ===== -->
+
+<!-- Plan -->
+<template id="tpl-schedule">
+    <div class="card-glass p-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2 class="h4 mb-0">Plan</h2>
+            <div id="teacherBadgeSchedule" class="badge text-bg-secondary"></div>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-sm align-middle mb-0">
+                <thead><tr>
+                    <th>Data</th><th>Przedmiot</th><th>Klasa</th><th>Nauczyciel</th>
+                </tr></thead>
+                <tbody id="scheduleTbody"></tbody>
+            </table>
+        </div>
+    </div>
+</template>
+
+<!-- Uwagi -->
+<template id="tpl-remarks">
+    <div class="card-glass p-4">
+        <div class="d-flex flex-wrap justify-content-between align-items-center mb-3">
+            <h2 class="h4 mb-2 mb-sm-0">Uwagi</h2>
+            <div class="d-flex gap-2">
+                <button id="remarkAddBtn" class="btn btn-primary"><i class="bi bi-plus-circle me-1"></i>Dodaj uwagę</button>
+                <input id="remarksFilter" class="form-control" style="max-width:280px" placeholder="Filtruj..."/>
+            </div>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-sm align-middle mb-0">
+                <thead><tr>
+                    <th>Uczeń</th><th>Treść</th><th>Data</th><th style="width:140px"></th>
+                </tr></thead>
+                <tbody id="remarksTbody"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Modal add/edit remark -->
+    <div class="modal fade" id="modalRemark" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content card-glass p-2">
+                <div class="modal-header border-0">
+                    <h5 class="modal-title" id="remarkModalTitle">Uwaga</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Zamknij"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="remarkForm" class="row g-3">
+                        <input type="hidden" id="remarkId"/>
+                        <div class="col-md-6">
+                            <label class="form-label">Klasa</label>
+                            <select id="remarkClass" class="form-select"></select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Uczeń</label>
+                            <select id="remarkStudent" class="form-select" required></select>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Treść</label>
+                            <textarea id="remarkContent" class="form-control" rows="5" required minlength="2" placeholder="Treść uwagi..."></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer border-0">
+                    <button class="btn btn-ghost" data-bs-dismiss="modal">Anuluj</button>
+                    <button id="remarkSaveBtn" class="btn btn-primary">Zapisz</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+
+<!-- Oceny -->
+<template id="tpl-grades">
+    <div class="card-glass p-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2 class="h4 mb-0">Oceny</h2>
+            <button id="gradeAddBtn" class="btn btn-primary"><i class="bi bi-plus-circle me-1"></i>Dodaj ocenę</button>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-sm align-middle mb-0">
+                <thead><tr>
+                    <th>Uczeń</th><th>Przedmiot</th><th>Ocena</th><th>Data</th><th style="width:140px"></th>
+                </tr></thead>
+                <tbody id="gradesTbody"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Modal add/edit grade -->
+    <div class="modal fade" id="modalGrade" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content card-glass p-2">
+                <div class="modal-header border-0">
+                    <h5 id="gradeModalTitle" class="modal-title">Ocena</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Zamknij"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="gradeForm" class="row g-3">
+                        <input type="hidden" id="gradeId"/>
+                        <div class="col-md-6">
+                            <label class="form-label">Przedmiot</label>
+                            <select id="gradeSubject" class="form-select" required>
+                                <option value="" selected disabled>— wybierz —</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Ocena</label>
+                            <input id="gradeValue" type="number" min="1" max="6" step="0.5" class="form-control" required placeholder="np. 4.5"/>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Klasa</label>
+                            <select id="gradeClass" class="form-select">
+                                <option value="" selected disabled>— wybierz —</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Uczeń</label>
+                            <select id="gradeStudent" class="form-select" required></select>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer border-0">
+                    <button class="btn btn-ghost" data-bs-dismiss="modal">Anuluj</button>
+                    <button id="gradeSaveBtn" class="btn btn-primary">Zapisz</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+
+<!-- Frekwencja -->
+<template id="tpl-attendance">
+    <div class="card-glass p-4">
+        <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
+            <h2 class="h4 mb-2 mb-sm-0">Frekwencja</h2>
+            <div class="d-flex flex-wrap gap-2">
+                <select id="attClass" class="form-select" style="min-width:220px">
+                    <option value="" selected disabled>— wybierz klasę —</option>
+                </select>
+                <select id="attSubject" class="form-select" style="min-width:220px">
+                    <option value="" selected disabled>— wybierz przedmiot —</option>
+                </select>
+                <button id="attLoadBtn" class="btn btn-outline-secondary">Wczytaj listę</button>
+                <button id="attSaveBtn" class="btn btn-primary" disabled>Zapisz</button>
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-sm align-middle mb-0">
+                <thead><tr>
+                    <th>Uczeń</th><th>Status</th>
+                </tr></thead>
+                <tbody id="attendanceTbody">
+                <tr><td colspan="2" class="text-secondary text-center">Wybierz klasę i przedmiot, a następnie „Wczytaj listę”.</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</template>
+
+<div id="toasts"></div>
+
+<script type="module">
+    import { initThemeToggle, renderUserBanner } from '../js/common.js';
+    import './teacher.js';
+    initThemeToggle();
+    renderUserBanner({ hideAuthLinks: true });
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" defer></script>
+</body>
+</html>

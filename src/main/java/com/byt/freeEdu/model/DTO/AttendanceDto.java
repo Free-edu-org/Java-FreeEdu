@@ -1,8 +1,12 @@
 package com.byt.freeEdu.model.DTO;
 
+import java.time.LocalDate;
+
 import com.byt.freeEdu.model.Attendance;
 import com.byt.freeEdu.model.enums.AttendanceEnum;
 import com.byt.freeEdu.model.enums.SubjectEnum;
+import com.byt.freeEdu.model.users.Student;
+import com.byt.freeEdu.model.users.Teacher;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -40,6 +44,7 @@ public class AttendanceDto{
   public static AttendanceDto fromEntity(Attendance attendance) {
     AttendanceDto dto = new AttendanceDto();
     dto.setId(attendance.getId());
+    dto.setAttendanceId(attendance.getId());
     dto.setStudentFirstName(attendance.getStudent().getFirstname());
     dto.setStudentLastName(attendance.getStudent().getLastname());
     dto.setTeacherFirstName(attendance.getTeacher().getFirstname());
@@ -48,5 +53,20 @@ public class AttendanceDto{
     dto.setAttendanceDate(attendance.getAttendanceDate().toString());
     dto.setAttendanceStatus(attendance.getStatus().getDisplayName());
     return dto;
+  }
+
+  public Attendance toEntity(Student student, Teacher teacher) {
+    Attendance attendance = new Attendance();
+    attendance.setAttendanceId(this.attendanceId);
+    attendance.setStudent(student);
+    attendance.setTeacher(teacher);
+    attendance.setAttendanceDate(LocalDate.parse(this.attendanceDate));
+    attendance.setStatus(this.status != null
+        ? this.status
+        : AttendanceEnum.valueOf(this.attendanceStatus.toUpperCase()));
+    attendance.setSubject(this.subjectEnum != null
+        ? this.subjectEnum
+        : SubjectEnum.valueOf(this.subjectName.toUpperCase()));
+    return attendance;
   }
 }
